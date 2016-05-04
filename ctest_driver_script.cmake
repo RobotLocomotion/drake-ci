@@ -225,15 +225,6 @@ set(DASHBOARD_SHARED_LINKER_FLAGS "")
 set(DASHBOARD_STATIC_LINKER_FLAGS "")
 set(DASHBOARD_VERBOSE_MAKEFILE OFF)
 
-# set compiler flags for regular builds
-if(NOT DEFINED ENV{ghprbPullId})
-  if("$ENV{compiler}" MATCHES "clang" OR "$ENV{compiler}" MATCHES "gcc")
-    set(DASHBOARD_WARNING_FLAGS "-pedantic -Wall -Wextra")
-    set(DASHBOARD_C_FLAGS "${DASHBOARD_WARNING_FLAGS} ${DASHBOARD_C_FLAGS}")
-    set(DASHBOARD_CXX_FLAGS "${DASHBOARD_WARNING_FLAGS} ${DASHBOARD_CXX_FLAGS}")
-  endif()
-endif()
-
 if("$ENV{compiler}" MATCHES "include-what-you-use")
   set(DASHBOARD_INSTALL OFF)
   set(DASHBOARD_TEST OFF)
