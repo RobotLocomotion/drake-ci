@@ -195,6 +195,7 @@ if("$ENV{compiler}" MATCHES "cpplint")
   set(DASHBOARD_TEST OFF)
   find_program(DASHBOARD_CPPLINT_COMMAND NAMES "cpplint" "cpplint.py")
   if(NOT DASHBOARD_CPPLINT_COMMAND)
+    file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
     message(FATAL_ERROR
       "*** CTest Result: FAILURE BECAUSE CPPLINT WAS NOT FOUND")
   endif()
@@ -226,6 +227,7 @@ if("$ENV{compiler}" MATCHES "include-what-you-use")
   find_program(DASHBOARD_INCLUDE_WHAT_YOU_USE_COMMAND
     NAMES "include-what-you-use")
   if(NOT DASHBOARD_INCLUDE_WHAT_YOU_USE_COMMAND)
+    file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
     message(FATAL_ERROR
       "*** CTest Result: FAILURE BECAUSE INCLUDE-WHAT-YOU-USE WAS NOT FOUND")
   endif()
@@ -263,6 +265,7 @@ if("$ENV{coverage}" MATCHES "true")
   if("$ENV{compiler}" MATCHES "clang")
     find_program(DASHBOARD_COVERAGE_COMMAND NAMES "llvm-cov")
     if(NOT DASHBOARD_COVERAGE_COMMAND)
+      file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
       message(FATAL_ERROR
         "*** CTest Result: FAILURE BECAUSE LLVM-COV WAS NOT FOUND")
     endif()
@@ -270,10 +273,12 @@ if("$ENV{coverage}" MATCHES "true")
   elseif("$ENV{compiler}" MATCHES "gcc")
     find_program(DASHBOARD_COVERAGE_COMMAND NAMES "gcov-4.9")
     if(NOT DASHBOARD_COVERAGE_COMMAND)
+      file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
       message(FATAL_ERROR
         "*** CTest Result: FAILURE BECAUSE GCOV-4.9 WAS NOT FOUND")
     endif()
   else()
+    file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
     message(FATAL_ERROR
       "*** CTest Result: FAILURE BECAUSE CTEST_COVERAGE_COMMAND WAS NOT SET")
   endif()
@@ -337,10 +342,12 @@ if("$ENV{memcheck}" MATCHES "asan" OR "$ENV{memcheck}" MATCHES "msan" OR "$ENV{m
     set(CTEST_MEMORYCHECK_SUPPRESSIONS_FILE
       "${DASHBOARD_WORKSPACE}/drake/valgrind.supp")
     if(NOT EXISTS "${DASHBOARD_WORKSPACE}/drake/valgrind.supp")
+      file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
       message(FATAL_ERROR
         "*** CTest Result: FAILURE BECAUSE CTEST_MEMORYCHECK_SUPPRESSIONS_FILE WAS NOT FOUND")
     endif()
   else()
+    file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
     message(FATAL_ERROR
       "*** CTest Result: FAILURE BECAUSE CTEST_MEMORYCHECK_TYPE WAS NOT SET")
   endif()
