@@ -5,7 +5,7 @@
 #   ENV{BUILD_ID}         optional    value of Jenkins BUILD_ID
 #   ENV{WORKSPACE}        required    value of Jenkins WORKSPACE
 #
-#   ENV{compiler}         optional    "clang" | "cpplint" | "gcc" | "include-what-you-use" | "msvc-32" | "msvc-64" | "scan-build"
+#   ENV{compiler}         optional    "clang" | "cpplint" | "gcc" | "include-what-you-use" | "msvc-32" | "msvc-64" | "msvc-ninja-32" | "msvc-ninja-64" "scan-build"
 #   ENV{coverage}         optional    "false" | "true"
 #   ENV{debug}            optional    "false" | "true"
 #   ENV{documentation}    optional    "false" | "true"
@@ -67,11 +67,25 @@ if(NOT DEFINED ENV{compiler})
 endif()
 
 if(WIN32)
-  set(CTEST_CMAKE_GENERATOR "Visual Studio 14 2015")
-  set(ENV{CMAKE_FLAGS} "-G \"Visual Studio 14 2015\"")  # HACK
-  set(CTEST_USE_LAUNCHERS OFF)
-  set(ENV{CXXFLAGS} "-MP")
-  set(ENV{CFLAGS} "-MP")
+  if($ENV{compiler} MATCHES "msvc-ninja")
+    set(CTEST_CMAKE_GENERATOR "Ninja")
+    set(CTEST_USE_LAUNCHERS ON)
+    set(ENV{CTEST_USE_LAUNCHERS_DEFAULT} 1)
+    set(ENV{CC} "cl")
+    set(ENV{CXX} "cl")
+    # load 64 or 32 bit compiler environments
+    if($ENV{compiler} STREQUAL "msvc-ninja-64")
+      include(${CMAKE_CURRENT_LIST_DIR}/visualStudio64.cmake)
+    else()
+      include(${CMAKE_CURRENT_LIST_DIR}/visualStudio32.cmake)
+    endif()
+  else()
+    set(CTEST_CMAKE_GENERATOR "Visual Studio 14 2015")
+    set(ENV{CMAKE_FLAGS} "-G \"Visual Studio 14 2015\"")  # HACK
+    set(CTEST_USE_LAUNCHERS OFF)
+    set(ENV{CXXFLAGS} "-MP")
+    set(ENV{CFLAGS} "-MP")
+  endif()
 elseif(NOT "$ENV{compiler}" MATCHES "cpplint")
   set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
   if(NOT DASHBOARD_PROCESSOR_COUNT EQUAL 0)
@@ -122,6 +136,16 @@ set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_WORKSPACE}")
 set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/pod-build")
 
 if(WIN32)
+  if($ENV{compiler} STREQUAL "msvc-ninja")
+    # grab ninj
+    file(DOWNLOAD
+    https://github.com/ninja-build/ninja/releases/download/v1.7.1/ninja-win.zip
+    ${DASHBOARD_WORKSPACE}/ninja-win.zip)
+    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf
+      ${DASHBOARD_WORKSPACE}/ninja-win.zip
+      WORKING_DIRECTORY ${DASHBOARD_WORKSPACE}
+      RESULT_VARIABLE DASHBOARD_NINJA_UNZIP_RES)
+  endif()
   file(DOWNLOAD
     "https://s3.amazonaws.com/drake-provisioning/pkg-config.exe"
     "${DASHBOARD_WORKSPACE}/pkg-config.exe")
@@ -733,6 +757,10 @@ ${CACHE_WITH_YAML_CPP}
   ctest_configure(BUILD "${CTEST_BINARY_DIRECTORY}"
     SOURCE "${CTEST_SOURCE_DIRECTORY}"
     RETURN_VALUE DASHBOARD_SUPERBUILD_CONFIGURE_RETURN_VALUE QUIET)
+  if($ENV{compiler} MATCHES "msvc-ninja")
+    ctest_build(BUILD "${CTEST_BINARY_DIRECTORY}" APPEND
+      TARGET download-all QUIET)
+  endif()
   ctest_build(BUILD "${CTEST_BINARY_DIRECTORY}" APPEND
     NUMBER_ERRORS DASHBOARD_SUPERBUILD_NUMBER_BUILD_ERRORS QUIET)
 
