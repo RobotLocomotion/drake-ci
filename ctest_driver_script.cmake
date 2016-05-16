@@ -138,13 +138,25 @@ set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/pod-build")
 if(WIN32)
   if($ENV{compiler} STREQUAL "msvc-ninja")
     # grab ninj
+    message("Download ninja")
     file(DOWNLOAD
     https://github.com/ninja-build/ninja/releases/download/v1.7.1/ninja-win.zip
     ${DASHBOARD_WORKSPACE}/ninja-win.zip)
-    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf
-      ${DASHBOARD_WORKSPACE}/ninja-win.zip
-      WORKING_DIRECTORY ${DASHBOARD_WORKSPACE}
-      RESULT_VARIABLE DASHBOARD_NINJA_UNZIP_RES)
+    if(EXISTS ${DASHBOARD_WORKSPACE}/ninja-win.zip)
+      message("${DASHBOARD_WORKSPACE}/ninja-win.zip found")
+      message("Unzip ninja")
+      execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf
+        ${DASHBOARD_WORKSPACE}/ninja-win.zip
+        WORKING_DIRECTORY ${DASHBOARD_WORKSPACE}
+        RESULT_VARIABLE DASHBOARD_NINJA_UNZIP_RES)
+      if(NOT EXISTS ${DASHBOARD_WORKSPACE}/ninja.exe)
+        message("${DASHBOARD_WORKSPACE}/ninja.exe not found")
+      else()
+        message("${DASHBOARD_WORKSPACE}/ninja.exe found")
+      endif()
+    else()
+      message("${DASHBOARD_WORKSPACE}/ninja-win.zip not downloaded")
+    endif()
   endif()
   file(DOWNLOAD
     "https://s3.amazonaws.com/drake-provisioning/pkg-config.exe"
