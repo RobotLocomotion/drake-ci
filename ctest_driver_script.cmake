@@ -468,7 +468,7 @@ if("$ENV{documentation}" MATCHES "true")
   set(DASHBOARD_BUILD_DOCUMENTATION ON)
 endif()
 
-if(NOT "${DASHBOARD_TRACK}" MATCHES "Experimental")
+if(NOT DEFINED ENV{ghprbPullId})
   set(DASHBOARD_LONG_RUNNING_TESTS ON)
 endif()
 
