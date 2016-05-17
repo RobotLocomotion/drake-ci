@@ -5,7 +5,7 @@
 #   ENV{BUILD_ID}         optional    value of Jenkins BUILD_ID
 #   ENV{WORKSPACE}        required    value of Jenkins WORKSPACE
 #
-#   ENV{compiler}         optional    "clang" | "cpplint" | "gcc" | "include-what-you-use" | "msvc-32" | "msvc-64" | "msvc-ninja-32" | "msvc-ninja-64" "scan-build"
+#   ENV{compiler}         optional    "clang" | "cpplint" | "gcc" | "include-what-you-use" | "msvc-32" | "msvc-64" | "msvc-ninja-32" | "msvc-ninja-64" | "scan-build"
 #   ENV{coverage}         optional    "false" | "true"
 #   ENV{debug}            optional    "false" | "true"
 #   ENV{documentation}    optional    "false" | "true"
@@ -166,7 +166,7 @@ endif()
 
 if("$ENV{matlab}" MATCHES "true")
   if(WIN32)
-    if("$ENV{compiler}" MATCHES "msvc-64")
+    if("$ENV{compiler}" MATCHES "msvc-64" OR "$ENV{compiler}" MATCHES "msvc-ninja-64")
       set(ENV{PATH} "C:\\Program Files\\MATLAB\\R2015b\\runtime\\win64;C:\\Program Files\\MATLAB\\R2015b\\bin;$ENV{PATH}")
     else()
       set(ENV{PATH} "C:\\Program Files (x86)\\MATLAB\\R2015b\\runtime\\win32;C:\\Program Files (x86)\\MATLAB\\R2015b\\bin;$ENV{PATH}")
@@ -176,7 +176,8 @@ if("$ENV{matlab}" MATCHES "true")
     execute_process(COMMAND mex -setup c++
       RESULT_VARIABLE DASHBOARD_MEX_CXX_RESULT_VARIABLE)
     if(NOT DASHBOARD_MEX_C_RESULT_VARIABLE EQUAL 0 OR NOT DASHBOARD_MEX_CXX_RESULT_VARIABLE EQUAL 0)
-      message(WARNING "*** mex setup was not successful")
+      file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
+      message(FATAL_ERROR "*** CTest Result: FAILURE BECAUSE MEX SETUP WAS NOT SUCCESSFUL")
     endif()
   elseif(APPLE)
     set(ENV{PATH} "/Applications/MATLAB_R2015b.app/bin:/Applications/MATLAB_R2015b.app/runtime/maci64:$ENV{PATH}")
