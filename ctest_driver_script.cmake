@@ -151,7 +151,6 @@ if(WIN32)
     "${DASHBOARD_WORKSPACE}/pkg-config.exe")
   set(PATH
     "${DASHBOARD_WORKSPACE}"
-    "${DASHBOARD_WORKSPACE}/drake/pod-build/lib/Release"
     "${DASHBOARD_WORKSPACE}/build/bin"
     "${DASHBOARD_WORKSPACE}/build/lib")
   foreach(p ${PATH})
