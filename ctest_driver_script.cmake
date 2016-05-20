@@ -153,6 +153,9 @@ if(WIN32)
     "${DASHBOARD_WORKSPACE}"
     "${DASHBOARD_WORKSPACE}/build/bin"
     "${DASHBOARD_WORKSPACE}/build/lib")
+  if("$ENV{matlab}" MATCHES "true")
+    list(APPEND PATH "${DASHBOARD_WORKSPACE}/drake/pod-build/lib/Release")
+  endif()
   foreach(p ${PATH})
     file(TO_NATIVE_PATH "${p}" path)
     list(APPEND paths "${path}")
