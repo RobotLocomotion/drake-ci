@@ -187,7 +187,7 @@ if("$ENV{matlab}" MATCHES "true")
     if("$ENV{compiler}" MATCHES "msvc-64" OR "$ENV{compiler}" MATCHES "msvc-ninja-64")
       set(ENV{PATH} "C:\\Program Files\\MATLAB\\R2015b\\runtime\\win64;C:\\Program Files\\MATLAB\\R2015b\\bin;C:\\Program Files\\MATLAB\\R2015b\\bin\\win64;$ENV{PATH}")
     else()
-      set(ENV{PATH} "C:\\Program Files (x86)\\MATLAB\\R2015b\\runtime\\win32;C:\\Program Files (x86)\\MATLAB\\R2015b\\bin;C:\\Program Files\\MATLAB\\R2015b\\bin\\win32;$ENV{PATH}")
+      set(ENV{PATH} "C:\\Program Files (x86)\\MATLAB\\R2015b\\runtime\\win32;C:\\Program Files (x86)\\MATLAB\\R2015b\\bin;C:\\Program Files (x86)\\MATLAB\\R2015b\\bin\\win32;$ENV{PATH}")
     endif()
     execute_process(COMMAND mex -setup c
       RESULT_VARIABLE DASHBOARD_MEX_C_RESULT_VARIABLE
