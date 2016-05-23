@@ -5,7 +5,13 @@
 #   ENV{BUILD_ID}         optional    value of Jenkins BUILD_ID
 #   ENV{WORKSPACE}        required    value of Jenkins WORKSPACE
 #
-#   ENV{compiler}         optional    "clang" | "cpplint" | "gcc" | "include-what-you-use" | "msvc-32" | "msvc-64" | "msvc-ninja-32" | "msvc-ninja-64" | "scan-build"
+#   ENV{compiler}         optional    "clang" | "clang-ninja" | "cpplint"
+#                                     | "gcc" | "gcc-ninja"
+#                                     | "include-what-you-use"
+#                                     | "include-what-you-use-ninja"
+#                                     | "msvc-32" | "msvc-64"
+#                                     | "msvc-ninja-32" | "msvc-ninja-64"
+#                                     | "scan-build" | "scan-build-ninja"
 #   ENV{coverage}         optional    "false" | "true"
 #   ENV{debug}            optional    "false" | "true"
 #   ENV{documentation}    optional    "false" | "true"
@@ -67,14 +73,14 @@ if(NOT DEFINED ENV{compiler})
 endif()
 
 if(WIN32)
-  if($ENV{compiler} MATCHES "msvc-ninja")
+  if("$ENV{compiler}" MATCHES "msvc-ninja")
     set(CTEST_CMAKE_GENERATOR "Ninja")
     set(CTEST_USE_LAUNCHERS ON)
     set(ENV{CTEST_USE_LAUNCHERS_DEFAULT} 1)
     set(ENV{CC} "cl")
     set(ENV{CXX} "cl")
     # load 64 or 32 bit compiler environments
-    if($ENV{compiler} STREQUAL "msvc-ninja-64")
+    if("$ENV{compiler}" MATCHES "msvc-ninja-64")
       include(${CMAKE_CURRENT_LIST_DIR}/visualStudio64.cmake)
     else()
       include(${CMAKE_CURRENT_LIST_DIR}/visualStudio32.cmake)
@@ -87,9 +93,13 @@ if(WIN32)
     set(ENV{CFLAGS} "-MP")
   endif()
 elseif(NOT "$ENV{compiler}" MATCHES "cpplint")
-  set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
-  if(NOT DASHBOARD_PROCESSOR_COUNT EQUAL 0)
-    set(CTEST_BUILD_FLAGS "-j${DASHBOARD_PROCESSOR_COUNT}")
+  if("$ENV{compiler}" MATCHES "ninja")
+    set(CTEST_CMAKE_GENERATOR "Ninja")
+  else()
+    set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
+    if(NOT DASHBOARD_PROCESSOR_COUNT EQUAL 0)
+      set(CTEST_BUILD_FLAGS "-j${DASHBOARD_PROCESSOR_COUNT}")
+    endif()
   endif()
   set(CTEST_USE_LAUNCHERS ON)
   set(ENV{CTEST_USE_LAUNCHERS_DEFAULT} 1)
@@ -137,14 +147,20 @@ set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/pod-build")
 
 if(WIN32)
   if($ENV{compiler} MATCHES "msvc-ninja")
-    # grab ninj
+    # grab Ninja
     file(DOWNLOAD
-    https://github.com/ninja-build/ninja/releases/download/v1.7.1/ninja-win.zip
-    ${DASHBOARD_WORKSPACE}/ninja-win.zip)
+      "https://github.com/ninja-build/ninja/releases/download/v1.7.1/ninja-win.zip"
+      "${DASHBOARD_WORKSPACE}/ninja-win.zip")
     execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf
-      ${DASHBOARD_WORKSPACE}/ninja-win.zip
+      "${DASHBOARD_WORKSPACE}/ninja-win.zip"
       WORKING_DIRECTORY ${DASHBOARD_WORKSPACE}
-      RESULT_VARIABLE DASHBOARD_NINJA_UNZIP_RES)
+      RESULT_VARIABLE DASHBOARD_NINJA_UNZIP_RESULT_VARIABLE
+      OUTPUT_VARIABLE DASHBOARD_NINJA_UNZIP_OUTPUT_VARIABLE
+      ERROR_VARIABLE DASHBOARD_NINJA_UNZIP_OUTPUT_VARIABLE)
+    message("${DASHBOARD_NINJA_UNZIP_OUTPUT_VARIABLE}")
+    if(NOT DASHBOARD_NINJA_UNZIP_RESULT_VARIABLE EQUAL 0)
+      message(WARNING "*** unzip ninja-win.zip was not successful (${DASHBOARD_NINJA_UNZIP_RESULT_VARIABLE})")
+    endif()
   endif()
   file(DOWNLOAD
     "https://s3.amazonaws.com/drake-provisioning/pkg-config.exe"
