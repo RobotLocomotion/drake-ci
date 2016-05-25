@@ -150,9 +150,20 @@ set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/pod-build")
 if(WIN32)
   if($ENV{compiler} MATCHES "ninja")
     # grab Ninja
+    message(STATUS "Downloading ninja-win.zip...")
     file(DOWNLOAD
       "https://github.com/ninja-build/ninja/releases/download/v1.7.1/ninja-win.zip"
-      "${DASHBOARD_WORKSPACE}/ninja-win.zip")
+      "${DASHBOARD_WORKSPACE}/ninja-win.zip"
+      SHOW_PROGRESS STATUS DASHBOARD_DOWNLOAD_NINJA_STATUS
+      EXPECTED_HASH SHA1=38c5b4192f845b953f26fa6aae7d2c9e7078f2f1
+      TLS_VERIFY ON)
+    list(GET DASHBOARD_DOWNLOAD_NINJA_STATUS 0
+      DASHBOARD_DOWNLOAD_NINJA_RESULT_VARIABLE)
+    if(NOT DASHBOARD_DOWNLOAD_NINJA_RESULT_VARIABLE EQUAL 0)
+      file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
+      message(FATAL_ERROR
+        "*** CTest Result: FAILURE BECAUSE NINJA DOWNLOAD WAS NOT SUCCESSFUL")
+    endif()
     execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf
       "${DASHBOARD_WORKSPACE}/ninja-win.zip"
       WORKING_DIRECTORY ${DASHBOARD_WORKSPACE}
@@ -166,15 +177,25 @@ if(WIN32)
         "*** CTest Result: FAILURE BECAUSE UNZIP NINJA WAS NOT SUCCESSFUL")
     endif()
   endif()
+  message(STATUS "Downloading pkg-config.exe...")
   file(DOWNLOAD
     "https://s3.amazonaws.com/drake-provisioning/pkg-config.exe"
-    "${DASHBOARD_WORKSPACE}/pkg-config.exe")
+    "${DASHBOARD_WORKSPACE}/pkg-config.exe"
+    SHOW_PROGRESS STATUS DASHBOARD_DOWNLOAD_PKG_CONFIG_STATUS
+    EXPECTED_HASH SHA1=4aed4ddb0135ab6234c60b0d6ab9f912476f6bff TLS_VERIFY ON)
+  list(GET DASHBOARD_DOWNLOAD_PKG_CONFIG_STATUS 0
+    DASHBOARD_DOWNLOAD_PKG_CONFIG_RESULT_VARIABLE)
+  if(NOT DASHBOARD_DOWNLOAD_PKG_CONFIG_RESULT_VARIABLE EQUAL 0)
+    file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
+    message(FATAL_ERROR
+      "*** CTest Result: FAILURE BECAUSE PKG-CONFIG DOWNLOAD WAS NOT SUCCESSFUL")
+  endif()
   set(PATH
     "${DASHBOARD_WORKSPACE}"
     "${DASHBOARD_WORKSPACE}/build/bin"
     "${DASHBOARD_WORKSPACE}/build/lib")
   if("$ENV{matlab}" MATCHES "true")
-    list(APPEND PATH "${DASHBOARD_WORKSPACE}/drake/pod-build/lib/Release")
+    list(APPEND PATH "${DASHBOARD_WORKSPACE}/drake/pod-build/lib/Release")  # FIXME
   endif()
   foreach(p ${PATH})
     file(TO_NATIVE_PATH "${p}" path)
