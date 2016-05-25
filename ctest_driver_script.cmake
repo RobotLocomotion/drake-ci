@@ -31,6 +31,8 @@ if(NOT DEFINED ENV{WORKSPACE})
     "*** CTest Result: FAILURE BECAUSE ENV{WORKSPACE} WAS NOT SET")
 endif()
 
+file(TO_CMAKE_PATH "$ENV{WORKSPACE}" DASHBOARD_WORKSPACE)
+
 # set site and build name
 if(DEFINED site)
   if(APPLE)
@@ -124,6 +126,7 @@ elseif("$ENV{compiler}" MATCHES "scan-build")
   find_program(DASHBOARD_CXX_ANALYZER_COMMAND NAMES "c++-analyzer"
     PATHS "/usr/local/libexec" "/usr/libexec")
   if(NOT DASHBOARD_CCC_ANALYZER_COMMAND OR NOT DASHBOARD_CXX_ANALYZER_COMMAND)
+    file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
     message(FATAL_ERROR
       "*** CTest Result: FAILURE BECAUSE SCAN-BUILD WAS NOT FOUND")
   endif()
@@ -141,7 +144,6 @@ elseif("$ENV{compiler}" MATCHES "msvc-64")
   set(ENV{CMAKE_FLAGS} "-G \"Visual Studio 14 2015 Win64\"")  # HACK
 endif()
 
-file(TO_CMAKE_PATH "$ENV{WORKSPACE}" DASHBOARD_WORKSPACE)
 set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_WORKSPACE}")
 set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/pod-build")
 
@@ -159,7 +161,9 @@ if(WIN32)
       ERROR_VARIABLE DASHBOARD_NINJA_UNZIP_OUTPUT_VARIABLE)
     message("${DASHBOARD_NINJA_UNZIP_OUTPUT_VARIABLE}")
     if(NOT DASHBOARD_NINJA_UNZIP_RESULT_VARIABLE EQUAL 0)
-      message(WARNING "*** unzip ninja-win.zip was not successful (${DASHBOARD_NINJA_UNZIP_RESULT_VARIABLE})")
+      file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
+      message(FATAL_ERROR
+        "*** CTest Result: FAILURE BECAUSE UNZIP NINJA WAS NOT SUCCESSFUL")
     endif()
   endif()
   file(DOWNLOAD
@@ -195,7 +199,9 @@ if("$ENV{matlab}" MATCHES "true")
       ERROR_VARIABLE DASHBOARD_MEX_C_OUTPUT_VARIABLE)
     message("${DASHBOARD_MEX_C_OUTPUT_VARIABLE}")
     if(NOT DASHBOARD_MEX_C_RESULT_VARIABLE EQUAL 0)
-      message(WARNING "*** mex -setup c was not successful (${DASHBOARD_MEX_C_RESULT_VARIABLE})")
+      file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
+      message(FATAL_ERROR
+        "*** CTest Result: FAILURE BECAUSE MEX SETUP C WAS NOT SUCCESSFUL")
     endif()
     execute_process(COMMAND mex -setup c++
       RESULT_VARIABLE DASHBOARD_MEX_CXX_RESULT_VARIABLE
@@ -203,7 +209,9 @@ if("$ENV{matlab}" MATCHES "true")
       ERROR_VARIABLE DASHBOARD_MEX_CXX_OUTPUT_VARIABLE)
     message("${DASHBOARD_MEX_CXX_OUTPUT_VARIABLE}")
     if(NOT DASHBOARD_MEX_CXX_RESULT_VARIABLE EQUAL 0)
-      message(WARNING "*** mex -setup c++ was not successful (${DASHBOARD_MEX_CXX_RESULT_VARIABLE})")
+      file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
+      message(FATAL_ERROR
+        "*** CTest Result: FAILURE BECAUSE MEX SETUP C++ WAS NOT SUCCESSFUL")
     endif()
   elseif(APPLE)
     set(ENV{PATH} "/Applications/MATLAB_R2015b.app/bin:/Applications/MATLAB_R2015b.app/runtime/maci64:$ENV{PATH}")
