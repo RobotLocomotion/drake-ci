@@ -887,10 +887,16 @@ message("
 if(NOT DASHBOARD_SUPERBUILD_FAILURE)
   ctest_start("${DASHBOARD_MODEL}" TRACK "${DASHBOARD_TRACK}" QUIET)
   ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}" QUIET)
-
+  # for windows ninja debug builds set the link pool size to 2
+  set(CACHE_CMAKE_NINJA_LINK_POOL_SIZE "")
+  if("$ENV{compiler}" MATCHES "ninja" AND ENV{debug} AND WIN32)
+    set(CACHE_CMAKE_NINJA_LINK_POOL_SIZE
+      CMAKE_NINJA_LINK_POOL_SIZE:STRING=2)
+  endif()
   if(DASHBOARD_CONFIGURE)
     # write initial cache
     file(WRITE "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt" "
+  ${CACHE_CMAKE_NINJA_LINK_POOL_SIZE}
   ${CACHE_BUILD_DOCUMENTATION}
   ${CACHE_C_FLAGS}
   ${CACHE_C_INCLUDE_WHAT_YOU_USE}
