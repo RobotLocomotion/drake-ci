@@ -461,8 +461,7 @@ if("${CTEST_CMAKE_GENERATOR}" MATCHES "Unix Makefiles")
     "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON $ENV{CMAKE_FLAGS}")  # HACK
 endif()
 
-# for Windows Ninja debug builds set the link pool size to 2
-if("$ENV{compiler}" MATCHES "ninja" AND "$ENV{debug}" MATCHES "true" AND WIN32)
+if("$ENV{compiler}" MATCHES "msvc-ninja-32" AND "$ENV{debug}" MATCHES "true")
   set(DASHBOARD_NINJA_LINK_POOL_SIZE 2)
 endif()
 
