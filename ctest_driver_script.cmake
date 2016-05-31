@@ -695,6 +695,7 @@ message("
   CMAKE_VERBOSE_MAKEFILE              = ${DASHBOARD_VERBOSE_MAKEFILE}
   ------------------------------------------------------------------------------
   CTEST_BUILD_COMMAND                 = ${CTEST_BUILD_COMMAND}
+  CTEST_BUILD_FLAGS                   = ${CTEST_BUILD_FLAGS}
   CTEST_BUILD_NAME                    = ${CTEST_BUILD_NAME}
   CTEST_CHANGE_ID                     = ${CTEST_CHANGE_ID}
   CTEST_CMAKE_GENERATOR               = ${CTEST_CMAKE_GENERATOR}
