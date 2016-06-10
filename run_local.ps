@@ -1,0 +1,22 @@
+# This is a sample Windows PowerShell script to run ctest_driver_script.cmake
+# locally without Jenkins.
+# 1. Update variables in this script to build you want, including the path to
+#    the cmake executable.
+# 2. Clone drake into the path specified in $env:WORKSPACE.
+# 3. Run this script.
+
+$env:compiler = msvc-ninja-64
+$env:debug = false
+$env:matlab = false
+$env:openSource = false
+$env:track = experimental
+
+$env:BUILD_ID = 0
+$env:JOB_NAME = windows-experimental
+$env:NODE_NAME = "$env:COMPUTERNAME"
+$env:WORKSPACE = "$env:HOMEPATH\workspace\windows-experimental"
+
+$env:PATH += "C:\Program Files (x86)\CMake\bin"
+
+ctest -Dbuildname="$env:JOB_NAME" -Dsite="$env:NODE_NAME" -S "$env:WORKSPACE/ci/ctest_driver_script.cmake" --extra-verbose --output-on-failure
+(Test-Path "$env:WORKSPACE/SUCCESS" -or Test-Path "$env:WORKSPACE/UNSTABLE") -and ! Test-Path "$env:WORKSPACE/FAILURE"
