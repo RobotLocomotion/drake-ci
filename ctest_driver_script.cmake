@@ -700,7 +700,7 @@ else()
   endif()
 endif()
 
-if("$ENV{openSource}" MATCHES "true")
+if(WIN32 OR "$ENV{openSource}" MATCHES "true")
   set(DASHBOARD_WITH_SNOPT_PRECOMPILED ON)
 else()
   set(DASHBOARD_WITH_SNOPT ON)
