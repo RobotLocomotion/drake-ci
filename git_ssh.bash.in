@@ -1,3 +1,3 @@
 #!/bin/bash +x
 [[ -z "${DISPLAY}" ]] && export DISPLAY=:0.0
-ssh -i "@DASHBOARD_SSH_IDENTITY_FILE@" -l "@DASHBOARD_SSH_LOGIN_NAME@" -o StrictHostKeyChecking=no "$@"
+ssh -i "@DASHBOARD_SSH_IDENTITY_FILE@" -o StrictHostKeyChecking=no "$@"

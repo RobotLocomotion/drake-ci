@@ -1,2 +1,0 @@
-#!/bin/bash +x
-echo "@DASHBOARD_SSH_IDENTITY_PASSPHRASE@"
