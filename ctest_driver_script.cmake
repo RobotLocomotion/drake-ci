@@ -150,7 +150,7 @@ set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/pod-build")
 if(WIN32)
   if($ENV{compiler} MATCHES "ninja")
     # grab Ninja
-    message(STATUS "Downloading ninja-win.zip...")
+    message(STATUS "Downloading Ninja for Windows...")
     file(DOWNLOAD
       "https://github.com/ninja-build/ninja/releases/download/v1.7.1/ninja-win.zip"
       "${DASHBOARD_WORKSPACE}/ninja-win.zip"
@@ -164,6 +164,7 @@ if(WIN32)
       message(FATAL_ERROR
         "*** CTest Result: FAILURE BECAUSE NINJA DOWNLOAD WAS NOT SUCCESSFUL")
     endif()
+    message("Extracting Ninja for Windows...")
     execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf
       "${DASHBOARD_WORKSPACE}/ninja-win.zip"
       WORKING_DIRECTORY ${DASHBOARD_WORKSPACE}
@@ -174,10 +175,10 @@ if(WIN32)
     if(NOT DASHBOARD_NINJA_UNZIP_RESULT_VARIABLE EQUAL 0)
       file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
       message(FATAL_ERROR
-        "*** CTest Result: FAILURE BECAUSE UNZIP NINJA WAS NOT SUCCESSFUL")
+        "*** CTest Result: FAILURE BECAUSE EXTRACTING NINJA FOR WINDOWS WAS NOT SUCCESSFUL")
     endif()
   endif()
-  message(STATUS "Downloading pkg-config.exe...")
+  message(STATUS "Downloading pkg-config for Windows...")
   file(DOWNLOAD
     "https://s3.amazonaws.com/drake-provisioning/pkg-config.exe"
     "${DASHBOARD_WORKSPACE}/pkg-config.exe"
@@ -211,6 +212,7 @@ if("$ENV{matlab}" MATCHES "true")
     else()
       set(ENV{PATH} "C:\\Program Files (x86)\\MATLAB\\R2015b\\runtime\\win32;C:\\Program Files (x86)\\MATLAB\\R2015b\\bin;C:\\Program Files (x86)\\MATLAB\\R2015b\\bin\\win32;$ENV{PATH}")
     endif()
+    message(STATUS "Setting default C compiler for MEX...")
     execute_process(COMMAND mex -setup c
       RESULT_VARIABLE DASHBOARD_MEX_C_RESULT_VARIABLE
       OUTPUT_VARIABLE DASHBOARD_MEX_C_OUTPUT_VARIABLE
@@ -219,8 +221,9 @@ if("$ENV{matlab}" MATCHES "true")
     if(NOT DASHBOARD_MEX_C_RESULT_VARIABLE EQUAL 0)
       file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
       message(FATAL_ERROR
-        "*** CTest Result: FAILURE BECAUSE MEX SETUP C WAS NOT SUCCESSFUL")
+        "*** CTest Result: FAILURE BECAUSE SETTING DEFAULT C COMPILER FOR MEX WAS NOT SUCCESSFUL")
     endif()
+    message(STATUS "Setting default C++ compiler for MEX...")
     execute_process(COMMAND mex -setup c++
       RESULT_VARIABLE DASHBOARD_MEX_CXX_RESULT_VARIABLE
       OUTPUT_VARIABLE DASHBOARD_MEX_CXX_OUTPUT_VARIABLE
@@ -229,7 +232,7 @@ if("$ENV{matlab}" MATCHES "true")
     if(NOT DASHBOARD_MEX_CXX_RESULT_VARIABLE EQUAL 0)
       file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
       message(FATAL_ERROR
-        "*** CTest Result: FAILURE BECAUSE MEX SETUP C++ WAS NOT SUCCESSFUL")
+        "*** CTest Result: FAILURE BECAUSE SETTING DEFAULT C++ COMPILER FOR MEX WAS NOT SUCCESSFUL")
     endif()
   elseif(APPLE)
     set(ENV{PATH} "/Applications/MATLAB_R2015b.app/bin:/Applications/MATLAB_R2015b.app/runtime/maci64:$ENV{PATH}")
@@ -249,6 +252,7 @@ if(NOT "$ENV{openSource}" MATCHES "true" AND NOT "$ENV{compiler}" MATCHES "cppli
       file(REMOVE "${DASHBOARD_SSH_IDENTITY_FILE}")
     endif()
   else()
+    message(STATUS "Creating temporary identity file...")
     execute_process(COMMAND mktemp -q /tmp/id_rsa_XXXXXXXX
       RESULT_VARIABLE DASHBOARD_MKTEMP_RESULT_VARIABLE
       OUTPUT_VARIABLE DASHBOARD_MKTEMP_OUTPUT_VARIABLE
@@ -267,6 +271,7 @@ if(NOT "$ENV{openSource}" MATCHES "true" AND NOT "$ENV{compiler}" MATCHES "cppli
     file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
     message(FATAL_ERROR "*** CTest Result: FAILURE BECAUSE AWS WAS NOT FOUND")
   endif()
+  message(STATUS "Downloading identity file from AWS S3...")
   execute_process(COMMAND ${DASHBOARD_AWS_COMMAND} s3 cp s3://drake-provisioning/id_rsa "${DASHBOARD_SSH_IDENTITY_FILE}"
     RESULT_VARIABLE DASHBOARD_AWS_S3_RESULT_VARIABLE
     OUTPUT_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE
@@ -290,6 +295,7 @@ if(NOT "$ENV{openSource}" MATCHES "true" AND NOT "$ENV{compiler}" MATCHES "cppli
     endif()
     configure_file("${CMAKE_CURRENT_LIST_DIR}/git_ssh.bat.in" "${DASHBOARD_GIT_SSH_FILE}" @ONLY)
   else()
+    message(STATUS "Setting permissions on identity file...")
     execute_process(COMMAND chmod 0400 "${DASHBOARD_SSH_IDENTITY_FILE}"
       RESULT_VARIABLE DASHBOARD_CHMOD_RESULT_VARIABLE
       OUTPUT_VARIABLE DASHBOARD_CHMOD_OUTPUT_VARIABLE
@@ -298,8 +304,9 @@ if(NOT "$ENV{openSource}" MATCHES "true" AND NOT "$ENV{compiler}" MATCHES "cppli
     if(NOT DASHBOARD_CHMOD_RESULT_VARIABLE EQUAL 0)
       file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
       message(FATAL_ERROR
-        "*** CTest Result: FAILURE BECAUSE CHMOD OF IDENTITY FILE WAS NOT SUCCESSFUL")
+        "*** CTest Result: FAILURE BECAUSE SETTING PERMISSIONS ON IDENTITY FILE WAS NOT SUCCESSFUL")
     endif()
+    message(STATUS "Creating temporary GIT_SSH file...")
     execute_process(COMMAND mktemp -q /tmp/git_ssh_XXXXXXXX
       RESULT_VARIABLE DASHBOARD_MKTEMP_RESULT_VARIABLE
       OUTPUT_VARIABLE DASHBOARD_MKTEMP_OUTPUT_VARIABLE
@@ -313,6 +320,7 @@ if(NOT "$ENV{openSource}" MATCHES "true" AND NOT "$ENV{compiler}" MATCHES "cppli
     endif()
     set(DASHBOARD_GIT_SSH_FILE "${DASHBOARD_MKTEMP_OUTPUT_VARIABLE}")
     configure_file("${CMAKE_CURRENT_LIST_DIR}/git_ssh.bash.in" "${DASHBOARD_GIT_SSH_FILE}" @ONLY)
+    message(STATUS "Setting permissions on GIT_SSH file...")
     execute_process(COMMAND chmod 0755 "${DASHBOARD_GIT_SSH_FILE}"
       RESULT_VARIABLE DASHBOARD_CHMOD_RESULT_VARIABLE
       OUTPUT_VARIABLE DASHBOARD_CHMOD_OUTPUT_VARIABLE
@@ -321,11 +329,11 @@ if(NOT "$ENV{openSource}" MATCHES "true" AND NOT "$ENV{compiler}" MATCHES "cppli
     if(NOT DASHBOARD_CHMOD_RESULT_VARIABLE EQUAL 0)
       file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
       message(FATAL_ERROR
-        "*** CTest Result: FAILURE BECAUSE CHMOD OF GIT_SSH FILE WAS NOT SUCCESSFUL")
+        "*** CTest Result: FAILURE BECAUSE SETTING PERMISSIONS ON GIT_SSH FILE WAS NOT SUCCESSFUL")
     endif()
   endif()
   set(ENV{GIT_SSH} "${DASHBOARD_GIT_SSH_FILE}")
-  message("*** Using ENV{GIT_SSH} to set credentials")
+  message(STATUS "Using ENV{GIT_SSH} to set credentials")
 endif()
 
 # clean out the old builds
@@ -1211,6 +1219,7 @@ if(EXISTS "${DASHBOARD_SSH_IDENTITY_FILE}")
   if(WIN32)
     file(REMOVE "${DASHBOARD_SSH_IDENTITY_FILE}")
   else()
+    message(STATUS "Setting permissions on identity file...")
     execute_process(COMMAND chmod 0600 "${DASHBOARD_SSH_IDENTITY_FILE}"
       RESULT_VARIABLE DASHBOARD_CHMOD_RESULT_VARIABLE
       OUTPUT_VARIABLE DASHBOARD_CHMOD_OUTPUT_VARIABLE
@@ -1219,7 +1228,7 @@ if(EXISTS "${DASHBOARD_SSH_IDENTITY_FILE}")
     if(DASHBOARD_CHMOD_RESULT_VARIABLE EQUAL 0)
       file(REMOVE "${DASHBOARD_SSH_IDENTITY_FILE}")
     else()
-      message(WARNING "*** chmod of identity file was not successful")
+      message(WARNING "*** Setting permissions on identity file was not successful")
     endif()
   endif()
 endif()
