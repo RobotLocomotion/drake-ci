@@ -333,6 +333,7 @@ if(NOT "$ENV{openSource}" MATCHES "true" AND NOT "$ENV{compiler}" MATCHES "cppli
     endif()
   endif()
   set(ENV{GIT_SSH} "${DASHBOARD_GIT_SSH_FILE}")
+  file(WRITE "${DASHBOARD_WORKSPACE}/GIT_SSH" "${DASHBOARD_GIT_SSH_FILE}")
   message(STATUS "Using ENV{GIT_SSH} to set credentials")
 endif()
 
