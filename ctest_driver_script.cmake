@@ -14,7 +14,7 @@
 #                                     | "scan-build" | "scan-build-ninja"
 #   ENV{coverage}         optional    "false" | "true"
 #   ENV{debug}            optional    "false" | "true"
-#   ENV{documentation}    optional    "false" | "true"
+#   ENV{documentation}    optional    "false" | "publish" | "true"
 #   ENV{ghprbPullId}      optional    value for CTEST_CHANGE_ID
 #   ENV{matlab}           optional    "false" | "true"
 #   ENV{memcheck}         optional    "asan" | "msan" | "tsan" | "valgrind"
@@ -622,7 +622,7 @@ endif()
 set(DASHBOARD_BUILD_DOCUMENTATION OFF)
 set(DASHBOARD_LONG_RUNNING_TESTS OFF)
 
-if("$ENV{documentation}" MATCHES "true")
+if("$ENV{documentation}" MATCHES "true" OR "$ENV{documentation}" MATCHES "publish")
   set(DASHBOARD_BUILD_DOCUMENTATION ON)
 endif()
 
@@ -1216,23 +1216,25 @@ message("
   ------------------------------------------------------------------------------
   ")
 
-if(EXISTS "${DASHBOARD_GIT_SSH_FILE}")
-  file(REMOVE "${DASHBOARD_GIT_SSH_FILE}")
-endif()
-if(EXISTS "${DASHBOARD_SSH_IDENTITY_FILE}")
-  if(WIN32)
-    file(REMOVE "${DASHBOARD_SSH_IDENTITY_FILE}")
-  else()
-    message(STATUS "Setting permissions on identity file...")
-    execute_process(COMMAND chmod 0600 "${DASHBOARD_SSH_IDENTITY_FILE}"
-      RESULT_VARIABLE DASHBOARD_CHMOD_RESULT_VARIABLE
-      OUTPUT_VARIABLE DASHBOARD_CHMOD_OUTPUT_VARIABLE
-      ERROR_VARIABLE DASHBOARD_CHMOD_OUTPUT_VARIABLE)
-    message("${DASHBOARD_CHMOD_OUTPUT_VARIABLE}")
-    if(DASHBOARD_CHMOD_RESULT_VARIABLE EQUAL 0)
+if(NOT "$ENV{documentation}" MATCHES "publish")
+  if(EXISTS "${DASHBOARD_GIT_SSH_FILE}")
+    file(REMOVE "${DASHBOARD_GIT_SSH_FILE}")
+  endif()
+  if(EXISTS "${DASHBOARD_SSH_IDENTITY_FILE}")
+    if(WIN32)
       file(REMOVE "${DASHBOARD_SSH_IDENTITY_FILE}")
     else()
-      message(WARNING "*** Setting permissions on identity file was not successful")
+      message(STATUS "Setting permissions on identity file...")
+      execute_process(COMMAND chmod 0600 "${DASHBOARD_SSH_IDENTITY_FILE}"
+        RESULT_VARIABLE DASHBOARD_CHMOD_RESULT_VARIABLE
+        OUTPUT_VARIABLE DASHBOARD_CHMOD_OUTPUT_VARIABLE
+        ERROR_VARIABLE DASHBOARD_CHMOD_OUTPUT_VARIABLE)
+      message("${DASHBOARD_CHMOD_OUTPUT_VARIABLE}")
+      if(DASHBOARD_CHMOD_RESULT_VARIABLE EQUAL 0)
+        file(REMOVE "${DASHBOARD_SSH_IDENTITY_FILE}")
+      else()
+        message(WARNING "*** Setting permissions on identity file was not successful")
+      endif()
     endif()
   endif()
 endif()
