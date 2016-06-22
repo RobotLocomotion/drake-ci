@@ -17,6 +17,7 @@
 #   ENV{documentation}    optional    "false" | "publish" | "true"
 #   ENV{ghprbPullId}      optional    value for CTEST_CHANGE_ID
 #   ENV{matlab}           optional    "false" | "true"
+#   ENV{ros}              optional    "false" | "true"
 #   ENV{memcheck}         optional    "asan" | "msan" | "tsan" | "valgrind"
 #   ENV{openSource}       optional    "false" | "true"
 #   ENV{track}            optional    "continuous" | "experimental" | "nightly"
@@ -237,6 +238,21 @@ if("$ENV{matlab}" MATCHES "true")
   else()
     set(ENV{PATH} "/usr/local/MATLAB/R2015b/bin:$ENV{PATH}")
   endif()
+endif()
+
+if("$ENV{ros}" MATCHES "true" AND EXISTS "/opt/ros/indigo/setup.bash")
+  set(ENV{ROS_ROOT} "/opt/ros/indigo/share/ros")
+  set(ENV{ROS_PACKAGE_PATH} "/opt/ros/indigo/share:/opt/ros/indigo/stacks")
+  set(ENV{ROS_MASTER_URI} "http://localhost:11311")
+  set(ENV{LD_LIBRARY_PATH} "/opt/ros/indigo/lib:$ENV{LD_LIBRARY_PATH}")
+  set(ENV{CPATH} "/opt/ros/indigo/include:$ENV{CPATH}")
+  set(ENV{PATH} "/opt/ros/indigo/bin:$ENV{PATH}")
+  set(ENV{ROSLISP_PACKAGE_DIRECTORIES} "")
+  set(ENV{ROS_DISTRO} "indigo")
+  set(ENV{PYTHONPATH} "/opt/ros/indigo/lib/python2.7/dist-packages:$ENV{PYTHONPATH}")
+  set(ENV{PKG_CONFIG_PATH} "/opt/ros/indigo/lib/pkgconfig:$ENV{PKG_CONFIG_PATH}")
+  set(ENV{CMAKE_PREFIX_PATH} "/opt/ros/indigo")
+  set(ENV{ROS_ETC_DIR} "/opt/ros/indigo/etc/ros")
 endif()
 
 set(CTEST_GIT_COMMAND "git")

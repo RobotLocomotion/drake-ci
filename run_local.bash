@@ -13,6 +13,7 @@ export debug=false
 export documentation=false
 export matlab=false
 export openSource=false
+export ros=false
 export track=experimental
 
 export BUILD_ID=0
