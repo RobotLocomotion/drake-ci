@@ -108,18 +108,21 @@ elseif(NOT "$ENV{compiler}" MATCHES "cpplint")
 endif()
 
 # check for compiler settings
+if("$ENV{compiler}" MATCHES "clang" OR "$ENV{compiler}" MATCHES "gcc" OR "$ENV{compiler}" MATCHES "include-what-you-use" OR "$ENV{compiler}" MATCHES "scan-build")
+  if(APPLE)
+    set(ENV{F77} "gfortran")
+    set(ENV{FC} "gfortran")
+  else()
+    set(ENV{F77} "gfortran-4.9")
+    set(ENV{FC} "gfortran-4.9")
+  endif()
+endif()
 if("$ENV{compiler}" MATCHES "gcc")
   set(ENV{CC} "gcc-4.9")
   set(ENV{CXX} "g++-4.9")
-  set(ENV{FC} "gfortran-4.9")
 elseif("$ENV{compiler}" MATCHES "clang" OR "$ENV{compiler}" MATCHES "include-what-you-use")
   set(ENV{CC} "clang")
   set(ENV{CXX} "clang++")
-  if(APPLE)
-    set(ENV{FC} "gfortran")
-  else()
-    set(ENV{FC} "gfortran-4.9")
-  endif()
 elseif("$ENV{compiler}" MATCHES "scan-build")
   find_program(DASHBOARD_CCC_ANALYZER_COMMAND NAMES "ccc-analyzer"
     PATHS "/usr/local/libexec" "/usr/libexec")
@@ -134,11 +137,6 @@ elseif("$ENV{compiler}" MATCHES "scan-build")
   set(ENV{CXX} "${DASHBOARD_CXX_ANALYZER_COMMAND}")
   set(ENV{CCC_CC} "clang")
   set(ENV{CCC_CXX} "clang++")
-  if(APPLE)
-    set(ENV{FC} "gfortran")
-  else()
-    set(ENV{FC} "gfortran-4.9")
-  endif()
 elseif("$ENV{compiler}" MATCHES "msvc-64")
   set(CTEST_CMAKE_GENERATOR "Visual Studio 14 2015 Win64")
   set(ENV{CMAKE_FLAGS} "-G \"Visual Studio 14 2015 Win64\"")  # HACK
@@ -416,6 +414,8 @@ if("$ENV{compiler}" MATCHES "scan-build")
   set(DASHBOARD_C_FLAGS "${DASHBOARD_EXTRA_DEBUG_FLAGS} ${DASHBOARD_C_FLAGS}")
   set(DASHBOARD_CXX_FLAGS
     "${DASHBOARD_EXTRA_DEBUG_FLAGS} ${DASHBOARD_CXX_FLAGS}")
+  set(DASHBOARD_FORTRAN_FLAGS
+    "${DASHBOARD_EXTRA_DEBUG_FLAGS} ${DASHBOARD_FORTRAN_FLAGS}")
   set(DASHBOARD_CCC_ANALYZER_HTML "${DASHBOARD_WORKSPACE}/drake/pod-build/html")
   set(ENV{CCC_ANALYZER_HTML} "${DASHBOARD_CCC_ANALYZER_HTML}")
   file(MAKE_DIRECTORY "${DASHBOARD_CCC_ANALYZER_HTML}")
@@ -432,6 +432,8 @@ if("$ENV{coverage}" MATCHES "true")
     "${DASHBOARD_COVERAGE_FLAGS} ${DASHBOARD_EXTRA_DEBUG_FLAGS} ${DASHBOARD_C_FLAGS}")
   set(DASHBOARD_CXX_FLAGS
     "${DASHBOARD_COVERAGE_FLAGS} ${DASHBOARD_EXTRA_DEBUG_FLAGS} ${DASHBOARD_CXX_FLAGS}")
+  set(DASHBOARD_FORTRAN_FLAGS
+    "${DASHBOARD_EXTRA_DEBUG_FLAGS} ${DASHBOARD_FORTRAN_FLAGS}")
   set(DASHBOARD_SHARED_LINKER_FLAGS
     "${DASHBOARD_COVERAGE_FLAGS} ${DASHBOARD_SHARED_LINKER_FLAGS}")
 
@@ -473,7 +475,10 @@ if("$ENV{memcheck}" MATCHES "asan" OR "$ENV{memcheck}" MATCHES "msan" OR "$ENV{m
   set(DASHBOARD_CONFIGURATION_TYPE "Debug")
   set(DASHBOARD_EXTRA_DEBUG_FLAGS "-O1 -fno-omit-frame-pointer")
   set(DASHBOARD_C_FLAGS "${DASHBOARD_EXTRA_DEBUG_FLAGS} ${DASHBOARD_C_FLAGS}")
-  set(DASHBOARD_CXX_FLAGS "${DASHBOARD_EXTRA_DEBUG_FLAGS} ${DASHBOARD_CXX_FLAGS}")
+  set(DASHBOARD_CXX_FLAGS
+    "${DASHBOARD_EXTRA_DEBUG_FLAGS} ${DASHBOARD_CXX_FLAGS}")
+  set(DASHBOARD_FORTRAN_FLAGS
+    "${DASHBOARD_EXTRA_DEBUG_FLAGS} ${DASHBOARD_FORTRAN_FLAGS}")
   if("$ENV{memcheck}" MATCHES "msan")
     set(ENV{LD_LIBRARY_PATH} "/usr/local/libcxx_msan/lib:$ENV{LD_LIBRARY_PATH}")
     set(DASHBOARD_C_FLAGS
@@ -774,6 +779,7 @@ message("
   CCC_CC                              = $ENV{CCC_CC}
   CCC_CXX                             = $ENV{CCC_CXX}
   CXX                                 = $ENV{CXX}
+  F77                                 = $ENV{F77}
   FC                                  = $ENV{FC}
   ------------------------------------------------------------------------------
   CMAKE_C_FLAGS                      += ${DASHBOARD_C_FLAGS}
