@@ -253,6 +253,7 @@ if("$ENV{ros}" MATCHES "true" AND EXISTS "/opt/ros/indigo/setup.bash")
   set(ENV{PKG_CONFIG_PATH} "/opt/ros/indigo/lib/pkgconfig:$ENV{PKG_CONFIG_PATH}")
   set(ENV{CMAKE_PREFIX_PATH} "/opt/ros/indigo")
   set(ENV{ROS_ETC_DIR} "/opt/ros/indigo/etc/ros")
+  set(ENV{ROS_HOME} "$ENV{WORKSPACE}")
 endif()
 
 set(CTEST_GIT_COMMAND "git")
