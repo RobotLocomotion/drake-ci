@@ -799,6 +799,13 @@ message("
   F77                                 = $ENV{F77}
   FC                                  = $ENV{FC}
   ------------------------------------------------------------------------------
+  ROS_DISTRO                          = $ENV{ROS_DISTRO}
+  ROS_ETC_DIR                         = $ENV{ROS_ETC_DIR}
+  ROS_HOME                            = $ENV{ROS_HOME}
+  ROS_MASTER_URI                      = $ENV{ROS_MASTER_URI}
+  ROS_PACKAGE_PATH                    = $ENV{ROS_PACKAGE_PATH}
+  ROS_ROOT                            = $ENV{ROS_ROOT}
+  ------------------------------------------------------------------------------
   CMAKE_C_FLAGS                      += ${DASHBOARD_C_FLAGS}
   CMAKE_C_INCLUDE_WHAT_YOU_USE        = ${DASHBOARD_C_INCLUDE_WHAT_YOU_USE}
   CMAKE_CXX_FLAGS                    += ${DASHBOARD_CXX_FLAGS}
