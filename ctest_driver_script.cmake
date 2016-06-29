@@ -1221,6 +1221,35 @@ else()
   endif()
 endif()
 
+if("$ENV{documentation}" MATCHES "publish")
+  if(DASHBOARD_FAILURE OR DASHBOARD_UNSTABLE)
+    set(DASHBOARD_PUBLISH_DOCUMENTATION OFF)
+    set(DASHBOARD_PUBLISH_DOCUMENTATION_MESSAGE "*** CTest Status: NOT PUBLISHING DOCUMENTATION BECAUSE BUILD WAS NOT SUCCESSFUL")
+  else()
+    set(DASHBOARD_PUBLISH_DOCUMENTATION ON)
+    set(DASHBOARD_PUBLISH_DOCUMENTATION_MESSAGE "*** CTest Status: PUBLISHING DOCUMENTATION")
+  endif()
+  message("
+    ------------------------------------------------------------------------------
+    ${DASHBOARD_PUBLISH_DOCUMENTATION_MESSAGE}
+    ------------------------------------------------------------------------------
+  ")
+  if(DASHBOARD_PUBLISH_DOCUMENTATION)
+    execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/ctest_publish_documentation.bash"
+      WORKING_DIRECTORY "${DASHBOARD_WORKSPACE}"
+      RESULT_VARIABLE DASHBOARD_PUBLISH_DOCUMENTATION_RESULT_VARIABLE
+      OUTPUT_VARIABLE DASHBOARD_PUBLISH_DOCUMENTATION_OUTPUT_VARIABLE
+      ERROR_VARIABLE DASHBOARD_PUBLISH_DOCUMENTATION_OUTPUT_VARIABLE)
+    message("${DASHBOARD_PUBLISH_DOCUMENTATION_OUTPUT_VARIABLE}")
+    if(NOT DASHBOARD_PUBLISH_DOCUMENTATION_RESULT_VARIABLE EQUAL 0)
+      set(DASHBOARD_UNSTABLE ON)
+      set(DASHBOARD_MESSAGE "UNSTABLE DUE TO FAILURE PUBLISHING DOCUMENTATION")
+      file(REMOVE "${DASHBOARD_WORKSPACE}/SUCCESS")
+      file(WRITE "${DASHBOARD_WORKSPACE}/UNSTABLE")
+    endif()
+  endif()
+endif()
+
 set(DASHBOARD_MESSAGE "*** CTest Result: ${DASHBOARD_MESSAGE}")
 
 if(DASHBOARD_CONFIGURE_AND_BUILD_SUPERBUILD AND DASHBOARD_LABEL)
@@ -1247,25 +1276,23 @@ message("
   ------------------------------------------------------------------------------
   ")
 
-if(NOT "$ENV{documentation}" MATCHES "publish")
-  if(EXISTS "${DASHBOARD_GIT_SSH_FILE}")
-    file(REMOVE "${DASHBOARD_GIT_SSH_FILE}")
-  endif()
-  if(EXISTS "${DASHBOARD_SSH_IDENTITY_FILE}")
-    if(WIN32)
+if(EXISTS "${DASHBOARD_GIT_SSH_FILE}")
+  file(REMOVE "${DASHBOARD_GIT_SSH_FILE}")
+endif()
+if(EXISTS "${DASHBOARD_SSH_IDENTITY_FILE}")
+  if(WIN32)
+    file(REMOVE "${DASHBOARD_SSH_IDENTITY_FILE}")
+  else()
+    message(STATUS "Setting permissions on identity file...")
+    execute_process(COMMAND chmod 0600 "${DASHBOARD_SSH_IDENTITY_FILE}"
+      RESULT_VARIABLE DASHBOARD_CHMOD_RESULT_VARIABLE
+      OUTPUT_VARIABLE DASHBOARD_CHMOD_OUTPUT_VARIABLE
+      ERROR_VARIABLE DASHBOARD_CHMOD_OUTPUT_VARIABLE)
+    message("${DASHBOARD_CHMOD_OUTPUT_VARIABLE}")
+    if(DASHBOARD_CHMOD_RESULT_VARIABLE EQUAL 0)
       file(REMOVE "${DASHBOARD_SSH_IDENTITY_FILE}")
     else()
-      message(STATUS "Setting permissions on identity file...")
-      execute_process(COMMAND chmod 0600 "${DASHBOARD_SSH_IDENTITY_FILE}"
-        RESULT_VARIABLE DASHBOARD_CHMOD_RESULT_VARIABLE
-        OUTPUT_VARIABLE DASHBOARD_CHMOD_OUTPUT_VARIABLE
-        ERROR_VARIABLE DASHBOARD_CHMOD_OUTPUT_VARIABLE)
-      message("${DASHBOARD_CHMOD_OUTPUT_VARIABLE}")
-      if(DASHBOARD_CHMOD_RESULT_VARIABLE EQUAL 0)
-        file(REMOVE "${DASHBOARD_SSH_IDENTITY_FILE}")
-      else()
-        message(WARNING "*** Setting permissions on identity file was not successful")
-      endif()
+      message(WARNING "*** Setting permissions on identity file was not successful")
     endif()
   endif()
 endif()
