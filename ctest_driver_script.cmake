@@ -156,7 +156,7 @@ elseif(COMPILER STREQUAL "msvc-64")
 endif()
 
 set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_WORKSPACE}")
-set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/pod-build")
+set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/build")
 
 if(WIN32)
   if(COMPILER MATCHES "ninja")
@@ -399,10 +399,10 @@ if(COMPILER STREQUAL "cpplint")
       "*** CTest Result: FAILURE BECAUSE CPPLINT WAS NOT FOUND")
   endif()
   set(CTEST_BUILD_COMMAND
-    "${CMAKE_CURRENT_LIST_DIR}/cpplint_wrapper.py --cpplint=${DASHBOARD_CPPLINT_COMMAND} --excludes=(\\.git|doc|pod-build|thirdParty) ${DASHBOARD_WORKSPACE}/drake")
+    "${CMAKE_CURRENT_LIST_DIR}/cpplint_wrapper.py --cpplint=${DASHBOARD_CPPLINT_COMMAND} --excludes=(\\.git|doc|build|thirdParty) ${DASHBOARD_WORKSPACE}/drake")
 endif()
 
-set(DASHBOARD_INSTALL_PREFIX "${DASHBOARD_WORKSPACE}/build")
+set(DASHBOARD_INSTALL_PREFIX "${DASHBOARD_WORKSPACE}/install")
 
 # clean out any old installs
 file(REMOVE_RECURSE "${DASHBOARD_INSTALL_PREFIX}")
@@ -445,7 +445,7 @@ if(COMPILER MATCHES "^scan-build")
     "${DASHBOARD_EXTRA_DEBUG_FLAGS} ${DASHBOARD_CXX_FLAGS}")
   set(DASHBOARD_FORTRAN_FLAGS
     "${DASHBOARD_EXTRA_DEBUG_FLAGS} ${DASHBOARD_FORTRAN_FLAGS}")
-  set(DASHBOARD_CCC_ANALYZER_HTML "${DASHBOARD_WORKSPACE}/drake/pod-build/html")
+  set(DASHBOARD_CCC_ANALYZER_HTML "${DASHBOARD_WORKSPACE}/drake/build/html")
   set(ENV{CCC_ANALYZER_HTML} "${DASHBOARD_CCC_ANALYZER_HTML}")
   file(MAKE_DIRECTORY "${DASHBOARD_CCC_ANALYZER_HTML}")
 endif()
@@ -1014,7 +1014,7 @@ else()
 
   # now start the actual drake build
   set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_WORKSPACE}/drake")
-  set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/drake/pod-build")
+  set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/drake/build")
 
   # switch the dashboard to the drake only dashboard
   set(CTEST_PROJECT_NAME "${DASHBOARD_PROJECT_NAME}")
