@@ -16,7 +16,7 @@ SET JOB_NAME=windows-experimental
 SET NODE_NAME=%COMPUTERNAME%
 SET WORKSPACE=%HOMEPATH%\workspace\windows-experimental
 
-SET PATH="C:\Program Files (x86)\CMake\bin;%PATH%"
+SET PATH=C:\Program Files (x86)\CMake\bin;%PATH%
 
 ctest -Dbuildname=%JOB_NAME% -Dsite=%NODE_NAME% -S %WORKSPACE%/ci/ctest_driver_script.cmake --extra-verbose --output-on-failure
 if EXIST %WORKSPACE%/FAILURE (
