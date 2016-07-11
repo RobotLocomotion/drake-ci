@@ -50,9 +50,7 @@ message("
 ctest_start("${DASHBOARD_MODEL}" TRACK "${DASHBOARD_TRACK}" QUIET)
 ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}" QUIET)
 
-# Disable the configure command by making it a no-op
-# Catkin does configure & build in one go
-set(CTEST_CONFIGURE_COMMAND "cmake -E echo")
+set(CTEST_CONFIGURE_COMMAND "catkin init")
 ctest_configure(BUILD "${DASHBOARD_WORKSPACE}"
                 SOURCE "${DASHBOARD_WORKSPACE}"
                 RETURN_VALUE DASHBOARD_SUPERBUILD_CONFIGURE_RETURN_VALUE QUIET)
