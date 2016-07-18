@@ -1,7 +1,16 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
-set(ENV{CC} "gcc-4.9")
-set(ENV{CXX} "g++-4.9")
+if(NOT DEFINED ENV{compiler})
+  set(ENV{compiler} "gcc")
+endif()
+
+if("$ENV{compiler}" MATCHES "clang")
+  set(ENV{CC} "clang-3.7")
+  set(ENV{CXX} "clang++-3.7")
+else()
+  set(ENV{CC} "gcc-4.9")
+  set(ENV{CXX} "g++-4.9")
+endif()
 set(ENV{F77} "gfortran-4.9")
 set(ENV{FC} "gfortran-4.9")
 
