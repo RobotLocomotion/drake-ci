@@ -18,6 +18,10 @@ if("$ENV{WORKSPACE}" STREQUAL "")
   message(FATAL_ERROR "WORKSPACE environment variable is not set, please set it and try again.")
 endif()
 
+# Set TERM to dumb to work around tput errors from catkin-tools
+# https://github.com/catkin/catkin_tools/issues/157#issuecomment-221975716
+set(ENV{TERM} "dumb")
+
 file(TO_CMAKE_PATH "$ENV{WORKSPACE}" DASHBOARD_WORKSPACE)
 
 set(DASHBOARD_CDASH_SERVER "drake-cdash.csail.mit.edu")
