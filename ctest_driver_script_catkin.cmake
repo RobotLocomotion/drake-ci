@@ -49,6 +49,15 @@ else()
   set(CTEST_TEST_ARGS ${CTEST_TEST_ARGS}
     PARALLEL_LEVEL ${DASHBOARD_PROCESSOR_COUNT})
 endif()
+set(DASHBOARD_CONFIGURE_AND_BUILD_SUPERBUILD ON)
+
+if(DEFINED ENV{BUILD_ID})
+  set(DASHBOARD_LABEL "jenkins-${CTEST_BUILD_NAME}-$ENV{BUILD_ID}")
+  set_property(GLOBAL PROPERTY Label "${DASHBOARD_LABEL}")
+else()
+  message(WARNING "*** ENV{BUILD_ID} was not set")
+  set(DASHBOARD_LABEL "")
+endif()
 
 set(ENV{ROS_ROOT} "/opt/ros/indigo/share/ros")
 set(ENV{ROS_PACKAGE_PATH} "/opt/ros/indigo/share:/opt/ros/indigo/stacks")
@@ -104,6 +113,16 @@ ctest_submit(PARTS Build)
 if(NOT DASHBOARD_BUILD_RETURN_VALUE EQUAL 0)
   message(FATAL_ERROR
     "*** CTest Result: FAILURE BECAUSE OF BUILD FAILURES")
+else()
+  if(DASHBOARD_NUMBER_BUILD_WARNINGS EQUAL 1)
+    set(DASHBOARD_WARNING ON)
+    set(DASHBOARD_MESSAGE "SUCCESS BUT WITH 1 BUILD WARNING")
+  elseif(DASHBOARD_NUMBER_BUILD_WARNINGS GREATER 1)
+    set(DASHBOARD_WARNING ON)
+    set(DASHBOARD_MESSAGE "SUCCESS BUT WITH ${DASHBOARD_NUMBER_BUILD_WARNINGS} BUILD WARNINGS")
+  else()
+    set(DASHBOARD_MESSAGE "SUCCESS")
+  endif()
 endif()
 
 set(ENV{ROS_PACKAGE_PATH} "${DASHBOARD_WORKSPACE}/src/drake:${DASHBOARD_WORKSPACE}/src/drake_ros:$ENV{ROS_PACKAGE_PATH}")
@@ -154,3 +173,29 @@ if(DASHBOARD_UNSTABLE)
 else()
   file(WRITE "${DASHBOARD_WORKSPACE}/SUCCESS")
 endif()
+
+set(DASHBOARD_MESSAGE "*** CTest Result: ${DASHBOARD_MESSAGE}")
+
+if(DASHBOARD_CONFIGURE_AND_BUILD_SUPERBUILD AND DASHBOARD_LABEL)
+  set(DASHBOARD_CDASH_SUPERBUILD_URL_MESSAGE
+    "*** CDash Superbuild URL: https://${DASHBOARD_CDASH_SERVER}/index.php?project=${DASHBOARD_SUPERBUILD_PROJECT_NAME}&showfilters=1&filtercount=2&showfilters=1&filtercombine=and&field1=label&compare1=61&value1=${DASHBOARD_LABEL}&field2=buildstarttime&compare2=84&value2=now")
+else()
+  set(DASHBOARD_CDASH_SUPERBUILD_URL_MESSAGE "*** CDash Superbuild URL:")
+endif()
+
+if(NOT DASHBOARD_SUPERBUILD_FAILURE AND DASHBOARD_LABEL)
+  set(DASHBOARD_CDASH_URL_MESSAGE
+    "*** CDash URL: https://${DASHBOARD_CDASH_SERVER}/index.php?project=${DASHBOARD_PROJECT_NAME}&showfilters=1&filtercount=2&showfilters=1&filtercombine=and&field1=label&compare1=61&value1=${DASHBOARD_LABEL}&field2=buildstarttime&compare2=84&value2=now")
+else()
+  set(DASHBOARD_CDASH_URL_MESSAGE "*** CDash URL:")
+endif()
+
+message("
+  ------------------------------------------------------------------------------
+  ${DASHBOARD_MESSAGE}
+  ------------------------------------------------------------------------------
+  ${DASHBOARD_CDASH_SUPERBUILD_URL_MESSAGE}
+  ------------------------------------------------------------------------------
+  ${DASHBOARD_CDASH_URL_MESSAGE}
+  ------------------------------------------------------------------------------
+  ")
