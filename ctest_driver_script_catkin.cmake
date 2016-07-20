@@ -42,6 +42,13 @@ set(CTEST_DROP_LOCATION
 set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_WORKSPACE}")
 set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/build")
 
+# Set the following to suppress false positives
+set(CTEST_CUSTOM_ERROR_EXCEPTION
+   ${CTEST_CUSTOM_ERROR_EXCEPTION}
+   "configure.ac:[0-9]*: installing"
+   "swig/Makefile.am:30: installing './py-compile'"
+)
+
 include(ProcessorCount)
 ProcessorCount(DASHBOARD_PROCESSOR_COUNT)
 
