@@ -1,5 +1,5 @@
 ECHO ON
-SET PATH=C:\Program Files (x86)\CMake\bin;%PATH%
+SET PATH=C:\Program Files\CMake\bin;C:\Program Files (x86)\CMake\bin;%PATH%
 ctest -Dbuildname=%JOB_NAME% -Dsite=%NODE_NAME% -S %WORKSPACE%/ci/ctest_driver_script.cmake --extra-verbose --no-compress-output --output-on-failure
 if EXIST %WORKSPACE%/FAILURE (
   EXIT /B 1
