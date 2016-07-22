@@ -5,37 +5,27 @@
 #   ENV{BUILD_ID}         optional    value of Jenkins BUILD_ID
 #   ENV{WORKSPACE}        required    value of Jenkins WORKSPACE
 #
-#   ENV{compiler}         optional    "gcc" | "gcc-ninja" |
-#                                     "clang" | "clang-ninja" |
-#                                     "msvc-32" | "msvc-ninja-32" |
-#                                     "msvc-64" | "msvc-ninja-64" |
-#                                     "scan-build" | "scan-build-ninja" |
-#                                     "include-what-you-use" |
-#                                     "include-what-you-use-ninja" |
-#                                     "cpplint"
-#   ENV{coverage}         optional    boolean
-#   ENV{debug}            optional    boolean
-#   ENV{documentation}    optional    boolean | "publish"
+#   ENV{compiler}         optional    "clang" | "clang-ninja" | "cpplint"
+#                                     | "gcc" | "gcc-ninja"
+#                                     | "include-what-you-use"
+#                                     | "include-what-you-use-ninja"
+#                                     | "msvc-32" | "msvc-64"
+#                                     | "msvc-ninja-32" | "msvc-ninja-64"
+#                                     | "scan-build" | "scan-build-ninja"
+#   ENV{coverage}         optional    "false" | "true"
+#   ENV{debug}            optional    "false" | "true"
+#   ENV{documentation}    optional    "false" | "publish" | "true"
 #   ENV{ghprbPullId}      optional    value for CTEST_CHANGE_ID
-#   ENV{matlab}           optional    boolean
-#   ENV{ros}              optional    boolean
+#   ENV{matlab}           optional    "false" | "true"
+#   ENV{ros}              optional    "false" | "true"
 #   ENV{memcheck}         optional    "asan" | "msan" | "tsan" | "valgrind"
-#   ENV{openSource}       optional    boolean
+#   ENV{openSource}       optional    "false" | "true"
 #   ENV{track}            optional    "continuous" | "experimental" | "nightly"
 #
 #   buildname             optional    value for CTEST_BUILD_NAME
 #   site                  optional    value for CTEST_SITE
 
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
-
-set(COVERAGE        $ENV{coverage})
-set(DEBUG           $ENV{debug})
-set(DOCUMENTATION   $ENV{documentation})
-set(MATLAB          $ENV{matlab})
-set(ROS             $ENV{ros})
-set(MEMCHECK        $ENV{memcheck})
-set(OPEN_SOURCE     $ENV{openSource})
-set(TRACK           $ENV{track})
 
 if(NOT DEFINED ENV{WORKSPACE})
   message(FATAL_ERROR
@@ -77,25 +67,23 @@ endif()
 if(NOT DEFINED ENV{compiler})
   message(WARNING "*** ENV{compiler} was not set")
   if(WIN32)
-    set(COMPILER "msvc-64")
+    set(ENV{compiler} "msvc-64")
   elseif(APPLE)
-    set(COMPILER "clang")
+    set(ENV{compiler} "clang")
   else()
-    set(COMPILER "gcc")
+    set(ENV{compiler} "gcc")
   endif()
-else()
-  set(COMPILER $ENV{compiler})
 endif()
 
 if(WIN32)
-  if(COMPILER MATCHES "ninja")
+  if("$ENV{compiler}" MATCHES "ninja")
     set(CTEST_CMAKE_GENERATOR "Ninja")
     set(CTEST_USE_LAUNCHERS ON)
     set(ENV{CTEST_USE_LAUNCHERS_DEFAULT} 1)
     set(ENV{CC} "cl")
     set(ENV{CXX} "cl")
     # load 64 or 32 bit compiler environments
-    if(COMPILER STREQUAL "msvc-ninja-64")
+    if("$ENV{compiler}" MATCHES "msvc-ninja-64")
       include(${CMAKE_CURRENT_LIST_DIR}/ctest_environment_msvc_64.cmake)
     else()
       include(${CMAKE_CURRENT_LIST_DIR}/ctest_environment_msvc_32.cmake)
@@ -107,8 +95,8 @@ if(WIN32)
     set(ENV{CXXFLAGS} "-MP")
     set(ENV{CFLAGS} "-MP")
   endif()
-elseif(NOT COMPILER STREQUAL "cpplint")
-  if(COMPILER MATCHES "ninja")
+elseif(NOT "$ENV{compiler}" MATCHES "cpplint")
+  if("$ENV{compiler}" MATCHES "ninja")
     set(CTEST_CMAKE_GENERATOR "Ninja")
   else()
     set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
@@ -121,7 +109,7 @@ elseif(NOT COMPILER STREQUAL "cpplint")
 endif()
 
 # check for compiler settings
-if(COMPILER MATCHES "^(clang|gcc|include-what-you-use|scan-build)")
+if("$ENV{compiler}" MATCHES "clang" OR "$ENV{compiler}" MATCHES "gcc" OR "$ENV{compiler}" MATCHES "include-what-you-use" OR "$ENV{compiler}" MATCHES "scan-build")
   if(APPLE)
     set(ENV{F77} "gfortran")
     set(ENV{FC} "gfortran")
@@ -130,13 +118,13 @@ if(COMPILER MATCHES "^(clang|gcc|include-what-you-use|scan-build)")
     set(ENV{FC} "gfortran-4.9")
   endif()
 endif()
-if(COMPILER MATCHES "^gcc")
+if("$ENV{compiler}" MATCHES "gcc")
   set(ENV{CC} "gcc-4.9")
   set(ENV{CXX} "g++-4.9")
-elseif(COMPILER MATCHES "^(clang|include-what-you-use)")
+elseif("$ENV{compiler}" MATCHES "clang" OR "$ENV{compiler}" MATCHES "include-what-you-use")
   set(ENV{CC} "clang")
   set(ENV{CXX} "clang++")
-elseif(COMPILER MATCHES "^scan-build")
+elseif("$ENV{compiler}" MATCHES "scan-build")
   find_program(DASHBOARD_CCC_ANALYZER_COMMAND NAMES "ccc-analyzer"
     PATHS "/usr/local/libexec" "/usr/libexec")
   find_program(DASHBOARD_CXX_ANALYZER_COMMAND NAMES "c++-analyzer"
@@ -150,16 +138,16 @@ elseif(COMPILER MATCHES "^scan-build")
   set(ENV{CXX} "${DASHBOARD_CXX_ANALYZER_COMMAND}")
   set(ENV{CCC_CC} "clang")
   set(ENV{CCC_CXX} "clang++")
-elseif(COMPILER STREQUAL "msvc-64")
+elseif("$ENV{compiler}" MATCHES "msvc-64")
   set(CTEST_CMAKE_GENERATOR "Visual Studio 14 2015 Win64")
   set(ENV{CMAKE_FLAGS} "-G \"Visual Studio 14 2015 Win64\"")  # HACK
 endif()
 
 set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_WORKSPACE}")
-set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/build")
+set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/pod-build")
 
 if(WIN32)
-  if(COMPILER MATCHES "ninja")
+  if($ENV{compiler} MATCHES "ninja")
     # grab Ninja
     message(STATUS "Downloading Ninja for Windows...")
     file(DOWNLOAD
@@ -216,9 +204,9 @@ elseif(APPLE)
   set(ENV{PATH} "/opt/X11/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:$ENV{PATH}")
 endif()
 
-if(MATLAB)
+if("$ENV{matlab}" MATCHES "true")
   if(WIN32)
-    if(COMPILER MATCHES "^msvc-(ninja-)?64$")
+    if("$ENV{compiler}" MATCHES "msvc-64" OR "$ENV{compiler}" MATCHES "msvc-ninja-64")
       set(ENV{PATH} "C:\\Program Files\\MATLAB\\R2015b\\runtime\\win64;C:\\Program Files\\MATLAB\\R2015b\\bin;C:\\Program Files\\MATLAB\\R2015b\\bin\\win64;$ENV{PATH}")
     else()
       set(ENV{PATH} "C:\\Program Files (x86)\\MATLAB\\R2015b\\runtime\\win32;C:\\Program Files (x86)\\MATLAB\\R2015b\\bin;C:\\Program Files (x86)\\MATLAB\\R2015b\\bin\\win32;$ENV{PATH}")
@@ -252,7 +240,7 @@ if(MATLAB)
   endif()
 endif()
 
-if(ROS AND EXISTS "/opt/ros/indigo/setup.bash")
+if("$ENV{ros}" MATCHES "true" AND EXISTS "/opt/ros/indigo/setup.bash")
   set(ENV{ROS_ROOT} "/opt/ros/indigo/share/ros")
   set(ENV{ROS_PACKAGE_PATH} "/opt/ros/indigo/share:/opt/ros/indigo/stacks")
   set(ENV{ROS_MASTER_URI} "http://localhost:11311")
@@ -272,7 +260,7 @@ set(CTEST_GIT_COMMAND "git")
 set(CTEST_UPDATE_COMMAND "${CTEST_GIT_COMMAND}")
 set(CTEST_UPDATE_VERSION_ONLY ON)
 
-if(NOT OPEN_SOURCE AND NOT COMPILER STREQUAL "cpplint")
+if(NOT "$ENV{openSource}" MATCHES "true" AND NOT "$ENV{compiler}" MATCHES "cpplint")
   if(WIN32)
     set(DASHBOARD_SSH_IDENTITY_FILE "C:\\Windows\\Temp\\id_rsa_$ENV{RANDOM}")
     if(EXISTS "${DASHBOARD_SSH_IDENTITY_FILE}")
@@ -310,7 +298,7 @@ if(NOT OPEN_SOURCE AND NOT COMPILER STREQUAL "cpplint")
       "*** CTest Result: FAILURE BECAUSE DOWNLOAD OF IDENTITY FILE FROM AWS S3 WAS NOT SUCCESSFUL")
   endif()
   file(SHA1 "${DASHBOARD_SSH_IDENTITY_FILE}" DASHBOARD_SSH_IDENTITY_FILE_SHA1)
-  if(NOT DASHBOARD_SSH_IDENTITY_FILE_SHA1 STREQUAL "8de7f79df9eb18344cf0e030d2ae3b658d81263b")
+  if(NOT "${DASHBOARD_SSH_IDENTITY_FILE_SHA1}" MATCHES "8de7f79df9eb18344cf0e030d2ae3b658d81263b")
     file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
     message(FATAL_ERROR
       "*** CTest Result: FAILURE BECAUSE SHA1 OF IDENTITY FILE WAS NOT CORRECT")
@@ -370,9 +358,9 @@ file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
 
 # set model and track for submission
 set(DASHBOARD_MODEL "Experimental")
-if(TRACK STREQUAL "continuous")
+if("$ENV{track}" MATCHES "continuous")
   set(DASHBOARD_TRACK "Continuous")
-elseif(TRACK STREQUAL "nightly")
+elseif("$ENV{track}" MATCHES "nightly")
   set(DASHBOARD_MODEL "Nightly")
   set(DASHBOARD_TRACK "Nightly")
 else()
@@ -387,7 +375,7 @@ set(DASHBOARD_TEST ON)
 set(DASHBOARD_COVERAGE OFF)
 set(DASHBOARD_MEMCHECK OFF)
 
-if(COMPILER STREQUAL "cpplint")
+if("$ENV{compiler}" MATCHES "cpplint")
   set(DASHBOARD_CONFIGURE_AND_BUILD_SUPERBUILD OFF)
   set(DASHBOARD_CONFIGURE OFF)
   set(DASHBOARD_INSTALL OFF)
@@ -399,10 +387,10 @@ if(COMPILER STREQUAL "cpplint")
       "*** CTest Result: FAILURE BECAUSE CPPLINT WAS NOT FOUND")
   endif()
   set(CTEST_BUILD_COMMAND
-    "${CMAKE_CURRENT_LIST_DIR}/cpplint_wrapper.py --cpplint=${DASHBOARD_CPPLINT_COMMAND} --excludes=(\\.git|doc|build|thirdParty) ${DASHBOARD_WORKSPACE}/drake")
+    "${CMAKE_CURRENT_LIST_DIR}/cpplint_wrapper.py --cpplint=${DASHBOARD_CPPLINT_COMMAND} --excludes=(\\.git|doc|pod-build|thirdParty) ${DASHBOARD_WORKSPACE}/drake")
 endif()
 
-set(DASHBOARD_INSTALL_PREFIX "${DASHBOARD_WORKSPACE}/install")
+set(DASHBOARD_INSTALL_PREFIX "${DASHBOARD_WORKSPACE}/build")
 
 # clean out any old installs
 file(REMOVE_RECURSE "${DASHBOARD_INSTALL_PREFIX}")
@@ -420,7 +408,7 @@ set(DASHBOARD_SHARED_LINKER_FLAGS "")
 set(DASHBOARD_STATIC_LINKER_FLAGS "")
 set(DASHBOARD_VERBOSE_MAKEFILE OFF)
 
-if(COMPILER MATCHES "^include-what-you-use")
+if("$ENV{compiler}" MATCHES "include-what-you-use")
   set(DASHBOARD_INSTALL OFF)
   set(DASHBOARD_TEST OFF)
   set(DASHBOARD_CONFIGURATION_TYPE "Debug")
@@ -435,7 +423,7 @@ if(COMPILER MATCHES "^include-what-you-use")
     "${DASHBOARD_INCLUDE_WHAT_YOU_USE_COMMAND}" "-Xiwyu" "--mapping_file=${DASHBOARD_WORKSPACE}/drake/include-what-you-use.imp")
 endif()
 
-if(COMPILER MATCHES "^scan-build")
+if("$ENV{compiler}" MATCHES "scan-build")
   set(DASHBOARD_INSTALL OFF)
   set(DASHBOARD_TEST OFF)
   set(DASHBOARD_CONFIGURATION_TYPE "Debug")
@@ -445,13 +433,13 @@ if(COMPILER MATCHES "^scan-build")
     "${DASHBOARD_EXTRA_DEBUG_FLAGS} ${DASHBOARD_CXX_FLAGS}")
   set(DASHBOARD_FORTRAN_FLAGS
     "${DASHBOARD_EXTRA_DEBUG_FLAGS} ${DASHBOARD_FORTRAN_FLAGS}")
-  set(DASHBOARD_CCC_ANALYZER_HTML "${DASHBOARD_WORKSPACE}/drake/build/html")
+  set(DASHBOARD_CCC_ANALYZER_HTML "${DASHBOARD_WORKSPACE}/drake/pod-build/html")
   set(ENV{CCC_ANALYZER_HTML} "${DASHBOARD_CCC_ANALYZER_HTML}")
   file(MAKE_DIRECTORY "${DASHBOARD_CCC_ANALYZER_HTML}")
 endif()
 
 # set compiler flags for coverage builds
-if(COVERAGE)
+if("$ENV{coverage}" MATCHES "true")
   set(DASHBOARD_COVERAGE ON)
   set(DASHBOARD_INSTALL OFF)
   set(DASHBOARD_CONFIGURATION_TYPE "Debug")
@@ -466,7 +454,7 @@ if(COVERAGE)
   set(DASHBOARD_SHARED_LINKER_FLAGS
     "${DASHBOARD_COVERAGE_FLAGS} ${DASHBOARD_SHARED_LINKER_FLAGS}")
 
-  if(COMPILER MATCHES "^clang")
+  if("$ENV{compiler}" MATCHES "clang")
     find_program(DASHBOARD_COVERAGE_COMMAND NAMES "llvm-cov")
     if(NOT DASHBOARD_COVERAGE_COMMAND)
       file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
@@ -474,7 +462,7 @@ if(COVERAGE)
         "*** CTest Result: FAILURE BECAUSE LLVM-COV WAS NOT FOUND")
     endif()
     set(DASHBOARD_COVERAGE_EXTRA_FLAGS "gcov")
-  elseif(COMPILER MATCHES "^gcc")
+  elseif("$ENV{compiler}" MATCHES "gcc")
     find_program(DASHBOARD_COVERAGE_COMMAND NAMES "gcov-4.9")
     if(NOT DASHBOARD_COVERAGE_COMMAND)
       file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
@@ -498,7 +486,7 @@ if(COVERAGE)
 endif()
 
 # set compiler flags for memcheck builds
-if(MEMCHECK MATCHES "^([amt]san|valgrind)$")
+if("$ENV{memcheck}" MATCHES "asan" OR "$ENV{memcheck}" MATCHES "msan" OR "$ENV{memcheck}" MATCHES "tsan" OR "$ENV{memcheck}" MATCHES "valgrind")
   set(DASHBOARD_MEMCHECK ON)
   set(DASHBOARD_INSTALL OFF)
   set(DASHBOARD_CONFIGURATION_TYPE "Debug")
@@ -508,7 +496,7 @@ if(MEMCHECK MATCHES "^([amt]san|valgrind)$")
     "${DASHBOARD_EXTRA_DEBUG_FLAGS} ${DASHBOARD_CXX_FLAGS}")
   set(DASHBOARD_FORTRAN_FLAGS
     "${DASHBOARD_EXTRA_DEBUG_FLAGS} ${DASHBOARD_FORTRAN_FLAGS}")
-  if(MEMCHECK STREQUAL "msan")
+  if("$ENV{memcheck}" MATCHES "msan")
     set(ENV{LD_LIBRARY_PATH} "/usr/local/libcxx_msan/lib:$ENV{LD_LIBRARY_PATH}")
     set(DASHBOARD_C_FLAGS
       "-I/usr/local/libcxx_msan/include ${DASHBOARD_C_FLAGS}")
@@ -516,7 +504,7 @@ if(MEMCHECK MATCHES "^([amt]san|valgrind)$")
       "-stdlib=libc++ -L/usr/local/libcxx_msan/lib -lc++abi -I/usr/local/libcxx_msan/include -I/usr/local/libcxx_msan/include/c++/v1 ${DASHBOARD_CXX_FLAGS}")
     set(DASHBOARD_CXX_STANDARD 11)
   endif()
-  if(MEMCHECK STREQUAL "asan")
+  if("$ENV{memcheck}" MATCHES "asan")
     set(DASHBOARD_MEMORYCHECK_TYPE "AddressSanitizer")
     set(DASHBOARD_SANITIZE_FLAGS "-fsanitize=address")
     set(DASHBOARD_C_FLAGS "${DASHBOARD_SANITIZE_FLAGS} ${DASHBOARD_C_FLAGS}")
@@ -524,7 +512,7 @@ if(MEMCHECK MATCHES "^([amt]san|valgrind)$")
       "${DASHBOARD_SANITIZE_FLAGS} ${DASHBOARD_CXX_FLAGS}")
     set(DASHBOARD_SHARED_LINKER_FLAGS
       "${DASHBOARD_SANITIZE_FLAGS} ${DASHBOARD_SHARED_LINKER_FLAGS}")
-  elseif(MEMCHECK STREQUAL "msan")
+  elseif("$ENV{memcheck}" MATCHES "msan")
     set(DASHBOARD_MEMORYCHECK_TYPE "MemorySanitizer")
     set(DASHBOARD_SANITIZE_FLAGS "-fsanitize=memory")
     set(DASHBOARD_C_FLAGS "${DASHBOARD_SANITIZE_FLAGS} ${DASHBOARD_C_FLAGS}")
@@ -532,7 +520,7 @@ if(MEMCHECK MATCHES "^([amt]san|valgrind)$")
       "${DASHBOARD_SANITIZE_FLAGS} ${DASHBOARD_CXX_FLAGS}")
     set(DASHBOARD_SHARED_LINKER_FLAGS
       "${DASHBOARD_SANITIZE_FLAGS} ${DASHBOARD_SHARED_LINKER_FLAGS}")
-  elseif(MEMCHECK STREQUAL "tsan")
+  elseif("$ENV{memcheck}" MATCHES "tsan")
     set(DASHBOARD_MEMORYCHECK_TYPE "ThreadSanitizer")
     set(DASHBOARD_SANITIZE_FLAGS "-fsanitize=thread")
     set(DASHBOARD_C_FLAGS "${DASHBOARD_SANITIZE_FLAGS} ${DASHBOARD_C_FLAGS}")
@@ -541,7 +529,7 @@ if(MEMCHECK MATCHES "^([amt]san|valgrind)$")
     set(DASHBOARD_SHARED_LINKER_FLAGS
       "${DASHBOARD_SANITIZE_FLAGS} ${DASHBOARD_SHARED_LINKER_FLAGS}")
     set(DASHBOARD_POSITION_INDEPENDENT_CODE ON)
-  elseif(MEMCHECK STREQUAL "valgrind")
+  elseif("$ENV{memcheck}" MATCHES "valgrind")
     set(DASHBOARD_MEMORYCHECK_TYPE "Valgrind")
     find_program(DASHBOARD_MEMORYCHECK_COMMAND NAMES "valgrind")
     set(CTEST_MEMORYCHECK_COMMAND "${DASHBOARD_MEMORYCHECK_COMMAND}")
@@ -561,15 +549,15 @@ if(MEMCHECK MATCHES "^([amt]san|valgrind)$")
   set(CTEST_MEMORYCHECK_TYPE "${DASHBOARD_MEMORYCHECK_TYPE}")
 endif()
 
-if(DEBUG)
+if("$ENV{debug}" MATCHES "true")
   set(DASHBOARD_CONFIGURATION_TYPE "Debug")
 endif()
 
-if(DASHBOARD_CONFIGURATION_TYPE STREQUAL "Debug")
+if(DASHBOARD_CONFIGURATION_TYPE MATCHES "Debug")
   set(DASHBOARD_TEST_TIMEOUT 1500)
 endif()
 
-if(MATLAB)
+if("$ENV{matlab}" MATCHES "true")
   if(APPLE)
     math(EXPR DASHBOARD_TEST_TIMEOUT "${DASHBOARD_TEST_TIMEOUT} + 250")
   else()
@@ -581,13 +569,13 @@ set(ENV{CMAKE_CONFIG_TYPE} "${DASHBOARD_CONFIGURATION_TYPE}")
 set(CTEST_CONFIGURATION_TYPE "${DASHBOARD_CONFIGURATION_TYPE}")
 set(CTEST_TEST_TIMEOUT ${DASHBOARD_TEST_TIMEOUT})
 
-if(CTEST_CMAKE_GENERATOR STREQUAL "Unix Makefiles")
+if("${CTEST_CMAKE_GENERATOR}" MATCHES "Unix Makefiles")
   set(DASHBOARD_VERBOSE_MAKEFILE ON)
   set(ENV{CMAKE_FLAGS}
     "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON $ENV{CMAKE_FLAGS}")  # HACK
 endif()
 
-if(COMPILER STREQUAL "msvc-ninja-32" AND DEBUG)
+if("$ENV{compiler}" MATCHES "msvc-ninja-32" AND "$ENV{debug}" MATCHES "true")
   set(DASHBOARD_NINJA_LINK_POOL_SIZE 2)
 endif()
 
@@ -656,7 +644,7 @@ endif()
 set(DASHBOARD_BUILD_DOCUMENTATION OFF)
 set(DASHBOARD_LONG_RUNNING_TESTS OFF)
 
-if(DOCUMENTATION OR DOCUMENTATION STREQUAL "publish")
+if("$ENV{documentation}" MATCHES "true" OR "$ENV{documentation}" MATCHES "publish")
   set(DASHBOARD_BUILD_DOCUMENTATION ON)
 endif()
 
@@ -700,16 +688,14 @@ set(DASHBOARD_WITH_YAML_CPP ON)
 
 if(WIN32)
   set(DASHBOARD_WITH_GTK ON)
-  set(DASHBOARD_WITH_LIBBOT OFF)
 else()
-  set(DASHBOARD_WITH_LIBBOT ON)
   set(DASHBOARD_WITH_MESHCONVERTERS ON)
   set(DASHBOARD_WITH_NLOPT ON)
   set(DASHBOARD_WITH_OCTOMAP ON)
   set(DASHBOARD_WITH_SIGNALSCOPE ON)
   set(DASHBOARD_WITH_SWIG_MATLAB ON)
 
-  if(NOT OPEN_SOURCE)
+  if(NOT "$ENV{openSource}" MATCHES "true")
     if(APPLE)
       set(DASHBOARD_GUROBI_DISTRO "$ENV{HOME}/gurobi6.0.5a_mac64.pkg")
     else()
@@ -724,13 +710,13 @@ else()
     set(DASHBOARD_WITH_MOSEK ON)
   endif()
 
-  if(MATLAB)
+  if("$ENV{matlab}" MATCHES "true")
     set(DASHBOARD_WITH_AVL ON)
     set(DASHBOARD_WITH_TEXTBOOK ON)
     set(DASHBOARD_WITH_XFOIL ON)
     set(DASHBOARD_WITH_YALMIP ON)
 
-    if(NOT OPEN_SOURCE)
+    if(NOT "$ENV{openSource}" MATCHES "true")
       set(DASHBOARD_WITH_BERTINI ON)
       set(DASHBOARD_WITH_GLOPTIPOLY ON)
       set(DASHBOARD_WITH_IRIS ON)
@@ -739,18 +725,14 @@ else()
   endif()
 endif()
 
-if(WIN32 OR OPEN_SOURCE)
+if(WIN32 OR "$ENV{openSource}" MATCHES "true")
   set(DASHBOARD_WITH_SNOPT_PRECOMPILED ON)
 else()
   set(DASHBOARD_WITH_SNOPT ON)
 endif()
 
-if(MATLAB)
+if("$ENV{matlab}" MATCHES "true")
   set(DASHBOARD_WITH_SPOTLESS ON)
-endif()
-
-if(MEMCHECK MATCHES "^[amt]san$")
-  set(DASHBOARD_WITH_LIBBOT OFF)
 endif()
 
 set(CACHE_WITH_AVL "WITH_AVL:BOOL=${DASHBOARD_WITH_AVL}")
@@ -765,7 +747,6 @@ set(CACHE_WITH_GTK "WITH_GTK:BOOL=${DASHBOARD_WITH_GTK}")
 set(CACHE_WITH_GUROBI "WITH_GUROBI:BOOL=${DASHBOARD_WITH_GUROBI}")
 set(CACHE_WITH_IRIS "WITH_IRIS:BOOL=${DASHBOARD_WITH_IRIS}")
 set(CACHE_WITH_LCM "WITH_LCM:BOOL=${DASHBOARD_WITH_LCM}")
-set(CACHE_WITH_LIBBOT "WITH_LIBBOT:BOOL=${DASHBOARD_WITH_LIBBOT}")
 set(CACHE_WITH_MESHCONVERTERS
   "WITH_MESHCONVERTERS:BOOL=${DASHBOARD_WITH_MESHCONVERTERS}")
 set(CACHE_WITH_MOSEK "WITH_MOSEK:BOOL=${DASHBOARD_WITH_MOSEK}")
@@ -874,7 +855,6 @@ message("
   WITH_GUROBI                         = ${DASHBOARD_WITH_GUROBI}
   WITH_IRIS                           = ${DASHBOARD_WITH_IRIS}
   WITH_LCM                            = ${DASHBOARD_WITH_LCM}
-  WITH_LIBBOT                         = ${DASHBOARD_WITH_LIBBOT}
   WITH_MESHCONVERTERS                 = ${DASHBOARD_WITH_MESHCONVERTERS}
   WITH_MOSEK                          = ${DASHBOARD_WITH_MOSEK}
   WITH_NLOPT                          = ${DASHBOARD_WITH_NLOPT}
@@ -953,7 +933,6 @@ ${CACHE_WITH_GTK}
 ${CACHE_WITH_GUROBI}
 ${CACHE_WITH_IRIS}
 ${CACHE_WITH_LCM}
-${CACHE_WITH_LIBBOT}
 ${CACHE_WITH_MESHCONVERTERS}
 ${CACHE_WITH_MOSEK}
 ${CACHE_WITH_NLOPT}
@@ -974,7 +953,7 @@ ${CACHE_WITH_YAML_CPP}
   ctest_configure(BUILD "${CTEST_BINARY_DIRECTORY}"
     SOURCE "${CTEST_SOURCE_DIRECTORY}"
     RETURN_VALUE DASHBOARD_SUPERBUILD_CONFIGURE_RETURN_VALUE QUIET)
-  if(COMPILER MATCHES "ninja")
+  if("$ENV{compiler}" MATCHES "ninja")
     ctest_build(BUILD "${CTEST_BINARY_DIRECTORY}" APPEND
       TARGET "download-all"
       RETURN_VALUE DASHBOARD_SUPERBUILD_DOWNLOAD_RETURN_VALUE QUIET)
@@ -1017,7 +996,7 @@ else()
 
   # now start the actual drake build
   set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_WORKSPACE}/drake")
-  set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/drake/build")
+  set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/drake/pod-build")
 
   # switch the dashboard to the drake only dashboard
   set(CTEST_PROJECT_NAME "${DASHBOARD_PROJECT_NAME}")
@@ -1031,7 +1010,7 @@ else()
   file(REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
   file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
 
-  if(COMPILER MATCHES "^scan-build")
+  if("$ENV{compiler}" MATCHES "scan-build")
     file(MAKE_DIRECTORY "${DASHBOARD_CCC_ANALYZER_HTML}")
   endif()
 
@@ -1080,7 +1059,6 @@ ${CACHE_WITH_GTK}
 ${CACHE_WITH_GUROBI}
 ${CACHE_WITH_IRIS}
 ${CACHE_WITH_LCM}
-${CACHE_WITH_LIBBOT}
 ${CACHE_WITH_MESHCONVERTERS}
 ${CACHE_WITH_MOSEK}
 ${CACHE_WITH_NLOPT}
@@ -1105,7 +1083,7 @@ ${CACHE_WITH_YAML_CPP}
 
   ctest_read_custom_files("${CTEST_BINARY_DIRECTORY}")
 
-  if(COMPILER STREQUAL "cpplint")
+  if("$ENV{compiler}" MATCHES "cpplint")
     set(CTEST_CUSTOM_MAXIMUM_NUMBER_OF_ERRORS 1000)
     set(CTEST_CUSTOM_MAXIMUM_NUMBER_OF_WARNINGS 1000)
 
@@ -1113,7 +1091,7 @@ ${CACHE_WITH_YAML_CPP}
       "Total errors found: [1-9]"
       ${CTEST_CUSTOM_ERROR_MATCH}
     )
-  elseif(COMPILER MATCHES "^include-what-you-use")
+  elseif("$ENV{compiler}" MATCHES "include-what-you-use")
     set(CTEST_CUSTOM_MAXIMUM_NUMBER_OF_ERRORS 1000)
     set(CTEST_CUSTOM_MAXIMUM_NUMBER_OF_WARNINGS 1000)
   else()
@@ -1121,7 +1099,7 @@ ${CACHE_WITH_YAML_CPP}
     set(CTEST_CUSTOM_MAXIMUM_NUMBER_OF_WARNINGS 100)
   endif()
 
-  if(MATLAB)
+  if("$ENV{matlab}" MATCHES "true")
     set(CTEST_CUSTOM_MAXIMUM_FAILED_TEST_OUTPUT_SIZE 307200)
     set(CTEST_CUSTOM_MAXIMUM_PASSED_TEST_OUTPUT_SIZE 307200)
   endif()
@@ -1216,7 +1194,7 @@ else()
   set(DASHBOARD_UNSTABLES "")
 
   if(DASHBOARD_WARNING)
-    if(COMPILER MATCHES "^(include-what-you-use|scan-build)")
+    if("$ENV{compiler}" MATCHES "include-what-you-use" OR "$ENV{compiler}" MATCHES "scan-build")
       set(DASHBOARD_UNSTABLE ON)
       list(APPEND DASHBOARD_UNSTABLES "STATIC ANALYSIS TOOL")
     endif()
@@ -1247,7 +1225,7 @@ else()
   endif()
 endif()
 
-if(DOCUMENTATION STREQUAL "publish")
+if("$ENV{documentation}" MATCHES "publish")
   if(DASHBOARD_FAILURE OR DASHBOARD_UNSTABLE)
     set(DASHBOARD_PUBLISH_DOCUMENTATION OFF)
     set(DASHBOARD_PUBLISH_DOCUMENTATION_MESSAGE "*** CTest Status: NOT PUBLISHING DOCUMENTATION BECAUSE BUILD WAS NOT SUCCESSFUL")
