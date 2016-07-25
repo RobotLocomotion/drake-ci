@@ -9,6 +9,8 @@
 #                                     | "gcc" | "gcc-ninja"
 #                                     | "include-what-you-use"
 #                                     | "include-what-you-use-ninja"
+#                                     | "link-what-you-use"
+#                                     | "link-what-you-use-ninja"
 #                                     | "msvc-32" | "msvc-64"
 #                                     | "msvc-ninja-32" | "msvc-ninja-64"
 #                                     | "scan-build" | "scan-build-ninja"
@@ -25,7 +27,7 @@
 #   buildname             optional    value for CTEST_BUILD_NAME
 #   site                  optional    value for CTEST_SITE
 
-cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
 
 if(NOT DEFINED ENV{WORKSPACE})
   message(FATAL_ERROR
@@ -109,7 +111,7 @@ elseif(NOT "$ENV{compiler}" MATCHES "cpplint")
 endif()
 
 # check for compiler settings
-if("$ENV{compiler}" MATCHES "clang" OR "$ENV{compiler}" MATCHES "gcc" OR "$ENV{compiler}" MATCHES "include-what-you-use" OR "$ENV{compiler}" MATCHES "scan-build")
+if("$ENV{compiler}" MATCHES "clang" OR "$ENV{compiler}" MATCHES "gcc" OR "$ENV{compiler}" MATCHES "^(include|link)-what-you-use" OR "$ENV{compiler}" MATCHES "scan-build")
   if(APPLE)
     set(ENV{F77} "gfortran")
     set(ENV{FC} "gfortran")
@@ -121,7 +123,7 @@ endif()
 if("$ENV{compiler}" MATCHES "gcc")
   set(ENV{CC} "gcc-4.9")
   set(ENV{CXX} "g++-4.9")
-elseif("$ENV{compiler}" MATCHES "clang" OR "$ENV{compiler}" MATCHES "include-what-you-use")
+elseif("$ENV{compiler}" MATCHES "clang" OR "$ENV{compiler}" MATCHES "^(include|link)-what-you-use")
   set(ENV{CC} "clang")
   set(ENV{CXX} "clang++")
 elseif("$ENV{compiler}" MATCHES "scan-build")
@@ -402,6 +404,7 @@ set(DASHBOARD_C_FLAGS "")
 set(DASHBOARD_CXX_FLAGS "")
 set(DASHBOARD_CXX_STANDARD "")
 set(DASHBOARD_FORTRAN_FLAGS "")
+set(DASHBOARD_LINK_WHAT_YOU_USE OFF)
 set(DASHBOARD_NINJA_LINK_POOL_SIZE 0)
 set(DASHBOARD_POSITION_INDEPENDENT_CODE OFF)
 set(DASHBOARD_SHARED_LINKER_FLAGS "")
@@ -421,6 +424,13 @@ if("$ENV{compiler}" MATCHES "include-what-you-use")
   endif()
   set(DASHBOARD_INCLUDE_WHAT_YOU_USE
     "${DASHBOARD_INCLUDE_WHAT_YOU_USE_COMMAND}" "-Xiwyu" "--mapping_file=${DASHBOARD_WORKSPACE}/drake/include-what-you-use.imp")
+endif()
+
+if("$ENV{compiler}" MATCHES "link-what-you-use")
+  set(DASHBOARD_INSTALL OFF)
+  set(DASHBOARD_TEST OFF)
+  set(DASHBOARD_CONFIGURATION_TYPE "Debug")
+  set(DASHBOARD_LINK_WHAT_YOU_USE ON)
 endif()
 
 if("$ENV{compiler}" MATCHES "scan-build")
@@ -618,6 +628,8 @@ if(DASHBOARD_INSTALL_PREFIX)
   set(CACHE_INSTALL_PREFIX
     "CMAKE_INSTALL_PREFIX:PATH=${DASHBOARD_INSTALL_PREFIX}")
 endif()
+set(CACHE_LINK_WHAT_YOU_USE
+  "CMAKE_LINK_WHAT_YOU_USE:BOOL=${DASHBOARD_LINK_WHAT_YOU_USE}")
 if(DASHBOARD_NINJA_LINK_POOL_SIZE)
   set(CACHE_NINJA_LINK_POOL_SIZE
     "CMAKE_NINJA_LINK_POOL_SIZE:STRING=${DASHBOARD_NINJA_LINK_POOL_SIZE}")
@@ -1051,6 +1063,7 @@ ${CACHE_CXX_STANDARD}
 ${CACHE_EXE_LINKER_FLAGS}
 ${CACHE_FORTRAN_FLAGS}
 ${CACHE_INSTALL_PREFIX}
+${CACHE_LINK_WHAT_YOU_USE}
 ${CACHE_NINJA_LINK_POOL_SIZE}
 ${CACHE_POSITION_INDEPENDENT_CODE}
 ${CACHE_SHARED_LINKER_FLAGS}
@@ -1101,7 +1114,7 @@ ${CACHE_WITH_YAML_CPP}
       "Total errors found: [1-9]"
       ${CTEST_CUSTOM_ERROR_MATCH}
     )
-  elseif("$ENV{compiler}" MATCHES "include-what-you-use")
+  elseif("$ENV{compiler}" MATCHES "^(include|link)-what-you-use")
     set(CTEST_CUSTOM_MAXIMUM_NUMBER_OF_ERRORS 1000)
     set(CTEST_CUSTOM_MAXIMUM_NUMBER_OF_WARNINGS 1000)
   else()
@@ -1204,7 +1217,7 @@ else()
   set(DASHBOARD_UNSTABLES "")
 
   if(DASHBOARD_WARNING)
-    if("$ENV{compiler}" MATCHES "include-what-you-use" OR "$ENV{compiler}" MATCHES "scan-build")
+    if("$ENV{compiler}" MATCHES "^(include|link)-what-you-use" OR "$ENV{compiler}" MATCHES "scan-build")
       set(DASHBOARD_UNSTABLE ON)
       list(APPEND DASHBOARD_UNSTABLES "STATIC ANALYSIS TOOL")
     endif()
