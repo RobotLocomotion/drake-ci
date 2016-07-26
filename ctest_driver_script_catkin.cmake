@@ -201,8 +201,6 @@ if(NOT DASHBOARD_FAILURE)
   endif()
 endif()
 
-message(FATAL_ERROR "stopping here")
-
 # Drake is built, blacklist to collect build info for drake_ros_integration only
 # This way, catkin does not attempt to re-build drake
 if(NOT DASHBOARD_FAILURE)
