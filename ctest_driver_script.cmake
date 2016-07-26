@@ -832,6 +832,19 @@ if(DEFINED ENV{ghprbPullId})
   message("${DASHBOARD_BUILD_DESCRIPTION}")
 endif()
 
+set(DASHBOARD_APPLE OFF)
+set(DASHBOARD_UNIX OFF)
+set(DASHBOARD_WIN32 OFF)
+if(APPLE)
+  set(DASHBOARD_APPLE ON)
+endif()
+if(UNIX)
+  set(DASHBOARD_UNIX ON)
+endif()
+if(WIN32)
+  set(DASHBOARD_WIN32 ON)
+endif()
+
 message("
   ------------------------------------------------------------------------------
   CC                                  = $ENV{CC}
@@ -848,6 +861,12 @@ message("
   ROS_PACKAGE_PATH                    = $ENV{ROS_PACKAGE_PATH}
   ROS_ROOT                            = $ENV{ROS_ROOT}
   ------------------------------------------------------------------------------
+  APPLE                               = ${DASHBOARD_APPLE}
+  UNIX                                = ${DASHBOARD_UNIX}
+  WIN32                               = ${DASHBOARD_WIN32}  
+  ------------------------------------------------------------------------------
+  CMAKE_VERSION                       = ${CMAKE_VERSION}
+  ------------------------------------------------------------------------------  
   CMAKE_C_FLAGS                      += ${DASHBOARD_C_FLAGS}
   CMAKE_C_INCLUDE_WHAT_YOU_USE        = ${DASHBOARD_C_INCLUDE_WHAT_YOU_USE}
   CMAKE_CXX_FLAGS                    += ${DASHBOARD_CXX_FLAGS}
