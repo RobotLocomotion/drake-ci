@@ -29,6 +29,21 @@ set(ENV{TERM} "dumb")
 
 file(TO_CMAKE_PATH "$ENV{WORKSPACE}" DASHBOARD_WORKSPACE)
 
+
+# set site and build name
+if(DEFINED site)
+  if(APPLE)
+    string(REGEX REPLACE "(.*)_(.*)" "\\1" DASHBOARD_SITE "${site}")
+  elseif(NOT WIN32)
+    string(REGEX REPLACE "(.*) (.*)" "\\1" DASHBOARD_SITE "${site}")
+  else()
+    set(DASHBOARD_SITE "${site}")
+  endif()
+  set(CTEST_SITE "${DASHBOARD_SITE}")
+else()
+  message(WARNING "*** CTEST_SITE was not set")
+endif()
+
 if(DEFINED buildname)
   set(CTEST_BUILD_NAME "${buildname}")
 else()
@@ -38,7 +53,6 @@ endif()
 
 set(DASHBOARD_CDASH_SERVER "drake-cdash.csail.mit.edu")
 set(DASHBOARD_NIGHTLY_START_TIME "00:00:00 EST")
-set(DASHBOARD_SITE "${site}")
 set(CTEST_SITE "${DASHBOARD_SITE}")
 set(CTEST_DROP_METHOD "https")
 set(CTEST_DROP_SITE "${DASHBOARD_CDASH_SERVER}")
