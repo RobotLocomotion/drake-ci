@@ -14,8 +14,13 @@ endif()
 set(ENV{F77} "gfortran-4.9")
 set(ENV{FC} "gfortran-4.9")
 
+set(DASHBOARD_FAILURE OFF)
+set(DASHBOARD_FAILURES "")
+
 if("$ENV{WORKSPACE}" STREQUAL "")
-  message(FATAL_ERROR "WORKSPACE environment variable is not set, please set it and try again.")
+  message("*** CTest Result: FAILURE BECAUSE ENV{WORKSPACE} environment variable is not set, please set it and try again.")
+  set(DASHBOARD_FAILURE ON)
+  list(APPEND DASHBOARD_FAILURES "ENVIRONMENT VARIABLES")
 endif()
 
 # Set TERM to dumb to work around tput errors from catkin-tools
@@ -24,16 +29,21 @@ set(ENV{TERM} "dumb")
 
 file(TO_CMAKE_PATH "$ENV{WORKSPACE}" DASHBOARD_WORKSPACE)
 
+if(DEFINED buildname)
+  set(CTEST_BUILD_NAME "${buildname}")
+else()
+  set(CTEST_BUILD_NAME "drake-catkin-ros")
+  message(WARNING "*** CTEST_BUILD_NAME was not set, defaulting to ${CTEST_BUILD_NAME}")
+endif()
+
 set(DASHBOARD_CDASH_SERVER "drake-cdash.csail.mit.edu")
 set(DASHBOARD_NIGHTLY_START_TIME "00:00:00 EST")
 set(DASHBOARD_SITE "${site}")
 set(CTEST_SITE "${DASHBOARD_SITE}")
-set(CTEST_BUILD_NAME "drake-catkin-ros")
 set(CTEST_DROP_METHOD "https")
 set(CTEST_DROP_SITE "${DASHBOARD_CDASH_SERVER}")
 set(CTEST_DROP_SITE_CDASH ON)
 set(CTEST_NIGHTLY_START_TIME "${DASHBOARD_NIGHTLY_START_TIME}")
-#set(DASHBOARD_SUPERBUILD_PROJECT_NAME "drake-catkin-ros")
 set(DASHBOARD_SUPERBUILD_PROJECT_NAME "drake-superbuild")
 set(CTEST_PROJECT_NAME "${DASHBOARD_SUPERBUILD_PROJECT_NAME}")
 set(CTEST_DROP_LOCATION
@@ -70,6 +80,7 @@ else()
   set(DASHBOARD_LABEL "")
 endif()
 
+# Set ROS Environment Up (Equivalent to sourcing /opt/ros/indigo/setup.bash)
 set(ENV{ROS_ROOT} "/opt/ros/indigo/share/ros")
 set(ENV{ROS_PACKAGE_PATH} "/opt/ros/indigo/share:/opt/ros/indigo/stacks")
 set(ENV{ROS_MASTER_URI} "http://localhost:11311")
@@ -84,7 +95,17 @@ set(ENV{CMAKE_PREFIX_PATH} "/opt/ros/indigo")
 set(ENV{ROS_ETC_DIR} "/opt/ros/indigo/etc/ros")
 set(ENV{ROS_HOME} "${DASHBOARD_WORKSPACE}")
 
-set(DASHBOARD_TRACK "Experimental")
+# set model and track for submission
+set(DASHBOARD_MODEL "Experimental")
+if("$ENV{track}" MATCHES "continuous")
+  set(DASHBOARD_TRACK "Continuous")
+elseif("$ENV{track}" MATCHES "nightly")
+  set(DASHBOARD_MODEL "Nightly")
+  set(DASHBOARD_TRACK "Nightly")
+else()
+  set(DASHBOARD_TRACK "Experimental")
+endif()
+
 set(DASHBOARD_SUPERBUILD_START_MESSAGE
   "*** CTest Status: CONFIGURING / BUILDING SUPERBUILD")
 message("
@@ -92,72 +113,86 @@ message("
   ${DASHBOARD_SUPERBUILD_START_MESSAGE}
   ------------------------------------------------------------------------------
   ")
-ctest_start("${DASHBOARD_MODEL}" TRACK "${DASHBOARD_TRACK}" QUIET)
-ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}" QUIET)
-
-set(CTEST_CONFIGURE_COMMAND "cmake -E create_symlink ${DASHBOARD_WORKSPACE}/src/drake/ros ${DASHBOARD_WORKSPACE}/src/drake_ros_integration")
-ctest_configure(BUILD "${DASHBOARD_WORKSPACE}"
-                SOURCE "${DASHBOARD_WORKSPACE}"
-                RETURN_VALUE DASHBOARD_CONFIGURE_RETURN_VALUE QUIET)
-if(NOT DASHBOARD_CONFIGURE_RETURN_VALUE EQUAL 0)
-  message(FATAL_ERROR
-    "*** CTest Result: FAILURE BECAUSE CREATION OF ROS SYMLINK WAS NOT SUCCESSFUL")
+if(NOT DASHBOARD_FAILURE)
+  ctest_start("${DASHBOARD_MODEL}" TRACK "${DASHBOARD_TRACK}" QUIET)
+  ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}" QUIET)
 endif()
 
-set(CTEST_CONFIGURE_COMMAND "catkin init")
-ctest_configure(BUILD "${DASHBOARD_WORKSPACE}"
-                SOURCE "${DASHBOARD_WORKSPACE}"
-                RETURN_VALUE DASHBOARD_CONFIGURE_RETURN_VALUE QUIET)
-if(NOT DASHBOARD_CONFIGURE_RETURN_VALUE EQUAL 0)
-  message(FATAL_ERROR
-    "*** CTest Result: FAILURE BECAUSE EXECUTION OF catkin init WAS NOT SUCCESSFUL")
+if(NOT DASHBOARD_FAILURE)
+  set(CTEST_CONFIGURE_COMMAND "cmake -E create_symlink ${DASHBOARD_WORKSPACE}/src/drake/ros ${DASHBOARD_WORKSPACE}/src/drake_ros_integration")
+  ctest_configure(BUILD "${DASHBOARD_WORKSPACE}"
+                  SOURCE "${DASHBOARD_WORKSPACE}"
+                  RETURN_VALUE DASHBOARD_CONFIGURE_RETURN_VALUE QUIET)
+  if(NOT DASHBOARD_CONFIGURE_RETURN_VALUE EQUAL 0)
+    message("*** CTest Result: FAILURE BECAUSE CREATION OF ROS SYMLINK WAS NOT SUCCESSFUL")
+    set(DASHBOARD_FAILURE ON)
+    list(APPEND DASHBOARD_FAILURES "CONFIGURE")
+  endif()
 endif()
 
-set(CTEST_CONFIGURE_COMMAND "catkin config -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCATKIN_ENABLE_TESTING=True")
-ctest_configure(BUILD "${DASHBOARD_WORKSPACE}"
-                SOURCE "${DASHBOARD_WORKSPACE}"
-                RETURN_VALUE DASHBOARD_CONFIGURE_RETURN_VALUE QUIET)
-if(NOT DASHBOARD_CONFIGURE_RETURN_VALUE EQUAL 0)
-  message(FATAL_ERROR
-    "*** CTest Result: FAILURE BECAUSE EXECUTION OF catkin config WAS NOT SUCCESSFUL")
+if(NOT DASHBOARD_FAILURE)
+  set(CTEST_CONFIGURE_COMMAND "catkin init")
+  ctest_configure(BUILD "${DASHBOARD_WORKSPACE}"
+                  SOURCE "${DASHBOARD_WORKSPACE}"
+                  RETURN_VALUE DASHBOARD_CONFIGURE_RETURN_VALUE QUIET)
+  if(NOT DASHBOARD_CONFIGURE_RETURN_VALUE EQUAL 0)
+    message("*** CTest Result: FAILURE BECAUSE EXECUTION OF catkin init WAS NOT SUCCESSFUL")
+    set(DASHBOARD_FAILURE ON)
+    list(APPEND DASHBOARD_FAILURES "CONFIGURE")
+  endif()
 endif()
 
-message("Building DRAKE & DRAKE Superbuild")
+if(NOT DASHBOARD_FAILURE)
+  set(CTEST_CONFIGURE_COMMAND "catkin config -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCATKIN_ENABLE_TESTING=True")
+  ctest_configure(BUILD "${DASHBOARD_WORKSPACE}"
+                  SOURCE "${DASHBOARD_WORKSPACE}"
+                  RETURN_VALUE DASHBOARD_CONFIGURE_RETURN_VALUE QUIET)
+  if(NOT DASHBOARD_CONFIGURE_RETURN_VALUE EQUAL 0)
+    message("*** CTest Result: FAILURE BECAUSE EXECUTION OF catkin config WAS NOT SUCCESSFUL")
+    set(DASHBOARD_FAILURE ON)
+    list(APPEND DASHBOARD_FAILURES "CONFIGURE")
+  endif()
+endif()
 
-set(CTEST_BUILD_COMMAND "catkin build --no-status -v -i drake")
-ctest_build(BUILD "${DASHBOARD_WORKSPACE}" APPEND
-  RETURN_VALUE DASHBOARD_BUILD_RETURN_VALUE
-  NUMBER_ERRORS DASHBOARD_NUMBER_BUILD_ERRORS QUIET)
-ctest_submit(PARTS Build)
+if(NOT DASHBOARD_FAILURE)
+  message("Building DRAKE & DRAKE Superbuild")
+  set(CTEST_BUILD_COMMAND "catkin build --no-status -v -i drake")
+  ctest_build(BUILD "${DASHBOARD_WORKSPACE}" APPEND
+    RETURN_VALUE DASHBOARD_BUILD_RETURN_VALUE
+    NUMBER_ERRORS DASHBOARD_NUMBER_BUILD_ERRORS QUIET)
+  ctest_submit(PARTS Build)
 
-# ERROR detection doesn't work correctly with catkin... use error code instead
-#if(NOT DASHBOARD_NUMBER_BUILD_ERRORS EQUAL 0)
-if(NOT DASHBOARD_BUILD_RETURN_VALUE EQUAL 0)
-  message(FATAL_ERROR
-    "*** CTest Result: FAILURE BECAUSE OF BUILD FAILURES")
-else()
-  if(DASHBOARD_NUMBER_BUILD_WARNINGS EQUAL 1)
-    set(DASHBOARD_WARNING ON)
-    set(DASHBOARD_MESSAGE "SUCCESS BUT WITH 1 BUILD WARNING")
-  elseif(DASHBOARD_NUMBER_BUILD_WARNINGS GREATER 1)
-    set(DASHBOARD_WARNING ON)
-    set(DASHBOARD_MESSAGE "SUCCESS BUT WITH ${DASHBOARD_NUMBER_BUILD_WARNINGS} BUILD WARNINGS")
+  # ERROR detection doesn't work correctly with catkin... use error code instead
+  if(NOT DASHBOARD_BUILD_RETURN_VALUE EQUAL 0)
+    message("*** CTest Result: FAILURE BECAUSE OF BUILD FAILURES")
+    set(DASHBOARD_FAILURE ON)
+    list(APPEND DASHBOARD_FAILURES "BUILD")
   else()
-    set(DASHBOARD_MESSAGE "SUCCESS")
+    if(DASHBOARD_NUMBER_BUILD_WARNINGS EQUAL 1)
+      set(DASHBOARD_WARNING ON)
+      set(DASHBOARD_MESSAGE "SUCCESS BUT WITH 1 BUILD WARNING")
+    elseif(DASHBOARD_NUMBER_BUILD_WARNINGS GREATER 1)
+      set(DASHBOARD_WARNING ON)
+      set(DASHBOARD_MESSAGE "SUCCESS BUT WITH ${DASHBOARD_NUMBER_BUILD_WARNINGS} BUILD WARNINGS")
+    else()
+      set(DASHBOARD_MESSAGE "SUCCESS")
+    endif()
   endif()
 endif()
 
 # Drake is built, blacklist to collect build info for drake_ros_integration only
-set(CTEST_CONFIGURE_COMMAND "catkin config --blacklist drake")
-ctest_configure(BUILD "${DASHBOARD_WORKSPACE}"
-                SOURCE "${DASHBOARD_WORKSPACE}"
-                RETURN_VALUE DASHBOARD_CONFIGURE_RETURN_VALUE QUIET)
-if(NOT DASHBOARD_CONFIGURE_RETURN_VALUE EQUAL 0)
-  message(FATAL_ERROR
-    "*** CTest Result: FAILURE BECAUSE EXECUTION OF catkin config WAS NOT SUCCESSFUL")
+if(NOT DASHBOARD_FAILURE)
+  set(CTEST_CONFIGURE_COMMAND "catkin config --blacklist drake")
+  ctest_configure(BUILD "${DASHBOARD_WORKSPACE}"
+                  SOURCE "${DASHBOARD_WORKSPACE}"
+                  RETURN_VALUE DASHBOARD_CONFIGURE_RETURN_VALUE QUIET)
+  if(NOT DASHBOARD_CONFIGURE_RETURN_VALUE EQUAL 0)
+    message("*** CTest Result: FAILURE BECAUSE EXECUTION OF catkin config WAS NOT SUCCESSFUL")
+    set(DASHBOARD_FAILURE ON)
+  endif()
 endif()
 
-set(DASHBOARD_PROJECT_NAME "Drake")
+set(DASHBOARD_PROJECT_NAME "Drake-ROS")
 # switch the dashboard to the drake only dashboard
 set(CTEST_PROJECT_NAME "${DASHBOARD_PROJECT_NAME}")
 set(CTEST_NIGHTLY_START_TIME "${DASHBOARD_NIGHTLY_START_TIME}")
@@ -166,29 +201,32 @@ set(CTEST_DROP_SITE "${DASHBOARD_CDASH_SERVER}")
 set(CTEST_DROP_LOCATION "/submit.php?project=${DASHBOARD_PROJECT_NAME}")
 set(CTEST_DROP_SITE_CDASH ON)
 
-set(CTEST_BUILD_COMMAND "catkin build --no-status -v -i")
-ctest_build(BUILD "${DASHBOARD_WORKSPACE}" APPEND
-  RETURN_VALUE DASHBOARD_BUILD_RETURN_VALUE
-  NUMBER_ERRORS DASHBOARD_NUMBER_BUILD_ERRORS QUIET)
-ctest_submit(PARTS Build)
+if(NOT DASHBOARD_FAILURE)
+  set(CTEST_BUILD_COMMAND "catkin build --no-status -v -i")
+  ctest_build(BUILD "${DASHBOARD_WORKSPACE}" APPEND
+    RETURN_VALUE DASHBOARD_BUILD_RETURN_VALUE
+    NUMBER_ERRORS DASHBOARD_NUMBER_BUILD_ERRORS QUIET)
+  ctest_submit(PARTS Build)
 
-# ERROR detection doesn't work correctly with catkin... use error code instead
-#if(NOT DASHBOARD_NUMBER_BUILD_ERRORS EQUAL 0)
-if(NOT DASHBOARD_BUILD_RETURN_VALUE EQUAL 0)
-  message(FATAL_ERROR
-    "*** CTest Result: FAILURE BECAUSE OF BUILD FAILURES")
-else()
-  if(DASHBOARD_NUMBER_BUILD_WARNINGS EQUAL 1)
-    set(DASHBOARD_WARNING ON)
-    set(DASHBOARD_MESSAGE "SUCCESS BUT WITH 1 BUILD WARNING")
-  elseif(DASHBOARD_NUMBER_BUILD_WARNINGS GREATER 1)
-    set(DASHBOARD_WARNING ON)
-    set(DASHBOARD_MESSAGE "SUCCESS BUT WITH ${DASHBOARD_NUMBER_BUILD_WARNINGS} BUILD WARNINGS")
+  # ERROR detection doesn't work correctly with catkin... use error code instead
+  if(NOT DASHBOARD_BUILD_RETURN_VALUE EQUAL 0)
+    message("*** CTest Result: FAILURE BECAUSE OF BUILD FAILURES")
+    set(DASHBOARD_FAILURE ON)
   else()
-    set(DASHBOARD_MESSAGE "SUCCESS")
+    if(DASHBOARD_NUMBER_BUILD_WARNINGS EQUAL 1)
+      set(DASHBOARD_WARNING ON)
+      set(DASHBOARD_MESSAGE "SUCCESS BUT WITH 1 BUILD WARNING")
+    elseif(DASHBOARD_NUMBER_BUILD_WARNINGS GREATER 1)
+      set(DASHBOARD_WARNING ON)
+      set(DASHBOARD_MESSAGE "SUCCESS BUT WITH ${DASHBOARD_NUMBER_BUILD_WARNINGS} BUILD WARNINGS")
+    else()
+      set(DASHBOARD_MESSAGE "SUCCESS")
+    endif()
   endif()
 endif()
 
+
+# Update ROS Environment after build, equivalent to sourcing devel/setup.bash
 set(ENV{ROS_PACKAGE_PATH} "${DASHBOARD_WORKSPACE}/src/drake:${DASHBOARD_WORKSPACE}/src/drake_ros:$ENV{ROS_PACKAGE_PATH}")
 set(ENV{LD_LIBRARY_PATH} "${DASHBOARD_WORKSPACE}/devel/lib::$ENV{LD_LIBRARY_PATH}")
 set(ENV{ROSLISP_PACKAGE_DIRECTORIES} "${DASHBOARD_WORKSPACE}/devel/share/common-lisp")
@@ -198,38 +236,44 @@ set(ENV{CMAKE_PREFIX_PATH} "${DASHBOARD_WORKSPACE}/devel:$ENV{CMAKE_PREFIX_PATH}
 set(DASHBOARD_UNSTABLE OFF)
 set(DASHBOARD_UNSTABLES "")
 
-ctest_test(BUILD "${DASHBOARD_WORKSPACE}/build/drake/drake" ${CTEST_TEST_ARGS}
-  RETURN_VALUE DASHBOARD_TEST_RETURN_VALUE QUIET APPEND)
-ctest_submit(PARTS Test)
-if(NOT DASHBOARD_TEST_RETURN_VALUE EQUAL 0)
-  set(DASHBOARD_UNSTABLE ON)
-  list(APPEND DASHBOARD_UNSTABLES "TEST DRAKE")
+# Run tests for Drake Proper
+if(NOT DASHBOARD_FAILURE)
+  ctest_test(BUILD "${DASHBOARD_WORKSPACE}/build/drake/drake" ${CTEST_TEST_ARGS}
+    RETURN_VALUE DASHBOARD_TEST_RETURN_VALUE QUIET APPEND)
+  ctest_submit(PARTS Test)
+  if(NOT DASHBOARD_TEST_RETURN_VALUE EQUAL 0)
+    set(DASHBOARD_UNSTABLE ON)
+    list(APPEND DASHBOARD_UNSTABLES "TEST DRAKE")
+  endif()
+
+  # Run tests on every ROS Package in the workspace
+  execute_process(COMMAND catkin list -u
+                  WORKING_DIRECTORY ${DASHBOARD_WORKSPACE}
+                  RESULT_VARIABLE RUN_RESULT
+                  OUTPUT_VARIABLE ROS_PACKAGES
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+  # Replace newlines with ; to turn output into a list
+  string(REPLACE "\n" ";" ROS_PACKAGES_LIST "${ROS_PACKAGES}")
+
+  # Loop through all detected packages and run tests
+  foreach(PKG ${ROS_PACKAGES_LIST})
+    if (NOT ${PKG} STREQUAL "drake")
+      ctest_test(BUILD "${DASHBOARD_WORKSPACE}/build/${PKG}" ${CTEST_TEST_ARGS}
+        RETURN_VALUE DASHBOARD_TEST_RETURN_VALUE QUIET APPEND)
+      if(NOT DASHBOARD_TEST_RETURN_VALUE EQUAL 0)
+        set(DASHBOARD_UNSTABLE ON)
+        list(APPEND DASHBOARD_UNSTABLES "TEST ${PKG}")
+      endif()
+      ctest_submit(PARTS Test)
+    endif()
+  endforeach()
 endif()
 
-# Run tests on every ROS Package in the workspace
-execute_process(COMMAND catkin list -u
-                WORKING_DIRECTORY ${DASHBOARD_WORKSPACE}
-                RESULT_VARIABLE RUN_RESULT
-                OUTPUT_VARIABLE ROS_PACKAGES
-                OUTPUT_STRIP_TRAILING_WHITESPACE)
-# Replace newlines with ; to turn output into a list
-string(REPLACE "\n" ";" ROS_PACKAGES_LIST "${ROS_PACKAGES}")
-
-# Loop through all detected packages and run tests
-foreach(PKG ${ROS_PACKAGES_LIST})
-  if (NOT ${PKG} STREQUAL "drake")
-    #message("Testing ROS Package: ${PKG}")
-    ctest_test(BUILD "${DASHBOARD_WORKSPACE}/build/${PKG}" ${CTEST_TEST_ARGS}
-      RETURN_VALUE DASHBOARD_TEST_RETURN_VALUE QUIET APPEND)
-    if(NOT DASHBOARD_TEST_RETURN_VALUE EQUAL 0)
-      set(DASHBOARD_UNSTABLE ON)
-      list(APPEND DASHBOARD_UNSTABLES "TEST ${PKG}")
-    endif()
-    ctest_submit(PARTS Test)
-  endif()
-endforeach()
-
-if(DASHBOARD_UNSTABLE)
+if(DASHBOARD_FAILURE)
+  string(REPLACE ";" " / " DASHBOARD_FAILURES_STRING "${DASHBOARD_FAILURES}")
+  set(DASHBOARD_MESSAGE "UNSTABLE DUE TO ${DASHBOARD_FAILURES_STRING} FAILURES")
+  file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
+elseif(DASHBOARD_UNSTABLE)
   string(REPLACE ";" " / " DASHBOARD_UNSTABLES_STRING "${DASHBOARD_UNSTABLES}")
   set(DASHBOARD_MESSAGE
     "UNSTABLE DUE TO ${DASHBOARD_UNSTABLES_STRING} FAILURES")
