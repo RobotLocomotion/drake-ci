@@ -45,6 +45,8 @@ set(CTEST_DROP_SITE "${DASHBOARD_CDASH_SERVER}")
 set(CTEST_DROP_SITE_CDASH ON)
 set(CTEST_NIGHTLY_START_TIME "${DASHBOARD_NIGHTLY_START_TIME}")
 set(DASHBOARD_SUPERBUILD_PROJECT_NAME "drake-superbuild")
+set(DASHBOARD_DRAKE_PROJECT_NAME "Drake")
+set(DASHBOARD_PROJECT_NAME "Drake-ROS")
 set(CTEST_PROJECT_NAME "${DASHBOARD_SUPERBUILD_PROJECT_NAME}")
 set(CTEST_DROP_LOCATION
     "/submit.php?project=${DASHBOARD_SUPERBUILD_PROJECT_NAME}")
@@ -180,7 +182,29 @@ if(NOT DASHBOARD_FAILURE)
   endif()
 endif()
 
+# Set Dashboard to Drake to send Drake's Unit tests there
+if(NOT DASHBOARD_FAILURE)
+  # switch the dashboard to the drake only dashboard
+  set(CTEST_PROJECT_NAME "${DASHBOARD_DRAKE_PROJECT_NAME}")
+  set(CTEST_NIGHTLY_START_TIME "${DASHBOARD_NIGHTLY_START_TIME}")
+  set(CTEST_DROP_METHOD "https")
+  set(CTEST_DROP_SITE "${DASHBOARD_CDASH_SERVER}")
+  set(CTEST_DROP_LOCATION "/submit.php?project=${DASHBOARD_DRAKE_PROJECT_NAME}")
+  set(CTEST_DROP_SITE_CDASH ON)
+
+  ctest_test(BUILD "${DASHBOARD_WORKSPACE}/build/drake/drake" ${CTEST_TEST_ARGS}
+    RETURN_VALUE DASHBOARD_TEST_RETURN_VALUE QUIET APPEND)
+  ctest_submit(PARTS Test)
+  if(NOT DASHBOARD_TEST_RETURN_VALUE EQUAL 0)
+    set(DASHBOARD_UNSTABLE ON)
+    list(APPEND DASHBOARD_UNSTABLES "TEST DRAKE")
+  endif()
+endif()
+
+message(FATAL_ERROR "stopping here")
+
 # Drake is built, blacklist to collect build info for drake_ros_integration only
+# This way, catkin does not attempt to re-build drake
 if(NOT DASHBOARD_FAILURE)
   set(CTEST_CONFIGURE_COMMAND "catkin config --blacklist drake")
   ctest_configure(BUILD "${DASHBOARD_WORKSPACE}"
@@ -189,10 +213,10 @@ if(NOT DASHBOARD_FAILURE)
   if(NOT DASHBOARD_CONFIGURE_RETURN_VALUE EQUAL 0)
     message("*** CTest Result: FAILURE BECAUSE EXECUTION OF catkin config WAS NOT SUCCESSFUL")
     set(DASHBOARD_FAILURE ON)
+    list(APPEND DASHBOARD_FAILURES "CONFIGURE")
   endif()
 endif()
 
-set(DASHBOARD_PROJECT_NAME "Drake-ROS")
 # switch the dashboard to the drake only dashboard
 set(CTEST_PROJECT_NAME "${DASHBOARD_PROJECT_NAME}")
 set(CTEST_NIGHTLY_START_TIME "${DASHBOARD_NIGHTLY_START_TIME}")
@@ -226,8 +250,19 @@ if(NOT DASHBOARD_FAILURE)
 endif()
 
 
+# Collect a list of all the ROS packages in the workspace
+execute_process(COMMAND catkin list -u
+                WORKING_DIRECTORY ${DASHBOARD_WORKSPACE}
+                RESULT_VARIABLE RUN_RESULT
+                OUTPUT_VARIABLE ROS_PACKAGES
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
+# Replace newlines with ; to turn output into a list
+string(REPLACE "\n" ";" ROS_PACKAGES_LIST "${ROS_PACKAGES}")
+
 # Update ROS Environment after build, equivalent to sourcing devel/setup.bash
-set(ENV{ROS_PACKAGE_PATH} "${DASHBOARD_WORKSPACE}/src/drake:${DASHBOARD_WORKSPACE}/src/drake_ros:$ENV{ROS_PACKAGE_PATH}")
+foreach(PKG ${ROS_PACKAGES_LIST})
+  set(ENV{ROS_PACKAGE_PATH} "${DASHBOARD_WORKSPACE}/src/${PKG}:$ENV{ROS_PACKAGE_PATH}")
+endforeach()
 set(ENV{LD_LIBRARY_PATH} "${DASHBOARD_WORKSPACE}/devel/lib::$ENV{LD_LIBRARY_PATH}")
 set(ENV{ROSLISP_PACKAGE_DIRECTORIES} "${DASHBOARD_WORKSPACE}/devel/share/common-lisp")
 set(ENV{PKG_CONFIG_PATH} "${DASHBOARD_WORKSPACE}/devel/lib/pkgconfig:$ENV{PKG_CONFIG_PATH}")
@@ -236,25 +271,8 @@ set(ENV{CMAKE_PREFIX_PATH} "${DASHBOARD_WORKSPACE}/devel:$ENV{CMAKE_PREFIX_PATH}
 set(DASHBOARD_UNSTABLE OFF)
 set(DASHBOARD_UNSTABLES "")
 
-# Run tests for Drake Proper
+# Run tests for ROS Packages
 if(NOT DASHBOARD_FAILURE)
-  ctest_test(BUILD "${DASHBOARD_WORKSPACE}/build/drake/drake" ${CTEST_TEST_ARGS}
-    RETURN_VALUE DASHBOARD_TEST_RETURN_VALUE QUIET APPEND)
-  ctest_submit(PARTS Test)
-  if(NOT DASHBOARD_TEST_RETURN_VALUE EQUAL 0)
-    set(DASHBOARD_UNSTABLE ON)
-    list(APPEND DASHBOARD_UNSTABLES "TEST DRAKE")
-  endif()
-
-  # Run tests on every ROS Package in the workspace
-  execute_process(COMMAND catkin list -u
-                  WORKING_DIRECTORY ${DASHBOARD_WORKSPACE}
-                  RESULT_VARIABLE RUN_RESULT
-                  OUTPUT_VARIABLE ROS_PACKAGES
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-  # Replace newlines with ; to turn output into a list
-  string(REPLACE "\n" ";" ROS_PACKAGES_LIST "${ROS_PACKAGES}")
-
   # Loop through all detected packages and run tests
   foreach(PKG ${ROS_PACKAGES_LIST})
     if (NOT ${PKG} STREQUAL "drake")
@@ -292,6 +310,13 @@ else()
 endif()
 
 if(NOT DASHBOARD_SUPERBUILD_FAILURE AND DASHBOARD_LABEL)
+  set(DASHBOARD_CDASH_DRAKE_URL_MESSAGE
+    "*** CDash Drake URL: https://${DASHBOARD_CDASH_SERVER}/index.php?project=${DASHBOARD_DRAKE_PROJECT_NAME}&showfilters=1&filtercount=2&showfilters=1&filtercombine=and&field1=label&compare1=61&value1=${DASHBOARD_LABEL}&field2=buildstarttime&compare2=84&value2=now")
+else()
+  set(DASHBOARD_CDASH_DRAKE_URL_MESSAGE "*** CDash Drake URL:")
+endif()
+
+if(NOT DASHBOARD_SUPERBUILD_FAILURE AND DASHBOARD_LABEL)
   set(DASHBOARD_CDASH_URL_MESSAGE
     "*** CDash URL: https://${DASHBOARD_CDASH_SERVER}/index.php?project=${DASHBOARD_PROJECT_NAME}&showfilters=1&filtercount=2&showfilters=1&filtercombine=and&field1=label&compare1=61&value1=${DASHBOARD_LABEL}&field2=buildstarttime&compare2=84&value2=now")
 else()
@@ -303,6 +328,8 @@ message("
   ${DASHBOARD_MESSAGE}
   ------------------------------------------------------------------------------
   ${DASHBOARD_CDASH_SUPERBUILD_URL_MESSAGE}
+  ------------------------------------------------------------------------------
+  ${DASHBOARD_CDASH_DRAKE_URL_MESSAGE}
   ------------------------------------------------------------------------------
   ${DASHBOARD_CDASH_URL_MESSAGE}
   ------------------------------------------------------------------------------
