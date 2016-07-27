@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 export PATH="/usr/local/bin:${PATH}"
 git clone --quiet --single-branch git@github.com:RobotLocomotion/RobotLocomotion.github.io.git "${WORKSPACE}/gh-pages"
-rsync --archive --delete --exclude=.git --exclude=.gitignore --exclude=LICENSE --exclude=README --quiet "${WORKSPACE}/build/share/doc/" "${WORKSPACE}/gh-pages/"
+rsync --archive --delete --exclude=.git --exclude=.gitignore --exclude=LICENSE --exclude=README --quiet "${WORKSPACE}/install/share/doc/" "${WORKSPACE}/gh-pages/"
 cd "${WORKSPACE}/gh-pages"
 git add --all
 if git diff-index --quiet HEAD; then
