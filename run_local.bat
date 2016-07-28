@@ -8,7 +8,8 @@ REM 3. Run this script.
 SET compiler=msvc-ninja-64
 SET debug=false
 SET matlab=false
-SET openSource=false
+SET minimal=false
+SET openSource=true
 SET track=experimental
 
 SET BUILD_ID=0

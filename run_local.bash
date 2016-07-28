@@ -12,7 +12,8 @@ export coverage=false
 export debug=false
 export documentation=false
 export matlab=false
-export openSource=false
+export minimal=false
+export openSource=true
 export ros=false
 export track=experimental
 
