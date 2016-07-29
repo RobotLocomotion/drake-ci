@@ -13,7 +13,7 @@ SET openSource=true
 SET track=experimental
 
 SET BUILD_ID=0
-SET JOB_NAME=windows-experimental
+SET JOB_NAME=windows-%compiler%-experimental
 SET NODE_NAME=%COMPUTERNAME%
 SET WORKSPACE=%HOMEPATH%\workspace\windows-experimental
 
