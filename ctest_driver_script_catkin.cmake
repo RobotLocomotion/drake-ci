@@ -4,6 +4,8 @@ if(NOT DEFINED ENV{compiler})
   set(ENV{compiler} "gcc")
 endif()
 
+set(DEBUG $ENV{debug})
+
 if("$ENV{compiler}" MATCHES "clang")
   set(ENV{CC} "clang")
   set(ENV{CXX} "clang++")
@@ -49,6 +51,16 @@ if(DEFINED buildname)
 else()
   set(CTEST_BUILD_NAME "drake-catkin-ros")
   message(WARNING "*** CTEST_BUILD_NAME was not set, defaulting to ${CTEST_BUILD_NAME}")
+endif()
+
+set(DASHBOARD_CONFIGURATION_TYPE "Release")
+set(DASHBOARD_TEST_TIMEOUT 500)
+if(DEBUG)
+  set(DASHBOARD_CONFIGURATION_TYPE "Debug")
+endif()
+
+if(DASHBOARD_CONFIGURATION_TYPE STREQUAL "Debug")
+  set(DASHBOARD_TEST_TIMEOUT 1500)
 endif()
 
 set(DASHBOARD_CDASH_SERVER "drake-cdash.csail.mit.edu")
@@ -159,7 +171,7 @@ if(NOT DASHBOARD_FAILURE)
 endif()
 
 if(NOT DASHBOARD_FAILURE)
-  set(CTEST_CONFIGURE_COMMAND "catkin config -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCATKIN_ENABLE_TESTING=True")
+  set(CTEST_CONFIGURE_COMMAND "catkin config -DCMAKE_BUILD_TYPE=${DASHBOARD_CONFIGURATION_TYPE} -DCATKIN_ENABLE_TESTING=True")
   ctest_configure(BUILD "${DASHBOARD_WORKSPACE}"
                   SOURCE "${DASHBOARD_WORKSPACE}"
                   RETURN_VALUE DASHBOARD_CONFIGURE_RETURN_VALUE QUIET)
