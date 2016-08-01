@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# This is a sample UNIX shell script to run ctest_driver_script.cmake locally
-# without Jenkins.
+# This is a sample UNIX shell script to run ctest_driver_script_catkin.cmake
+# locally without Jenkins.
 # 1. Update variables in this script to build you want, including the path to
 #    the cmake executable.
-# 2. Clone drake into $WORKSPACE/src/drake.
+# 2. Clone drake into ${WORKSPACE}/src/drake.
 # 3. Run this script.
 
 export compiler=gcc
