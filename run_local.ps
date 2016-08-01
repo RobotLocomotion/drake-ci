@@ -15,7 +15,7 @@ $env:track = experimental
 $env:BUILD_ID = 0
 $env:JOB_NAME = "windows-$env:compiler-experimental"
 $env:NODE_NAME = "$env:COMPUTERNAME"
-$env:WORKSPACE = "$env:HOMEPATH\workspace\windows-experimental"
+$env:WORKSPACE = "$env:HOMEPATH\workspace\$env:JOB_NAME"
 
 $env:PATH += "C:\Program Files\CMake\bin;C:\Program Files (x86)\CMake\bin"
 

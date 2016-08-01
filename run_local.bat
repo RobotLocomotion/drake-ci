@@ -15,7 +15,7 @@ SET track=experimental
 SET BUILD_ID=0
 SET JOB_NAME=windows-%compiler%-experimental
 SET NODE_NAME=%COMPUTERNAME%
-SET WORKSPACE=%HOMEPATH%\workspace\windows-experimental
+SET WORKSPACE=%HOMEPATH%\workspace\%JOB_NAME%
 
 SET PATH=C:\Program Files\CMake\bin;C:\Program Files (x86)\CMake\bin;%PATH%
 

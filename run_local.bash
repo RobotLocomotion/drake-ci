@@ -20,7 +20,7 @@ export track=experimental
 export BUILD_ID=0
 export JOB_NAME="unix-${compiler}-experimental"
 export NODE_NAME=$(hostname -s)
-export WORKSPACE="${HOME}/workspace/unix-experimental"
+export WORKSPACE="${HOME}/workspace/${JOB_NAME}"
 
 export PATH="/usr/local/bin:${PATH}"
 
