@@ -464,10 +464,16 @@ message("
   ${DASHBOARD_SUPERBUILD_START_MESSAGE}
   ------------------------------------------------------------------------------
   ")
-if(NOT DASHBOARD_FAILURE)
-  ctest_start("${DASHBOARD_MODEL}" TRACK "${DASHBOARD_TRACK}" QUIET)
-  ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}" QUIET)
-endif()
+
+ctest_start("${DASHBOARD_MODEL}" TRACK "${DASHBOARD_TRACK}" QUIET)
+ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}" QUIET)
+ctest_submit(PARTS Update QUIET)
+
+set(DASHBOARD_BUILD_URL_FILE
+  "${CTEST_BINARY_DIRECTORY}/${CTEST_BUILD_NAME}.url")
+file(WRITE "${DASHBOARD_BUILD_URL_FILE}" "$ENV{BUILD_URL}")
+ctest_upload(FILES "${DASHBOARD_BUILD_URL_FILE}" QUIET)
+ctest_submit(PARTS Upload QUIET)
 
 if(NOT DASHBOARD_FAILURE)
   set(CTEST_CONFIGURE_COMMAND "cmake -E create_symlink ${DASHBOARD_WORKSPACE}/src/drake/ros ${DASHBOARD_WORKSPACE}/src/drake_ros_integration")
@@ -511,7 +517,7 @@ if(NOT DASHBOARD_FAILURE)
   ctest_build(BUILD "${DASHBOARD_WORKSPACE}" APPEND
     RETURN_VALUE DASHBOARD_BUILD_RETURN_VALUE
     NUMBER_ERRORS DASHBOARD_NUMBER_BUILD_ERRORS QUIET)
-  ctest_submit(PARTS Build)
+  ctest_submit(PARTS Build QUIET)
 
   # ERROR detection doesn't work correctly with catkin... use error code instead
   if(NOT DASHBOARD_BUILD_RETURN_VALUE EQUAL 0)
@@ -541,9 +547,18 @@ if(NOT DASHBOARD_FAILURE)
   set(CTEST_DROP_LOCATION "/submit.php?project=${DASHBOARD_DRAKE_PROJECT_NAME}")
   set(CTEST_DROP_SITE_CDASH ON)
 
+  ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}" QUIET)
+  ctest_submit(PARTS Update QUIET)
+
+  set(DASHBOARD_BUILD_URL_FILE
+    "${CTEST_BINARY_DIRECTORY}/${CTEST_BUILD_NAME}.url")
+  file(WRITE "${DASHBOARD_BUILD_URL_FILE}" "$ENV{BUILD_URL}")
+  ctest_upload(FILES "${DASHBOARD_BUILD_URL_FILE}" QUIET)
+  ctest_submit(PARTS Upload QUIET)
+
   ctest_test(BUILD "${DASHBOARD_WORKSPACE}/build/drake/drake" ${CTEST_TEST_ARGS}
     RETURN_VALUE DASHBOARD_TEST_RETURN_VALUE QUIET APPEND)
-  ctest_submit(PARTS Test)
+  ctest_submit(PARTS Test QUIET)
   if(NOT DASHBOARD_TEST_RETURN_VALUE EQUAL 0)
     set(DASHBOARD_UNSTABLE ON)
     list(APPEND DASHBOARD_UNSTABLES "TEST DRAKE")
@@ -573,11 +588,20 @@ set(CTEST_DROP_LOCATION "/submit.php?project=${DASHBOARD_PROJECT_NAME}")
 set(CTEST_DROP_SITE_CDASH ON)
 
 if(NOT DASHBOARD_FAILURE)
+  ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}" QUIET)
+  ctest_submit(PARTS Update QUIET)
+
+  set(DASHBOARD_BUILD_URL_FILE
+    "${CTEST_BINARY_DIRECTORY}/${CTEST_BUILD_NAME}.url")
+  file(WRITE "${DASHBOARD_BUILD_URL_FILE}" "$ENV{BUILD_URL}")
+  ctest_upload(FILES "${DASHBOARD_BUILD_URL_FILE}" QUIET)
+  ctest_submit(PARTS Upload QUIET)
+
   set(CTEST_BUILD_COMMAND "catkin build --no-status -v -i")
   ctest_build(BUILD "${DASHBOARD_WORKSPACE}" APPEND
     RETURN_VALUE DASHBOARD_BUILD_RETURN_VALUE
     NUMBER_ERRORS DASHBOARD_NUMBER_BUILD_ERRORS QUIET)
-  ctest_submit(PARTS Build)
+  ctest_submit(PARTS Build QUIET)
 
   # ERROR detection doesn't work correctly with catkin... use error code instead
   if(NOT DASHBOARD_BUILD_RETURN_VALUE EQUAL 0)
@@ -628,7 +652,7 @@ if(NOT DASHBOARD_FAILURE)
         set(DASHBOARD_UNSTABLE ON)
         list(APPEND DASHBOARD_UNSTABLES "TEST ${PKG}")
       endif()
-      ctest_submit(PARTS Test)
+      ctest_submit(PARTS Test QUIET)
     endif()
   endforeach()
   if(DASHBOARD_COVERAGE)
@@ -637,7 +661,7 @@ if(NOT DASHBOARD_FAILURE)
       set(DASHBOARD_UNSTABLE ON)
       list(APPEND DASHBOARD_UNSTABLES "COVERAGE TOOL")
     endif()
-    ctest_submit(PARTS Coverage)
+    ctest_submit(PARTS Coverage QUIET)
   endif()
 endif()
 
