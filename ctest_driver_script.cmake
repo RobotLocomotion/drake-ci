@@ -808,6 +808,7 @@ else()
   endif()
 
   if(MEMCHECK MATCHES "^[amt]san$")
+    set(DASHBOARD_WITH_DIRECTOR OFF)
     set(DASHBOARD_WITH_LIBBOT OFF)
   endif()
 endif()
