@@ -31,6 +31,10 @@ endif()
 
 file(TO_CMAKE_PATH "$ENV{WORKSPACE}" DASHBOARD_WORKSPACE)
 
+if(NOT TRACK)
+  set(TRACK "experimental")
+endif()
+
 # set site and build name
 if(DEFINED site)
   string(REGEX REPLACE "(.*) (.*)" "\\1" DASHBOARD_SITE "${site}")
@@ -41,6 +45,13 @@ endif()
 
 if(DEFINED buildname)
   set(CTEST_BUILD_NAME "${buildname}")
+  if(TRACK STREQUAL "experimental")
+    if(DEBUG)
+      set(CTEST_BUILD_NAME "${CTEST_BUILD_NAME}-debug")
+    else()
+      set(CTEST_BUILD_NAME "${CTEST_BUILD_NAME}-release")
+    endif()
+  endif()
   if(DEFINED ENV{ghprbPullId})
     set(CTEST_BUILD_NAME "${CTEST_BUILD_NAME}-$ENV{ghprbPullId}")
   endif()

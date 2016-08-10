@@ -48,6 +48,10 @@ endif()
 
 file(TO_CMAKE_PATH "$ENV{WORKSPACE}" DASHBOARD_WORKSPACE)
 
+if(NOT TRACK)
+  set(TRACK "experimental")
+endif()
+
 # set site and build name
 if(DEFINED site)
   if(APPLE)
@@ -64,6 +68,13 @@ endif()
 
 if(DEFINED buildname)
   set(CTEST_BUILD_NAME "${buildname}")
+  if(TRACK STREQUAL "experimental")
+    if(DEBUG)
+      set(CTEST_BUILD_NAME "${CTEST_BUILD_NAME}-debug")
+    else()
+      set(CTEST_BUILD_NAME "${CTEST_BUILD_NAME}-release")
+    endif()
+  endif()
 else()
   message(WARNING "*** CTEST_BUILD_NAME was not set")
 endif()
