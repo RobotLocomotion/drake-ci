@@ -795,11 +795,7 @@ else()
       if(NOT OPEN_SOURCE)
         set(DASHBOARD_WITH_BERTINI ON)
         set(DASHBOARD_WITH_GLOPTIPOLY ON)
-        # TODO(jwnimmer-tri) Temporarily disable IRIS on PRs;
-        # it is broken due to FTP server outage.
-        if(NOT DEFINED ENV{ghprbPullId})
-          set(DASHBOARD_WITH_IRIS ON)
-        endif()
+        set(DASHBOARD_WITH_IRIS ON)
         set(DASHBOARD_WITH_SEDUMI ON)
       endif()
     endif()
