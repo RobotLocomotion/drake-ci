@@ -36,65 +36,7 @@ set(DASHBOARD_TEMPORARY_FILES "")
 
 include(${DASHBOARD_DRIVER_DIR}/functions.cmake)
 
-set(COVERAGE $ENV{coverage})
-set(DEBUG $ENV{debug})
-set(DOCUMENTATION $ENV{documentation})
-set(MATLAB $ENV{matlab})
-set(MEMCHECK $ENV{memcheck})
-set(MINIMAL $ENV{minimal})
-set(OPEN_SOURCE $ENV{openSource})
-set(ROS $ENV{ros})
-set(TRACK $ENV{track})
-
-if(NOT DEFINED ENV{WORKSPACE})
-  fatal("ENV{WORKSPACE} was not set")
-endif()
-
-file(TO_CMAKE_PATH "$ENV{WORKSPACE}" DASHBOARD_WORKSPACE)
-
-if(NOT TRACK)
-  set(TRACK "experimental")
-endif()
-
-# set site and build name
-if(DEFINED site)
-  if(APPLE)
-    string(REGEX REPLACE "(.*)_(.*)" "\\1" DASHBOARD_SITE "${site}")
-  elseif(NOT WIN32)
-    string(REGEX REPLACE "(.*) (.*)" "\\1" DASHBOARD_SITE "${site}")
-  else()
-    set(DASHBOARD_SITE "${site}")
-  endif()
-  set(CTEST_SITE "${DASHBOARD_SITE}")
-else()
-  message(WARNING "*** CTEST_SITE was not set")
-endif()
-
-if(DEFINED buildname)
-  set(CTEST_BUILD_NAME "${buildname}")
-  if(TRACK STREQUAL "experimental")
-    if(DEBUG)
-      set(CTEST_BUILD_NAME "${CTEST_BUILD_NAME}-debug")
-    else()
-      set(CTEST_BUILD_NAME "${CTEST_BUILD_NAME}-release")
-    endif()
-  endif()
-else()
-  message(WARNING "*** CTEST_BUILD_NAME was not set")
-endif()
-
-include(ProcessorCount)
-ProcessorCount(DASHBOARD_PROCESSOR_COUNT)
-
-set(CTEST_TEST_ARGS "")
-
-if(DASHBOARD_PROCESSOR_COUNT EQUAL 0)
-  message(WARNING "*** CTEST_TEST_ARGS PARALLEL_LEVEL was not set")
-else()
-  set(CTEST_TEST_ARGS ${CTEST_TEST_ARGS}
-    PARALLEL_LEVEL ${DASHBOARD_PROCESSOR_COUNT})
-endif()
-
+# Set default compiler (if not specified) or copy from environment
 if(NOT DEFINED ENV{compiler})
   message(WARNING "*** ENV{compiler} was not set")
   if(WIN32)
@@ -106,6 +48,49 @@ if(NOT DEFINED ENV{compiler})
   endif()
 else()
   set(COMPILER $ENV{compiler})
+endif()
+
+# Copy remaining configuration from environment
+set(COVERAGE $ENV{coverage})
+set(DEBUG $ENV{debug})
+set(DOCUMENTATION $ENV{documentation})
+set(MATLAB $ENV{matlab})
+set(MEMCHECK $ENV{memcheck})
+set(MINIMAL $ENV{minimal})
+set(OPEN_SOURCE $ENV{openSource})
+set(ROS $ENV{ros})
+set(TRACK $ENV{track})
+
+# Verify workspace location and convert to CMake path
+if(NOT DEFINED ENV{WORKSPACE})
+  fatal("ENV{WORKSPACE} was not set")
+endif()
+
+file(TO_CMAKE_PATH "$ENV{WORKSPACE}" DASHBOARD_WORKSPACE)
+
+# Set initial configuration
+set(CTEST_TEST_ARGS "")
+
+set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_WORKSPACE}")
+set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/build")
+set(DASHBOARD_INSTALL_PREFIX "${CTEST_BINARY_DIRECTORY}/install")
+
+set(CTEST_GIT_COMMAND "git")
+set(CTEST_UPDATE_COMMAND "${CTEST_GIT_COMMAND}")
+set(CTEST_UPDATE_VERSION_ONLY ON)
+
+# Set up the site and build information
+include(${DASHBOARD_DRIVER_DIR}/site.cmake)
+
+# Set up compiler
+include(ProcessorCount)
+ProcessorCount(DASHBOARD_PROCESSOR_COUNT)
+
+if(DASHBOARD_PROCESSOR_COUNT EQUAL 0)
+  message(WARNING "*** CTEST_TEST_ARGS PARALLEL_LEVEL was not set")
+else()
+  set(CTEST_TEST_ARGS ${CTEST_TEST_ARGS}
+    PARALLEL_LEVEL ${DASHBOARD_PROCESSOR_COUNT})
 endif()
 
 if(WIN32)
@@ -175,10 +160,6 @@ elseif(COMPILER STREQUAL "msvc-64")
   set(CTEST_CMAKE_GENERATOR "Visual Studio 14 2015 Win64")
   set(ENV{CMAKE_FLAGS} "-G \"Visual Studio 14 2015 Win64\"")  # HACK
 endif()
-
-set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_WORKSPACE}")
-set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/build")
-set(DASHBOARD_INSTALL_PREFIX "${CTEST_BINARY_DIRECTORY}/install")
 
 if(WIN32)
   if(COMPILER MATCHES "ninja")
@@ -280,10 +261,6 @@ if(ROS AND EXISTS "/opt/ros/indigo/setup.bash")
   set(ENV{ROS_HOME} "$ENV{WORKSPACE}")
 endif()
 
-set(CTEST_GIT_COMMAND "git")
-set(CTEST_UPDATE_COMMAND "${CTEST_GIT_COMMAND}")
-set(CTEST_UPDATE_VERSION_ONLY ON)
-
 if(NOT MINIMAL AND NOT OPEN_SOURCE AND NOT COMPILER STREQUAL "cpplint")
   include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
 endif()
@@ -291,17 +268,6 @@ endif()
 # clean out the old builds
 file(REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
 file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
-
-# set model and track for submission
-set(DASHBOARD_MODEL "Experimental")
-if(TRACK STREQUAL "continuous")
-  set(DASHBOARD_TRACK "Continuous")
-elseif(TRACK STREQUAL "nightly")
-  set(DASHBOARD_MODEL "Nightly")
-  set(DASHBOARD_TRACK "Nightly")
-else()
-  set(DASHBOARD_TRACK "Experimental")
-endif()
 
 set(DASHBOARD_CONFIGURE_AND_BUILD_SUPERBUILD ON)
 set(DASHBOARD_CONFIGURE ON)
@@ -513,29 +479,6 @@ if(COMPILER STREQUAL "msvc-ninja-32" AND DEBUG)
 endif()
 
 include(${DASHBOARD_DRIVER_DIR}/configurations/packages.cmake)
-
-if(DEFINED ENV{BUILD_ID})
-  set(DASHBOARD_LABEL "jenkins-${CTEST_BUILD_NAME}-$ENV{BUILD_ID}")
-  set_property(GLOBAL PROPERTY Label "${DASHBOARD_LABEL}")
-else()
-  message(WARNING "*** ENV{BUILD_ID} was not set")
-  set(DASHBOARD_LABEL "")
-endif()
-
-# set pull request id
-if(DEFINED ENV{ghprbPullId})
-  set(CTEST_CHANGE_ID "$ENV{ghprbPullId}")
-  set(DASHBOARD_CHANGE_TITLE "$ENV{ghprbPullTitle}")
-  string(LENGTH "${DASHBOARD_CHANGE_TITLE}" DASHBOARD_CHANGE_TITLE_LENGTH)
-  if(DASHBOARD_CHANGE_TITLE_LENGTH GREATER 30)
-    string(SUBSTRING "${DASHBOARD_CHANGE_TITLE}" 0 27
-      DASHBOARD_CHANGE_TITLE_SUBSTRING)
-    set(DASHBOARD_CHANGE_TITLE "${DASHBOARD_CHANGE_TITLE_SUBSTRING}...")
-  endif()
-  set(DASHBOARD_BUILD_DESCRIPTION
-    "*** Build Description: <a title=\"$ENV{ghprbPullTitle}\" href=\"$ENV{ghprbPullLink}\">PR ${CTEST_CHANGE_ID}</a>: ${DASHBOARD_CHANGE_TITLE}")
-  message("${DASHBOARD_BUILD_DESCRIPTION}")
-endif()
 
 set(DASHBOARD_APPLE OFF)
 set(DASHBOARD_UNIX OFF)
