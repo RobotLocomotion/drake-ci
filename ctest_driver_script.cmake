@@ -32,6 +32,7 @@
 cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
 
 set(DASHBOARD_DRIVER_DIR ${CMAKE_CURRENT_LIST_DIR}/driver)
+set(DASHBOARD_TEMPORARY_FILES "")
 
 include(${DASHBOARD_DRIVER_DIR}/functions.cmake)
 
@@ -551,25 +552,10 @@ endif()
 
 include(${DASHBOARD_DRIVER_DIR}/configurations/generic.cmake)
 
-if(EXISTS "${DASHBOARD_GIT_SSH_FILE}")
-  file(REMOVE "${DASHBOARD_GIT_SSH_FILE}")
-endif()
-if(EXISTS "${DASHBOARD_SSH_IDENTITY_FILE}")
-  if(WIN32)
-    file(REMOVE "${DASHBOARD_SSH_IDENTITY_FILE}")
-  else()
-    execute_process(COMMAND chmod 0600 "${DASHBOARD_SSH_IDENTITY_FILE}"
-      RESULT_VARIABLE DASHBOARD_CHMOD_RESULT_VARIABLE
-      OUTPUT_VARIABLE DASHBOARD_CHMOD_OUTPUT_VARIABLE
-      ERROR_VARIABLE DASHBOARD_CHMOD_OUTPUT_VARIABLE)
-    if(DASHBOARD_CHMOD_RESULT_VARIABLE EQUAL 0)
-      message("${DASHBOARD_CHMOD_OUTPUT_VARIABLE}")
-      file(REMOVE "${DASHBOARD_SSH_IDENTITY_FILE}")
-    else()
-      message(WARNING "*** Setting permissions on identity file was not successful")
-    endif()
-  endif()
-endif()
+# Remove any temporary files that we created
+foreach(_file ${DASHBOARD_TEMPORARY_FILES})
+  file(REMOVE ${${_file}})
+endforeach()
 
 # Report any failures and set return value
 if(DASHBOARD_FAILURE)
