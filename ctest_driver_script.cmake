@@ -31,6 +31,10 @@
 
 cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
 
+set(DASHBOARD_DRIVER_DIR ${CMAKE_CURRENT_LIST_DIR}/driver)
+
+include(${DASHBOARD_DRIVER_DIR}/functions.cmake)
+
 set(COVERAGE $ENV{coverage})
 set(DEBUG $ENV{debug})
 set(DOCUMENTATION $ENV{documentation})
@@ -42,8 +46,7 @@ set(ROS $ENV{ros})
 set(TRACK $ENV{track})
 
 if(NOT DEFINED ENV{WORKSPACE})
-  message(FATAL_ERROR
-    "*** CTest Result: FAILURE BECAUSE ENV{WORKSPACE} WAS NOT SET")
+  fatal("ENV{WORKSPACE} was not set")
 endif()
 
 file(TO_CMAKE_PATH "$ENV{WORKSPACE}" DASHBOARD_WORKSPACE)
@@ -161,9 +164,7 @@ elseif(COMPILER MATCHES "^scan-build")
   find_program(DASHBOARD_CXX_ANALYZER_COMMAND NAMES "c++-analyzer"
     PATHS "/usr/local/libexec" "/usr/libexec")
   if(NOT DASHBOARD_CCC_ANALYZER_COMMAND OR NOT DASHBOARD_CXX_ANALYZER_COMMAND)
-    file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
-    message(FATAL_ERROR
-      "*** CTest Result: FAILURE BECAUSE SCAN-BUILD WAS NOT FOUND")
+    fatal("scan-build was not found")
   endif()
   set(ENV{CC} "${DASHBOARD_CCC_ANALYZER_COMMAND}")
   set(ENV{CXX} "${DASHBOARD_CXX_ANALYZER_COMMAND}")
@@ -191,9 +192,7 @@ if(WIN32)
     list(GET DASHBOARD_DOWNLOAD_NINJA_STATUS 0
       DASHBOARD_DOWNLOAD_NINJA_RESULT_VARIABLE)
     if(NOT DASHBOARD_DOWNLOAD_NINJA_RESULT_VARIABLE EQUAL 0)
-      file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
-      message(FATAL_ERROR
-        "*** CTest Result: FAILURE BECAUSE NINJA DOWNLOAD WAS NOT SUCCESSFUL")
+      fatal("Ninja download was not successful")
     endif()
     message("Extracting Ninja for Windows...")
     execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf
@@ -204,9 +203,7 @@ if(WIN32)
       ERROR_VARIABLE DASHBOARD_NINJA_UNZIP_OUTPUT_VARIABLE)
     message("${DASHBOARD_NINJA_UNZIP_OUTPUT_VARIABLE}")
     if(NOT DASHBOARD_NINJA_UNZIP_RESULT_VARIABLE EQUAL 0)
-      file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
-      message(FATAL_ERROR
-        "*** CTest Result: FAILURE BECAUSE EXTRACTING NINJA FOR WINDOWS WAS NOT SUCCESSFUL")
+      fatal("extracting Ninja for Windows was not successful")
     endif()
   endif()
   message(STATUS "Downloading pkg-config for Windows...")
@@ -218,9 +215,7 @@ if(WIN32)
   list(GET DASHBOARD_DOWNLOAD_PKG_CONFIG_STATUS 0
     DASHBOARD_DOWNLOAD_PKG_CONFIG_RESULT_VARIABLE)
   if(NOT DASHBOARD_DOWNLOAD_PKG_CONFIG_RESULT_VARIABLE EQUAL 0)
-    file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
-    message(FATAL_ERROR
-      "*** CTest Result: FAILURE BECAUSE PKG-CONFIG DOWNLOAD WAS NOT SUCCESSFUL")
+    fatal("pkg-config download was not successful")
   endif()
   set(PATH
     "${DASHBOARD_WORKSPACE}"
@@ -250,9 +245,7 @@ if(MATLAB)
       ERROR_VARIABLE DASHBOARD_MEX_C_OUTPUT_VARIABLE)
     message("${DASHBOARD_MEX_C_OUTPUT_VARIABLE}")
     if(NOT DASHBOARD_MEX_C_RESULT_VARIABLE EQUAL 0)
-      file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
-      message(FATAL_ERROR
-        "*** CTest Result: FAILURE BECAUSE SETTING DEFAULT C COMPILER FOR MEX WAS NOT SUCCESSFUL")
+      fatal("setting default C compiler for mex was not successful")
     endif()
     message(STATUS "Setting default C++ compiler for MEX...")
     execute_process(COMMAND mex -setup c++
@@ -261,9 +254,7 @@ if(MATLAB)
       ERROR_VARIABLE DASHBOARD_MEX_CXX_OUTPUT_VARIABLE)
     message("${DASHBOARD_MEX_CXX_OUTPUT_VARIABLE}")
     if(NOT DASHBOARD_MEX_CXX_RESULT_VARIABLE EQUAL 0)
-      file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
-      message(FATAL_ERROR
-        "*** CTest Result: FAILURE BECAUSE SETTING DEFAULT C++ COMPILER FOR MEX WAS NOT SUCCESSFUL")
+      fatal("setting default C++ compiler for mex was not successful")
     endif()
   elseif(APPLE)
     set(ENV{PATH} "/Applications/MATLAB_R2015b.app/bin:/Applications/MATLAB_R2015b.app/runtime/maci64:$ENV{PATH}")
@@ -304,18 +295,15 @@ if(NOT MINIMAL AND NOT OPEN_SOURCE AND NOT COMPILER STREQUAL "cpplint")
       OUTPUT_VARIABLE DASHBOARD_MKTEMP_OUTPUT_VARIABLE
       ERROR_VARIABLE DASHBOARD_MKTEMP_ERROR_VARIABLE)
     if(NOT DASHBOARD_MKTEMP_RESULT_VARIABLE EQUAL 0)
-      message("${DASHBOARD_MKTEMP_OUTPUT_VARIABLE}")
-      message("${DASHBOARD_MKTEMP_ERROR_VARIABLE}")
-      file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
-      message(FATAL_ERROR
-        "*** CTest Result: FAILURE BECAUSE CREATION OF TEMPORARY IDENTITY FILE WAS NOT SUCCESSFUL")
+      fatal("creation of temporary identity file was not successful"
+        DASHBOARD_MKTEMP_OUTPUT_VARIABLE
+        DASHBOARD_MKTEMP_ERROR_VARIABLE)
     endif()
     set(DASHBOARD_SSH_IDENTITY_FILE "${DASHBOARD_MKTEMP_OUTPUT_VARIABLE}")
   endif()
   find_program(DASHBOARD_AWS_COMMAND NAMES "aws")
   if(NOT DASHBOARD_AWS_COMMAND)
-    file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
-    message(FATAL_ERROR "*** CTest Result: FAILURE BECAUSE AWS WAS NOT FOUND")
+    fatal("aws was not found")
   endif()
   message(STATUS "Downloading identity file from AWS S3...")
   execute_process(COMMAND ${DASHBOARD_AWS_COMMAND} s3 cp s3://drake-provisioning/id_rsa "${DASHBOARD_SSH_IDENTITY_FILE}"
@@ -324,15 +312,11 @@ if(NOT MINIMAL AND NOT OPEN_SOURCE AND NOT COMPILER STREQUAL "cpplint")
     ERROR_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE)
   message("${DASHBOARD_AWS_S3_OUTPUT_VARIABLE}")
   if(NOT DASHBOARD_AWS_S3_RESULT_VARIABLE EQUAL 0)
-    file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
-    message(FATAL_ERROR
-      "*** CTest Result: FAILURE BECAUSE DOWNLOAD OF IDENTITY FILE FROM AWS S3 WAS NOT SUCCESSFUL")
+    fatal("download of identity file from AWS S3 was not successful")
   endif()
   file(SHA1 "${DASHBOARD_SSH_IDENTITY_FILE}" DASHBOARD_SSH_IDENTITY_FILE_SHA1)
   if(NOT DASHBOARD_SSH_IDENTITY_FILE_SHA1 STREQUAL "8de7f79df9eb18344cf0e030d2ae3b658d81263b")
-    file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
-    message(FATAL_ERROR
-      "*** CTest Result: FAILURE BECAUSE SHA1 OF IDENTITY FILE WAS NOT CORRECT")
+    fatal("SHA1 of identity file was not correct")
   endif()
   if(WIN32)
     set(DASHBOARD_GIT_SSH_FILE "C:\\Windows\\Temp\\git_ssh_$ENV{RANDOM}.bat")
@@ -346,21 +330,17 @@ if(NOT MINIMAL AND NOT OPEN_SOURCE AND NOT COMPILER STREQUAL "cpplint")
       OUTPUT_VARIABLE DASHBOARD_CHMOD_OUTPUT_VARIABLE
       ERROR_VARIABLE DASHBOARD_CHMOD_OUTPUT_VARIABLE)
     if(NOT DASHBOARD_CHMOD_RESULT_VARIABLE EQUAL 0)
-      message("${DASHBOARD_CHMOD_OUTPUT_VARIABLE}")
-      file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
-      message(FATAL_ERROR
-        "*** CTest Result: FAILURE BECAUSE SETTING PERMISSIONS ON IDENTITY FILE WAS NOT SUCCESSFUL")
+      fatal("setting permissions on identity file was not successful"
+        DASHBOARD_CHMOD_OUTPUT_VARIABLE)
     endif()
     execute_process(COMMAND mktemp -q /tmp/git_ssh_XXXXXXXX
       RESULT_VARIABLE DASHBOARD_MKTEMP_RESULT_VARIABLE
       OUTPUT_VARIABLE DASHBOARD_MKTEMP_OUTPUT_VARIABLE
       ERROR_VARIABLE DASHBOARD_MKTEMP_ERROR_VARIABLE)
     if(NOT DASHBOARD_MKTEMP_RESULT_VARIABLE EQUAL 0)
-      message("${DASHBOARD_MKTEMP_OUTPUT_VARIABLE}")
-      message("${DASHBOARD_MKTEMP_ERROR_VARIABLE}")
-      file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
-      message(FATAL_ERROR
-        "*** CTest Result: FAILURE BECAUSE CREATION OF TEMPORARY GIT_SSH FILE WAS NOT SUCCESSFUL")
+      fatal("creation of temporary git_ssh file was not successful"
+        DASHBOARD_MKTEMP_OUTPUT_VARIABLE
+        DASHBOARD_MKTEMP_ERROR_VARIABLE)
     endif()
     set(DASHBOARD_GIT_SSH_FILE "${DASHBOARD_MKTEMP_OUTPUT_VARIABLE}")
     configure_file("${CMAKE_CURRENT_LIST_DIR}/git_ssh.bash.in" "${DASHBOARD_GIT_SSH_FILE}" @ONLY)
@@ -369,10 +349,8 @@ if(NOT MINIMAL AND NOT OPEN_SOURCE AND NOT COMPILER STREQUAL "cpplint")
       OUTPUT_VARIABLE DASHBOARD_CHMOD_OUTPUT_VARIABLE
       ERROR_VARIABLE DASHBOARD_CHMOD_OUTPUT_VARIABLE)
     if(NOT DASHBOARD_CHMOD_RESULT_VARIABLE EQUAL 0)
-      message("${DASHBOARD_CHMOD_OUTPUT_VARIABLE}")
-      file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
-      message(FATAL_ERROR
-        "*** CTest Result: FAILURE BECAUSE SETTING PERMISSIONS ON GIT_SSH FILE WAS NOT SUCCESSFUL")
+      fatal("setting permissions on git_ssh file was not successful"
+        DASHBOARD_CHMOD_OUTPUT_VARIABLE)
     endif()
   endif()
   set(ENV{GIT_SSH} "${DASHBOARD_GIT_SSH_FILE}")
@@ -433,9 +411,7 @@ if(COMPILER MATCHES "^include-what-you-use")
   find_program(DASHBOARD_INCLUDE_WHAT_YOU_USE_COMMAND
     NAMES "include-what-you-use")
   if(NOT DASHBOARD_INCLUDE_WHAT_YOU_USE_COMMAND)
-    file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
-    message(FATAL_ERROR
-      "*** CTest Result: FAILURE BECAUSE INCLUDE-WHAT-YOU-USE WAS NOT FOUND")
+    fatal("include-what-you-use was not found")
   endif()
   set(DASHBOARD_INCLUDE_WHAT_YOU_USE
     "${DASHBOARD_INCLUDE_WHAT_YOU_USE_COMMAND}" "-Xiwyu" "--mapping_file=${DASHBOARD_WORKSPACE}/drake/include-what-you-use.imp")
@@ -483,10 +459,8 @@ if(COVERAGE)
     if(APPLE)
       find_program(DASHBOARD_XCRUN_COMMAND NAMES "xcrun")
       if(NOT DASHBOARD_XCRUN_COMMAND)
-        file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
-        message(FATAL_ERROR
-          "*** CTest Result: FAILURE BECAUSE XCRUN WAS NOT FOUND")
-	  endif()
+        fatal("xcrun was not found")
+      endif()
       execute_process(COMMAND "${DASHBOARD_XCRUN_COMMAND}" -f llvm-cov
         RESULT_VARIABLE DASHBOARD_XCRUN_RESULT_VARIABLE
         OUTPUT_VARIABLE DASHBOARD_XCRUN_OUTPUT_VARIABLE
@@ -502,22 +476,16 @@ if(COVERAGE)
       find_program(DASHBOARD_COVERAGE_COMMAND NAMES "llvm-cov")
     endif()
     if(NOT DASHBOARD_COVERAGE_COMMAND)
-      file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
-      message(FATAL_ERROR
-        "*** CTest Result: FAILURE BECAUSE LLVM-COV WAS NOT FOUND")
+      fatal("llvm-cov was not found")
     endif()
     set(DASHBOARD_COVERAGE_EXTRA_FLAGS "gcov")
   elseif(COMPILER MATCHES "^gcc")
     find_program(DASHBOARD_COVERAGE_COMMAND NAMES "gcov-4.9")
     if(NOT DASHBOARD_COVERAGE_COMMAND)
-      file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
-      message(FATAL_ERROR
-        "*** CTest Result: FAILURE BECAUSE GCOV-4.9 WAS NOT FOUND")
+      fatal("gcov-4.9 was not found")
     endif()
   else()
-    file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
-    message(FATAL_ERROR
-      "*** CTest Result: FAILURE BECAUSE CTEST_COVERAGE_COMMAND WAS NOT SET")
+    fatal("CTEST_COVERAGE_COMMAND was not set")
   endif()
 
   set(CTEST_COVERAGE_COMMAND "${DASHBOARD_COVERAGE_COMMAND}")
@@ -582,14 +550,10 @@ if(MEMCHECK MATCHES "^([amt]san|valgrind)$")
     set(CTEST_MEMORYCHECK_SUPPRESSIONS_FILE
       "${DASHBOARD_WORKSPACE}/drake/valgrind.supp")
     if(NOT EXISTS "${DASHBOARD_WORKSPACE}/drake/valgrind.supp")
-      file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
-      message(FATAL_ERROR
-        "*** CTest Result: FAILURE BECAUSE CTEST_MEMORYCHECK_SUPPRESSIONS_FILE WAS NOT FOUND")
+      fatal("CTEST_MEMORYCHECK_SUPPRESSIONS_FILE was not found")
     endif()
   else()
-    file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
-    message(FATAL_ERROR
-      "*** CTest Result: FAILURE BECAUSE CTEST_MEMORYCHECK_TYPE WAS NOT SET")
+    fatal("CTEST_MEMORYCHECK_TYPE was not set")
   endif()
   set(CTEST_MEMORYCHECK_TYPE "${DASHBOARD_MEMORYCHECK_TYPE}")
 endif()
@@ -618,7 +582,7 @@ if(COMPILER STREQUAL "msvc-ninja-32" AND DEBUG)
   set(DASHBOARD_NINJA_LINK_POOL_SIZE 2)
 endif()
 
-include(${CMAKE_CURRENT_LIST_DIR}/driver/configurations/packages.cmake)
+include(${DASHBOARD_DRIVER_DIR}/configurations/packages.cmake)
 
 if(DEFINED ENV{BUILD_ID})
   set(DASHBOARD_LABEL "jenkins-${CTEST_BUILD_NAME}-$ENV{BUILD_ID}")
@@ -656,7 +620,7 @@ if(WIN32)
   set(DASHBOARD_WIN32 ON)
 endif()
 
-include(${CMAKE_CURRENT_LIST_DIR}/driver/configurations/generic.cmake)
+include(${DASHBOARD_DRIVER_DIR}/configurations/generic.cmake)
 
 if(EXISTS "${DASHBOARD_GIT_SSH_FILE}")
   file(REMOVE "${DASHBOARD_GIT_SSH_FILE}")
@@ -678,6 +642,7 @@ if(EXISTS "${DASHBOARD_SSH_IDENTITY_FILE}")
   endif()
 endif()
 
+# Report any failures and set return value
 if(DASHBOARD_FAILURE)
   message(FATAL_ERROR
     "*** Return value set to NON-ZERO due to failure during build")
