@@ -37,12 +37,12 @@ chmod("${DASHBOARD_SSH_IDENTITY_FILE}" 0400 "identity file")
 mktemp(DASHBOARD_GIT_SSH_FILE git_ssh_XXXXXXXX "temporary git_ssh file")
 if(WIN32)
   configure_file(
-    "${CMAKE_CURRENT_LIST_DIR}/git_ssh.bat.in"
+    "${DASHBOARD_TOOLS_DIR}/git_ssh.bat.in"
     "${DASHBOARD_GIT_SSH_FILE}"
     @ONLY)
 else()
   configure_file(
-    "${CMAKE_CURRENT_LIST_DIR}/git_ssh.bash.in"
+    "${DASHBOARD_TOOLS_DIR}/git_ssh.bash.in"
     "${DASHBOARD_GIT_SSH_FILE}"
     @ONLY)
   chmod("${DASHBOARD_GIT_SSH_FILE}" 0755 "git_ssh file")
