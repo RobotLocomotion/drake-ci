@@ -600,6 +600,7 @@ else()
   set(DASHBOARD_CDASH_URL_MESSAGE "*** CDash URL:")
 endif()
 
+# Report build result and CDash links
 message("
   ------------------------------------------------------------------------------
   ${DASHBOARD_MESSAGE}
@@ -609,3 +610,8 @@ message("
   ${DASHBOARD_CDASH_URL_MESSAGE}
   ------------------------------------------------------------------------------
   ")
+
+# Touch "warm" file
+if(NOT APPLE AND NOT DASHBOARD_WARM AND NOT COMPILER STREQUAL "cpplint")
+  file(WRITE "${DASHBOARD_WARM_FILE}")
+endif()
