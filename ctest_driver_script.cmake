@@ -509,10 +509,6 @@ foreach(_file ${DASHBOARD_TEMPORARY_FILES})
   file(REMOVE ${${_file}})
 endforeach()
 
-if(NOT APPLE AND NOT DASHBOARD_WARM AND NOT COMPILER STREQUAL "cpplint")
-  file(WRITE "${DASHBOARD_WARM_FILE}")
-endif()
-
 # Report any failures and set return value
 if(DASHBOARD_FAILURE)
   message(FATAL_ERROR
