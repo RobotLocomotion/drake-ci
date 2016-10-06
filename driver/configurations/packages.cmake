@@ -108,7 +108,7 @@ else()
       else()
         message(WARNING "*** GUROBI_DISTRO was not found")
       endif()
-      # enable_package(MOSEK)  # until license is renewed, see #3700.
+      enable_package(MOSEK)
     endif()
 
     if(MATLAB)
