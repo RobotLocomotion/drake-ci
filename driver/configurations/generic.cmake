@@ -99,7 +99,6 @@ message("
   ------------------------------------------------------------------------------
   APPLE                               = ${DASHBOARD_APPLE}
   UNIX                                = ${DASHBOARD_UNIX}
-  WIN32                               = ${DASHBOARD_WIN32}
   ------------------------------------------------------------------------------
   CMAKE_VERSION                       = ${CMAKE_VERSION}
   ------------------------------------------------------------------------------
@@ -143,17 +142,14 @@ message("
   TEST_TIMEOUT_MULTIPLIER             = ${DASHBOARD_TEST_TIMEOUT_MULTIPLIER}
   ------------------------------------------------------------------------------
   WITH_AVL                            = ${DASHBOARD_WITH_AVL}
-  WITH_BERTINI                        = ${DASHBOARD_WITH_BERTINI}
   WITH_BOT_CORE_LCMTYPES              = ${DASHBOARD_WITH_BOT_CORE_LCMTYPES}
   WITH_BULLET                         = ${DASHBOARD_WITH_BULLET}
-  WITH_CMAKE                          = ${DASHBOARD_WITH_CMAKE}
   WITH_DIRECTOR                       = ${DASHBOARD_WITH_DIRECTOR}
   WITH_DRAKE                          = ${DASHBOARD_WITH_DRAKE}
   WITH_DREAL                          = ${DASHBOARD_WITH_DREAL}
   WITH_EIGEN                          = ${DASHBOARD_WITH_EIGEN}
   WITH_FCL                            = ${DASHBOARD_WITH_FCL}
   WITH_GFLAGS                         = ${DASHBOARD_WITH_GFLAGS}
-  WITH_GLOPTIPOLY                     = ${DASHBOARD_WITH_GLOPTIPOLY}
   WITH_GOOGLE_STYLEGUIDE              = ${DASHBOARD_WITH_GOOGLE_STYLEGUIDE}
   WITH_GOOGLETEST                     = ${DASHBOARD_WITH_GOOGLETEST}
   WITH_GTK                            = ${DASHBOARD_WITH_GTK}
@@ -234,17 +230,14 @@ ${CACHE_VERBOSE_MAKEFILE}
 ${CACHE_LONG_RUNNING_TESTS}
 ${CACHE_TEST_TIMEOUT_MULTIPLIER}
 ${CACHE_WITH_AVL}
-${CACHE_WITH_BERTINI}
 ${CACHE_WITH_BOT_CORE_LCMTYPES}
 ${CACHE_WITH_BULLET}
-${CACHE_WITH_CMAKE}
 ${CACHE_WITH_DIRECTOR}
 ${CACHE_WITH_DRAKE}
 ${CACHE_WITH_DREAL}
 ${CACHE_WITH_EIGEN}
 ${CACHE_WITH_FCL}
 ${CACHE_WITH_GFLAGS}
-${CACHE_WITH_GLOPTIPOLY}
 ${CACHE_WITH_GOOGLE_STYLEGUIDE}
 ${CACHE_WITH_GOOGLETEST}
 ${CACHE_WITH_GTK}

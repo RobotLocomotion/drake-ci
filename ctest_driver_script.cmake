@@ -40,9 +40,7 @@ include(${DASHBOARD_DRIVER_DIR}/functions.cmake)
 # Set default compiler (if not specified) or copy from environment
 if(NOT DEFINED ENV{compiler})
   message(WARNING "*** ENV{compiler} was not set")
-  if(WIN32)
-    set(COMPILER "msvc-64")
-  elseif(APPLE)
+  if(APPLE)
     set(COMPILER "clang")
   else()
     set(COMPILER "gcc")
@@ -70,12 +68,7 @@ endif()
 file(TO_CMAKE_PATH "$ENV{WORKSPACE}" DASHBOARD_WORKSPACE)
 
 if(NOT APPLE)
-  if(WIN32)
-    set(DASHBOARD_WARM_FILE "C:\\Windows\\Temp\\WARM")
-  else()
-    set(DASHBOARD_WARM_FILE "/tmp/WARM")
-  endif()
-
+  set(DASHBOARD_WARM_FILE "/tmp/WARM")
   if(EXISTS "${DASHBOARD_WARM_FILE}")
     set(DASHBOARD_WARM ON)
     set(DASHBOARD_WARM_MESSAGE "*** This EBS volume is warm")
@@ -111,39 +104,17 @@ else()
     PARALLEL_LEVEL ${DASHBOARD_PROCESSOR_COUNT})
 endif()
 
-if(WIN32)
-  if(COMPILER MATCHES "ninja")
-    set(CTEST_CMAKE_GENERATOR "Ninja")
-    set(CTEST_USE_LAUNCHERS ON)
-    set(ENV{CTEST_USE_LAUNCHERS_DEFAULT} 1)
-    set(ENV{CC} "cl")
-    set(ENV{CXX} "cl")
-    # load 64 or 32 bit compiler environments
-    if(COMPILER STREQUAL "msvc-ninja-64")
-      include(${CMAKE_CURRENT_LIST_DIR}/ctest_environment_msvc_64.cmake)
-    else()
-      include(${CMAKE_CURRENT_LIST_DIR}/ctest_environment_msvc_32.cmake)
-    endif()
-  else()
-    set(CTEST_CMAKE_GENERATOR "Visual Studio 14 2015")
-    set(ENV{CMAKE_FLAGS} "-G \"Visual Studio 14 2015\"")  # HACK
-    set(CTEST_USE_LAUNCHERS OFF)
-    set(ENV{CXXFLAGS} "-MP")
-    set(ENV{CFLAGS} "-MP")
-  endif()
+if(COMPILER MATCHES "ninja")
+  set(CTEST_CMAKE_GENERATOR "Ninja")
 else()
-  if(COMPILER MATCHES "ninja")
-    set(CTEST_CMAKE_GENERATOR "Ninja")
-  else()
-    set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
-    if(NOT DASHBOARD_PROCESSOR_COUNT EQUAL 0)
-      set(CTEST_BUILD_FLAGS "-j${DASHBOARD_PROCESSOR_COUNT}")
-    endif()
+  set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
+  if(NOT DASHBOARD_PROCESSOR_COUNT EQUAL 0)
+    set(CTEST_BUILD_FLAGS "-j${DASHBOARD_PROCESSOR_COUNT}")
   endif()
-  if(NOT COMPILER STREQUAL "cpplint")
-    set(CTEST_USE_LAUNCHERS ON)
-    set(ENV{CTEST_USE_LAUNCHERS_DEFAULT} 1)
-  endif()
+endif()
+if(NOT COMPILER STREQUAL "cpplint")
+  set(CTEST_USE_LAUNCHERS ON)
+  set(ENV{CTEST_USE_LAUNCHERS_DEFAULT} 1)
 endif()
 
 # check for compiler settings
@@ -179,84 +150,12 @@ elseif(COMPILER STREQUAL "msvc-64")
   set(ENV{CMAKE_FLAGS} "-G \"Visual Studio 14 2015 Win64\"")  # HACK
 endif()
 
-if(WIN32)
-  if(COMPILER MATCHES "ninja")
-    # grab Ninja
-    message(STATUS "Downloading Ninja for Windows...")
-    file(DOWNLOAD
-      "https://github.com/ninja-build/ninja/releases/download/v1.7.1/ninja-win.zip"
-      "${DASHBOARD_WORKSPACE}/ninja-win.zip"
-      SHOW_PROGRESS STATUS DASHBOARD_DOWNLOAD_NINJA_STATUS
-      EXPECTED_HASH SHA1=38c5b4192f845b953f26fa6aae7d2c9e7078f2f1
-      TLS_VERIFY ON)
-    list(GET DASHBOARD_DOWNLOAD_NINJA_STATUS 0
-      DASHBOARD_DOWNLOAD_NINJA_RESULT_VARIABLE)
-    if(NOT DASHBOARD_DOWNLOAD_NINJA_RESULT_VARIABLE EQUAL 0)
-      fatal("Ninja download was not successful")
-    endif()
-    message("Extracting Ninja for Windows...")
-    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf
-      "${DASHBOARD_WORKSPACE}/ninja-win.zip"
-      WORKING_DIRECTORY ${DASHBOARD_WORKSPACE}
-      RESULT_VARIABLE DASHBOARD_NINJA_UNZIP_RESULT_VARIABLE
-      OUTPUT_VARIABLE DASHBOARD_NINJA_UNZIP_OUTPUT_VARIABLE
-      ERROR_VARIABLE DASHBOARD_NINJA_UNZIP_OUTPUT_VARIABLE)
-    message("${DASHBOARD_NINJA_UNZIP_OUTPUT_VARIABLE}")
-    if(NOT DASHBOARD_NINJA_UNZIP_RESULT_VARIABLE EQUAL 0)
-      fatal("extracting Ninja for Windows was not successful")
-    endif()
-  endif()
-  message(STATUS "Downloading pkg-config for Windows...")
-  file(DOWNLOAD
-    "https://s3.amazonaws.com/drake-provisioning/pkg-config.exe"
-    "${DASHBOARD_WORKSPACE}/pkg-config.exe"
-    SHOW_PROGRESS STATUS DASHBOARD_DOWNLOAD_PKG_CONFIG_STATUS
-    EXPECTED_HASH SHA1=4aed4ddb0135ab6234c60b0d6ab9f912476f6bff TLS_VERIFY ON)
-  list(GET DASHBOARD_DOWNLOAD_PKG_CONFIG_STATUS 0
-    DASHBOARD_DOWNLOAD_PKG_CONFIG_RESULT_VARIABLE)
-  if(NOT DASHBOARD_DOWNLOAD_PKG_CONFIG_RESULT_VARIABLE EQUAL 0)
-    fatal("pkg-config download was not successful")
-  endif()
-  set(PATH
-    "${DASHBOARD_WORKSPACE}"
-    "${DASHBOARD_INSTALL_PREFIX}/bin"
-    "${DASHBOARD_INSTALL_PREFIX}/lib")
-  foreach(p ${PATH})
-    file(TO_NATIVE_PATH "${p}" path)
-    list(APPEND paths "${path}")
-  endforeach()
-  set(curPath "$ENV{PATH}")
-  set(ENV{PATH} "${paths};${curPath}")
-elseif(APPLE)
+if(APPLE)
   set(ENV{PATH} "/opt/X11/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:$ENV{PATH}")
 endif()
 
 if(MATLAB)
-  if(WIN32)
-    if(COMPILER MATCHES "^msvc-(ninja-)?64$")
-      set(ENV{PATH} "C:\\Program Files\\MATLAB\\R2015b\\runtime\\win64;C:\\Program Files\\MATLAB\\R2015b\\bin;C:\\Program Files\\MATLAB\\R2015b\\bin\\win64;$ENV{PATH}")
-    else()
-      set(ENV{PATH} "C:\\Program Files (x86)\\MATLAB\\R2015b\\runtime\\win32;C:\\Program Files (x86)\\MATLAB\\R2015b\\bin;C:\\Program Files (x86)\\MATLAB\\R2015b\\bin\\win32;$ENV{PATH}")
-    endif()
-    message(STATUS "Setting default C compiler for MEX...")
-    execute_process(COMMAND mex -setup c
-      RESULT_VARIABLE DASHBOARD_MEX_C_RESULT_VARIABLE
-      OUTPUT_VARIABLE DASHBOARD_MEX_C_OUTPUT_VARIABLE
-      ERROR_VARIABLE DASHBOARD_MEX_C_OUTPUT_VARIABLE)
-    message("${DASHBOARD_MEX_C_OUTPUT_VARIABLE}")
-    if(NOT DASHBOARD_MEX_C_RESULT_VARIABLE EQUAL 0)
-      fatal("setting default C compiler for mex was not successful")
-    endif()
-    message(STATUS "Setting default C++ compiler for MEX...")
-    execute_process(COMMAND mex -setup c++
-      RESULT_VARIABLE DASHBOARD_MEX_CXX_RESULT_VARIABLE
-      OUTPUT_VARIABLE DASHBOARD_MEX_CXX_OUTPUT_VARIABLE
-      ERROR_VARIABLE DASHBOARD_MEX_CXX_OUTPUT_VARIABLE)
-    message("${DASHBOARD_MEX_CXX_OUTPUT_VARIABLE}")
-    if(NOT DASHBOARD_MEX_CXX_RESULT_VARIABLE EQUAL 0)
-      fatal("setting default C++ compiler for mex was not successful")
-    endif()
-  elseif(APPLE)
+  if(APPLE)
     set(ENV{PATH} "/Applications/MATLAB_R2015b.app/bin:/Applications/MATLAB_R2015b.app/runtime/maci64:$ENV{PATH}")
   else()
     set(ENV{PATH} "/usr/local/MATLAB/R2015b/bin:$ENV{PATH}")
@@ -491,15 +390,11 @@ include(${DASHBOARD_DRIVER_DIR}/configurations/timeout.cmake)
 
 set(DASHBOARD_APPLE OFF)
 set(DASHBOARD_UNIX OFF)
-set(DASHBOARD_WIN32 OFF)
 if(APPLE)
   set(DASHBOARD_APPLE ON)
 endif()
 if(UNIX)
   set(DASHBOARD_UNIX ON)
-endif()
-if(WIN32)
-  set(DASHBOARD_WIN32 ON)
 endif()
 
 include(${DASHBOARD_DRIVER_DIR}/configurations/generic.cmake)
