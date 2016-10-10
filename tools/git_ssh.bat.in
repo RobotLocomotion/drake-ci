@@ -1,2 +1,0 @@
-@ECHO OFF
-ssh -i "@DASHBOARD_SSH_IDENTITY_FILE@" -o StrictHostKeyChecking=no %*

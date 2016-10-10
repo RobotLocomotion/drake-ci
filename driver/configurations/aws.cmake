@@ -35,18 +35,12 @@ chmod("${DASHBOARD_SSH_IDENTITY_FILE}" 0400 "identity file")
 
 # Create git SSH wrapper
 mktemp(DASHBOARD_GIT_SSH_FILE git_ssh_XXXXXXXX "temporary git_ssh file")
-if(WIN32)
-  configure_file(
-    "${DASHBOARD_TOOLS_DIR}/git_ssh.bat.in"
-    "${DASHBOARD_GIT_SSH_FILE}"
-    @ONLY)
-else()
-  configure_file(
-    "${DASHBOARD_TOOLS_DIR}/git_ssh.bash.in"
-    "${DASHBOARD_GIT_SSH_FILE}"
-    @ONLY)
-  chmod("${DASHBOARD_GIT_SSH_FILE}" 0755 "git_ssh file")
-endif()
+
+configure_file(
+  "${DASHBOARD_TOOLS_DIR}/git_ssh.bash.in"
+  "${DASHBOARD_GIT_SSH_FILE}"
+  @ONLY)
+chmod("${DASHBOARD_GIT_SSH_FILE}" 0755 "git_ssh file")
 
 # Point git at our wrapper
 set(ENV{GIT_SSH} "${DASHBOARD_GIT_SSH_FILE}")

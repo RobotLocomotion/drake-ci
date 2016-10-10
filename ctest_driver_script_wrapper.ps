@@ -1,4 +1,0 @@
-Set-PSDebug -Trace 1
-$env:PATH += "C:\Program Files\CMake\bin;C:\Program Files (x86)\CMake\bin"
-ctest -Dbuildname="$env:JOB_NAME" -Dsite="$env:NODE_NAME" -S "$env:WORKSPACE/ci/ctest_driver_script.cmake" --extra-verbose --no-compress-output --output-on-failure
-(Test-Path "$env:WORKSPACE/SUCCESS" -or Test-Path "$env:WORKSPACE/UNSTABLE") -and ! Test-Path "$env:WORKSPACE/FAILURE"
