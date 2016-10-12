@@ -91,7 +91,7 @@ else()
   enable_package(SIGNALSCOPE)
   enable_package(TEXTBOOK)
 
-  if(NOT COVERAGE AND NOT COMPILER STREQUAL "clang")
+  if(NOT COVERAGE OR NOT COMPILER STREQUAL "clang")
     enable_package(AVL)
     enable_package(XFOIL)
   endif()
