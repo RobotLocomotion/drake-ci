@@ -264,7 +264,7 @@ if(COMPILER MATCHES "^scan-build")
   file(MAKE_DIRECTORY "${DASHBOARD_CCC_ANALYZER_HTML}")
 endif()
 
-if (PROVISION)
+if(PROVISION)
   if(COMPILER MATCHES "^xenial")
     execute_process(COMMAND bash "-c" "yes | sudo ${DASHBOARD_WORKSPACE}/setup/ubuntu/16.04/install_prereqs.sh"
       RESULT_VARIABLE INSTALL_PREREQS_RESULT_VARIABLE
