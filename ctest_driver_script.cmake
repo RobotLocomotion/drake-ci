@@ -25,6 +25,7 @@
 #   ENV{memcheck}         optional    "asan" | "msan" | "tsan" | "valgrind"
 #   ENV{minimal}          optional    boolean
 #   ENV{openSource}       optional    boolean
+#   ENV{provision}        optional    boolean
 #   ENV{ros}              optional    boolean
 #   ENV{track}            optional    "continuous" | "experimental" | "nightly"
 #
@@ -59,6 +60,7 @@ set(MATLAB $ENV{matlab})
 set(MEMCHECK $ENV{memcheck})
 set(MINIMAL $ENV{minimal})
 set(OPEN_SOURCE $ENV{openSource})
+set(PROVISION $ENV{provision})
 set(ROS $ENV{ros})
 set(TRACK $ENV{track})
 
@@ -262,16 +264,18 @@ if(COMPILER MATCHES "^scan-build")
   file(MAKE_DIRECTORY "${DASHBOARD_CCC_ANALYZER_HTML}")
 endif()
 
-if(COMPILER MATCHES "^xenial")
-  execute_process(COMMAND bash "-c" "yes | sudo ${DASHBOARD_WORKSPACE}/setup/ubuntu/16.04/install_prereqs.sh"
-    RESULT_VARIABLE INSTALL_PREREQS_RESULT_VARIABLE
-    OUTPUT_VARIABLE INSTALL_PREREQS_OUTPUT_VARIABLE
-    ERROR_VARIABLE INSTALL_PREREQS_ERROR_VARIABLE
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-  if(NOT INSTALL_PREREQS_RESULT_VARIABLE EQUAL 0)
-    message("${INSTALL_PREREQS_OUTPUT_VARIABLE}")
-    message("${INSTALL_PREREQS_ERROR_VARIABLE}")
-    fatal("Install script failed")
+if (PROVISION)
+  if(COMPILER MATCHES "^xenial")
+    execute_process(COMMAND bash "-c" "yes | sudo ${DASHBOARD_WORKSPACE}/setup/ubuntu/16.04/install_prereqs.sh"
+      RESULT_VARIABLE INSTALL_PREREQS_RESULT_VARIABLE
+      OUTPUT_VARIABLE INSTALL_PREREQS_OUTPUT_VARIABLE
+      ERROR_VARIABLE INSTALL_PREREQS_ERROR_VARIABLE
+      OUTPUT_STRIP_TRAILING_WHITESPACE)
+    if(NOT INSTALL_PREREQS_RESULT_VARIABLE EQUAL 0)
+      message("${INSTALL_PREREQS_OUTPUT_VARIABLE}")
+      message("${INSTALL_PREREQS_ERROR_VARIABLE}")
+      fatal("provisioning script did not complete successfully")
+    endif()
   endif()
 endif()
 
