@@ -14,7 +14,9 @@
 #                                     "include-what-you-use-ninja" |
 #                                     "link-what-you-use" |
 #                                     "link-what-you-use-ninja" |
-#                                     "cpplint"
+#                                     "cpplint" |
+#                                     "xenial-gcc" | "xenial-gcc-ninja" |
+#                                     "xenial-clang" | "xenial-clang-ninja"
 #   ENV{coverage}         optional    boolean
 #   ENV{debug}            optional    boolean
 #   ENV{documentation}    optional    boolean | "publish"
@@ -23,6 +25,7 @@
 #   ENV{memcheck}         optional    "asan" | "msan" | "tsan" | "valgrind"
 #   ENV{minimal}          optional    boolean
 #   ENV{openSource}       optional    boolean
+#   ENV{provision}        optional    boolean
 #   ENV{ros}              optional    boolean
 #   ENV{track}            optional    "continuous" | "experimental" | "nightly"
 #
@@ -57,6 +60,7 @@ set(MATLAB $ENV{matlab})
 set(MEMCHECK $ENV{memcheck})
 set(MINIMAL $ENV{minimal})
 set(OPEN_SOURCE $ENV{openSource})
+set(PROVISION $ENV{provision})
 set(ROS $ENV{ros})
 set(TRACK $ENV{track})
 
@@ -118,7 +122,10 @@ if(NOT COMPILER STREQUAL "cpplint")
 endif()
 
 # check for compiler settings
-if(COMPILER MATCHES "^(clang|gcc|(include|link)-what-you-use|scan-build)")
+if(COMPILER MATCHES "^xenial")
+  set(ENV{F77} "gfortran-5")
+  set(ENV{FC} "gfortran-5")
+elseif(COMPILER MATCHES "^(clang|gcc|(include|link)-what-you-use|scan-build)")
   if(APPLE)
     set(ENV{F77} "gfortran")
     set(ENV{FC} "gfortran")
@@ -127,7 +134,13 @@ if(COMPILER MATCHES "^(clang|gcc|(include|link)-what-you-use|scan-build)")
     set(ENV{FC} "gfortran-4.9")
   endif()
 endif()
-if(COMPILER MATCHES "^gcc")
+if(COMPILER MATCHES "^xenial-gcc")
+  set(ENV{CC} "gcc-5")
+  set(ENV{CXX} "g++-5")
+elseif(COMPILER MATCHES "^xenial-clang")
+  set(ENV{CC} "clang-3.9")
+  set(ENV{CXX} "clang++-3.9")
+elseif(COMPILER MATCHES "^gcc")
   set(ENV{CC} "gcc-4.9")
   set(ENV{CXX} "g++-4.9")
 elseif(COMPILER MATCHES "^(clang|cpplint|(include|link)-what-you-use)")
@@ -249,6 +262,21 @@ if(COMPILER MATCHES "^scan-build")
   set(DASHBOARD_CCC_ANALYZER_HTML "${DASHBOARD_WORKSPACE}/build/drake/html")
   set(ENV{CCC_ANALYZER_HTML} "${DASHBOARD_CCC_ANALYZER_HTML}")
   file(MAKE_DIRECTORY "${DASHBOARD_CCC_ANALYZER_HTML}")
+endif()
+
+if(PROVISION)
+  if(COMPILER MATCHES "^xenial")
+    execute_process(COMMAND bash "-c" "yes | sudo ${DASHBOARD_WORKSPACE}/setup/ubuntu/16.04/install_prereqs.sh"
+      RESULT_VARIABLE INSTALL_PREREQS_RESULT_VARIABLE
+      OUTPUT_VARIABLE INSTALL_PREREQS_OUTPUT_VARIABLE
+      ERROR_VARIABLE INSTALL_PREREQS_ERROR_VARIABLE
+      OUTPUT_STRIP_TRAILING_WHITESPACE)
+    if(NOT INSTALL_PREREQS_RESULT_VARIABLE EQUAL 0)
+      message("${INSTALL_PREREQS_OUTPUT_VARIABLE}")
+      message("${INSTALL_PREREQS_ERROR_VARIABLE}")
+      fatal("provisioning script did not complete successfully")
+    endif()
+  endif()
 endif()
 
 # set compiler flags for coverage builds
