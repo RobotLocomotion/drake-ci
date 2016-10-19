@@ -386,7 +386,7 @@ if(MEMCHECK MATCHES "^([amt]san|valgrind)$")
     set(DASHBOARD_MEMORYCHECK_TYPE "Valgrind")
     find_program(DASHBOARD_MEMORYCHECK_COMMAND NAMES "valgrind")
     set(CTEST_MEMORYCHECK_COMMAND "${DASHBOARD_MEMORYCHECK_COMMAND}")
-    set(CTEST_MEMORYCHECK_COMMAND_OPTIONS "--show-leak-kinds=definite,possible")
+    set(CTEST_MEMORYCHECK_COMMAND_OPTIONS "--show-leak-kinds=definite,possible --trace-children=yes --trace-children-skip=/bin/*,/usr/bin/*,/usr/local/bin/*,/usr/local/MATLAB/*")
     set(CTEST_MEMORYCHECK_SUPPRESSIONS_FILE
       "${DASHBOARD_WORKSPACE}/drake/valgrind.supp")
     if(NOT EXISTS "${DASHBOARD_WORKSPACE}/drake/valgrind.supp")
