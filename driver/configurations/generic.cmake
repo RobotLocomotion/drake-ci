@@ -90,6 +90,8 @@ message("
   F77                                 = $ENV{F77}
   FC                                  = $ENV{FC}
   ------------------------------------------------------------------------------
+  GTEST_DEATH_TEST_USE_FORK           = $ENV{GTEST_DEATH_TEST_USE_FORK}
+  ------------------------------------------------------------------------------
   ROS_DISTRO                          = $ENV{ROS_DISTRO}
   ROS_ETC_DIR                         = $ENV{ROS_ETC_DIR}
   ROS_HOME                            = $ENV{ROS_HOME}
@@ -152,7 +154,6 @@ message("
   WITH_GFLAGS                         = ${DASHBOARD_WITH_GFLAGS}
   WITH_GOOGLE_STYLEGUIDE              = ${DASHBOARD_WITH_GOOGLE_STYLEGUIDE}
   WITH_GOOGLETEST                     = ${DASHBOARD_WITH_GOOGLETEST}
-  WITH_GTK                            = ${DASHBOARD_WITH_GTK}
   WITH_GUROBI                         = ${DASHBOARD_WITH_GUROBI}
   WITH_IPOPT                          = ${DASHBOARD_WITH_IPOPT}
   WITH_IRIS                           = ${DASHBOARD_WITH_IRIS}
