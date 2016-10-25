@@ -90,14 +90,22 @@ else()
   enable_package(OCTOMAP)
   enable_package(SIGNALSCOPE)
   enable_package(TEXTBOOK)
- 
+
+  if(COVERAGE)
+    disable_package(GOOGLE_STYLEGUIDE)
+  endif()
+
   if(MEMCHECK)
     disable_package(GOOGLE_STYLEGUIDE)
     disable_package(SWIG_MATLAB)
     disable_package(SWIGMAKE)
   endif()
 
-  if(NOT (COVERAGE OR MEMCHECK) OR NOT COMPILER STREQUAL "clang")
+  if(MEMCHECK STREQUAL "msan")
+    disable_package(IPOPT)
+  endif()
+
+  if(NOT COVERAGE AND NOT MEMCHECK MATCHES "^[amt]san$" OR NOT COMPILER STREQUAL "clang")
     enable_package(AVL)
     enable_package(XFOIL)
   endif()
