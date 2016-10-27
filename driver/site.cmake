@@ -17,16 +17,16 @@ endif()
 
 # Set build name
 if(DEFINED buildname)
-  set(CTEST_BUILD_NAME "${buildname}")
+  set(DASHBOARD_BUILD_NAME "${buildname}")
   if(TRACK STREQUAL "experimental")
     if(DEBUG)
-      set(CTEST_BUILD_NAME "${CTEST_BUILD_NAME}-debug")
+      set(DASHBOARD_BUILD_NAME "${DASHBOARD_BUILD_NAME}-debug")
     else()
-      set(CTEST_BUILD_NAME "${CTEST_BUILD_NAME}-release")
+      set(DASHBOARD_BUILD_NAME "${DASHBOARD_BUILD_NAME}-release")
     endif()
   endif()
 else()
-  message(WARNING "*** CTEST_BUILD_NAME was not set")
+  message(WARNING "*** DASHBOARD_BUILD_NAME was not set")
 endif()
 
 # set model and track for submission
@@ -42,7 +42,7 @@ endif()
 
 # Set build id
 if(DEFINED ENV{BUILD_ID})
-  set(DASHBOARD_LABEL "jenkins-${CTEST_BUILD_NAME}-$ENV{BUILD_ID}")
+  set(DASHBOARD_LABEL "jenkins-${DASHBOARD_BUILD_NAME}-$ENV{BUILD_ID}")
   set_property(GLOBAL PROPERTY Label "${DASHBOARD_LABEL}")
 else()
   message(WARNING "*** ENV{BUILD_ID} was not set")
