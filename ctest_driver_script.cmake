@@ -158,9 +158,6 @@ elseif(COMPILER MATCHES "^scan-build")
   set(ENV{CXX} "${DASHBOARD_CXX_ANALYZER_COMMAND}")
   set(ENV{CCC_CC} "clang")
   set(ENV{CCC_CXX} "clang++")
-elseif(COMPILER STREQUAL "msvc-64")
-  set(CTEST_CMAKE_GENERATOR "Visual Studio 14 2015 Win64")
-  set(ENV{CMAKE_FLAGS} "-G \"Visual Studio 14 2015 Win64\"")  # HACK
 endif()
 
 if(APPLE)
@@ -416,10 +413,6 @@ set(CTEST_CONFIGURATION_TYPE "${DASHBOARD_CONFIGURATION_TYPE}")
 set(DASHBOARD_VERBOSE_MAKEFILE ON)
 set(ENV{CMAKE_FLAGS}
   "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON $ENV{CMAKE_FLAGS}")  # HACK
-
-if(COMPILER STREQUAL "msvc-ninja-32" AND DEBUG)
-  set(DASHBOARD_NINJA_LINK_POOL_SIZE 2)
-endif()
 
 include(${DASHBOARD_DRIVER_DIR}/configurations/packages.cmake)
 include(${DASHBOARD_DRIVER_DIR}/configurations/timeout.cmake)
