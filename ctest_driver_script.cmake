@@ -431,7 +431,12 @@ if(UNIX)
   set(DASHBOARD_UNIX ON)
 endif()
 
-include(${DASHBOARD_DRIVER_DIR}/configurations/generic.cmake)
+# Invoke the appropriate build driver for the selected configuration
+if(COMPILER STREQUAL "cpplint")
+  include(${DASHBOARD_DRIVER_DIR}/configurations/cpplint.cmake)
+else()
+  include(${DASHBOARD_DRIVER_DIR}/configurations/generic.cmake)
+endif()
 
 # Remove any temporary files that we created
 foreach(_file ${DASHBOARD_TEMPORARY_FILES})
