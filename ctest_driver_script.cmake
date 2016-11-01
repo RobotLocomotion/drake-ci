@@ -109,6 +109,10 @@ else()
     PARALLEL_LEVEL ${DASHBOARD_PROCESSOR_COUNT})
 endif()
 
+# Set up status variables
+set(DASHBOARD_FAILURE OFF)
+set(DASHBOARD_FAILURES "")
+
 if(GENERATOR STREQUAL "ninja")
   set(CTEST_CMAKE_GENERATOR "Ninja")
 else()
