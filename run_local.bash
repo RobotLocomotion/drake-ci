@@ -8,6 +8,7 @@
 # 3. Run this script.
 
 export compiler=gcc
+export generator=ninja
 export coverage=false
 export debug=false
 export documentation=false
