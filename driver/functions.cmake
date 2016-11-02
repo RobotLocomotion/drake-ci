@@ -27,6 +27,24 @@ function(fatal MESSAGE)
 endfunction()
 
 #------------------------------------------------------------------------------
+# Prepend entries to an environment path
+#------------------------------------------------------------------------------
+function(prepend_path VAR)
+  file(TO_CMAKE_PATH "$ENV{${VAR}}" _paths)
+  list(APPEND _paths ${ARGN})
+  file(TO_NATIVE_PATH "${_paths}" _newpath)
+  set(ENV{${VAR}} "${_newpath}")
+endfunction()
+
+#------------------------------------------------------------------------------
+# Set an environment path
+#------------------------------------------------------------------------------
+function(set_path VAR)
+  unset(ENV{${VAR}})
+  prepend_path(${VAR} ${ARGN})
+endfunction()
+
+#------------------------------------------------------------------------------
 # Create a temporary file
 #------------------------------------------------------------------------------
 function(mktemp OUTVAR NAME MESSAGE)
