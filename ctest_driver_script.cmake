@@ -95,32 +95,20 @@ set(CTEST_GIT_COMMAND "git")
 set(CTEST_UPDATE_COMMAND "${CTEST_GIT_COMMAND}")
 set(CTEST_UPDATE_VERSION_ONLY ON)
 
+set(DASHBOARD_CONFIGURATION_TYPE "Release")
+
+set(DASHBOARD_INSTALL ON)
+set(DASHBOARD_TEST ON)
+
 # Set up the site and build information
 include(${DASHBOARD_DRIVER_DIR}/site.cmake)
 
-# Set up compiler
-include(ProcessorCount)
-ProcessorCount(DASHBOARD_PROCESSOR_COUNT)
-
-if(DASHBOARD_PROCESSOR_COUNT EQUAL 0)
-  message(WARNING "*** CTEST_TEST_ARGS PARALLEL_LEVEL was not set")
-else()
-  set(CTEST_TEST_ARGS ${CTEST_TEST_ARGS}
-    PARALLEL_LEVEL ${DASHBOARD_PROCESSOR_COUNT})
-endif()
+# Set up the compiler and build platform
+include(driver/platform.cmake)
 
 # Set up status variables
 set(DASHBOARD_FAILURE OFF)
 set(DASHBOARD_FAILURES "")
-
-if(GENERATOR STREQUAL "ninja")
-  set(CTEST_CMAKE_GENERATOR "Ninja")
-else()
-  set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
-  if(NOT DASHBOARD_PROCESSOR_COUNT EQUAL 0)
-    set(CTEST_BUILD_FLAGS "-j${DASHBOARD_PROCESSOR_COUNT}")
-  endif()
-endif()
 
 # check for compiler settings
 if(COMPILER MATCHES "^xenial")
@@ -161,52 +149,12 @@ elseif(COMPILER MATCHES "^scan-build")
   set(ENV{CCC_CXX} "clang++")
 endif()
 
-if(APPLE)
-  set(ENV{PATH} "/opt/X11/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:$ENV{PATH}")
-endif()
-
-if(MATLAB)
-  if(APPLE)
-    set(ENV{PATH} "/Applications/MATLAB_R2015b.app/bin:/Applications/MATLAB_R2015b.app/runtime/maci64:$ENV{PATH}")
-  else()
-    set(ENV{PATH} "/usr/local/MATLAB/R2015b/bin:$ENV{PATH}")
-  endif()
-endif()
-
-if(ROS AND EXISTS "/opt/ros/indigo/setup.bash")
-  set(ENV{ROS_ROOT} "/opt/ros/indigo/share/ros")
-  set(ENV{ROS_PACKAGE_PATH} "/opt/ros/indigo/share:/opt/ros/indigo/stacks")
-  set(ENV{ROS_MASTER_URI} "http://localhost:11311")
-  set(ENV{LD_LIBRARY_PATH} "/opt/ros/indigo/lib:$ENV{LD_LIBRARY_PATH}")
-  set(ENV{CPATH} "/opt/ros/indigo/include:$ENV{CPATH}")
-  set(ENV{PATH} "/opt/ros/indigo/bin:$ENV{PATH}")
-  set(ENV{ROSLISP_PACKAGE_DIRECTORIES} "")
-  set(ENV{ROS_DISTRO} "indigo")
-  set(ENV{PYTHONPATH} "/opt/ros/indigo/lib/python2.7/dist-packages:$ENV{PYTHONPATH}")
-  set(ENV{PKG_CONFIG_PATH} "/opt/ros/indigo/lib/pkgconfig:$ENV{PKG_CONFIG_PATH}")
-  set(ENV{CMAKE_PREFIX_PATH} "/opt/ros/indigo")
-  set(ENV{ROS_ETC_DIR} "/opt/ros/indigo/etc/ros")
-  set(ENV{ROS_HOME} "$ENV{WORKSPACE}")
-endif()
-
 if(NOT MINIMAL AND NOT OPEN_SOURCE AND NOT COMPILER STREQUAL "cpplint")
   include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
 endif()
 
-# clean out the old builds
-file(REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
-file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
-
-set(DASHBOARD_INSTALL ON)
-set(DASHBOARD_TEST ON)
-
 set(DASHBOARD_COVERAGE OFF)
 set(DASHBOARD_MEMCHECK OFF)
-
-# clean out any old installs
-file(REMOVE_RECURSE "${DASHBOARD_INSTALL_PREFIX}")
-
-set(DASHBOARD_CONFIGURATION_TYPE "Release")
 
 set(DASHBOARD_C_FLAGS "")
 set(DASHBOARD_CXX_FLAGS "")
@@ -409,15 +357,6 @@ set(ENV{CMAKE_FLAGS}
 
 include(${DASHBOARD_DRIVER_DIR}/configurations/packages.cmake)
 include(${DASHBOARD_DRIVER_DIR}/configurations/timeout.cmake)
-
-set(DASHBOARD_APPLE OFF)
-set(DASHBOARD_UNIX OFF)
-if(APPLE)
-  set(DASHBOARD_APPLE ON)
-endif()
-if(UNIX)
-  set(DASHBOARD_UNIX ON)
-endif()
 
 # Invoke the appropriate build driver for the selected configuration
 if(COMPILER STREQUAL "cpplint")
