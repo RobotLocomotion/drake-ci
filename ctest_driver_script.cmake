@@ -5,18 +5,12 @@
 #   ENV{BUILD_ID}         optional    value of Jenkins BUILD_ID
 #   ENV{WORKSPACE}        required    value of Jenkins WORKSPACE
 #
-#   ENV{compiler}         optional    "gcc" | "gcc-ninja" |
-#                                     "clang" | "clang-ninja" |
-#                                     "msvc-32" | "msvc-ninja-32" |
-#                                     "msvc-64" | "msvc-ninja-64" |
-#                                     "scan-build" | "scan-build-ninja" |
+#   ENV{generator}        optional    "make" | "ninja"
+#   ENV{compiler}         optional    "gcc" | "clang" | "scan-build" |
 #                                     "include-what-you-use" |
-#                                     "include-what-you-use-ninja" |
 #                                     "link-what-you-use" |
-#                                     "link-what-you-use-ninja" |
 #                                     "cpplint" |
-#                                     "xenial-gcc" | "xenial-gcc-ninja" |
-#                                     "xenial-clang" | "xenial-clang-ninja"
+#                                     "xenial-gcc" | "xenial-clang"
 #   ENV{coverage}         optional    boolean
 #   ENV{debug}            optional    boolean
 #   ENV{documentation}    optional    boolean | "publish"
@@ -40,16 +34,23 @@ set(DASHBOARD_TEMPORARY_FILES "")
 
 include(${DASHBOARD_DRIVER_DIR}/functions.cmake)
 
-# Set default compiler (if not specified) or copy from environment
+# Set default compiler and generator (if not specified) or copy from environment
 if(NOT DEFINED ENV{compiler})
-  message(WARNING "*** ENV{compiler} was not set")
   if(APPLE)
+    message(WARNING "*** ENV{compiler} was not set; defaulting to 'clang'")
     set(COMPILER "clang")
   else()
+    message(WARNING "*** ENV{compiler} was not set; defaulting to 'gcc'")
     set(COMPILER "gcc")
   endif()
 else()
   set(COMPILER $ENV{compiler})
+endif()
+if(NOT DEFINED ENV{generator})
+  message(WARNING "*** ENV{generator} was not set; defaulting to 'make'")
+  set(GENERATOR "make")
+else()
+  set(GENERATOR $ENV{generator})
 endif()
 
 # Copy remaining configuration from environment
@@ -108,7 +109,7 @@ else()
     PARALLEL_LEVEL ${DASHBOARD_PROCESSOR_COUNT})
 endif()
 
-if(COMPILER MATCHES "ninja")
+if(GENERATOR STREQUAL "ninja")
   set(CTEST_CMAKE_GENERATOR "Ninja")
 else()
   set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
@@ -158,9 +159,6 @@ elseif(COMPILER MATCHES "^scan-build")
   set(ENV{CXX} "${DASHBOARD_CXX_ANALYZER_COMMAND}")
   set(ENV{CCC_CC} "clang")
   set(ENV{CCC_CXX} "clang++")
-elseif(COMPILER STREQUAL "msvc-64")
-  set(CTEST_CMAKE_GENERATOR "Visual Studio 14 2015 Win64")
-  set(ENV{CMAKE_FLAGS} "-G \"Visual Studio 14 2015 Win64\"")  # HACK
 endif()
 
 if(APPLE)
@@ -416,10 +414,6 @@ set(CTEST_CONFIGURATION_TYPE "${DASHBOARD_CONFIGURATION_TYPE}")
 set(DASHBOARD_VERBOSE_MAKEFILE ON)
 set(ENV{CMAKE_FLAGS}
   "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON $ENV{CMAKE_FLAGS}")  # HACK
-
-if(COMPILER STREQUAL "msvc-ninja-32" AND DEBUG)
-  set(DASHBOARD_NINJA_LINK_POOL_SIZE 2)
-endif()
 
 include(${DASHBOARD_DRIVER_DIR}/configurations/packages.cmake)
 include(${DASHBOARD_DRIVER_DIR}/configurations/timeout.cmake)
