@@ -18,6 +18,7 @@ else()
   endif()
 endif()
 
+# Set up specific platform
 set(DASHBOARD_APPLE OFF)
 
 if(APPLE)
@@ -28,3 +29,27 @@ endif()
 set(DASHBOARD_UNIX ON)
 
 include(${DASHBOARD_DRIVER_DIR}/platform/unix.cmake)
+
+# Execute provisioning script, if requested
+if(PROVISION)
+  string(TOLOWER
+    "${UNIX_DISTRIBUTION}/${UNIX_DISTRIBUTION_VERSION}"
+    PROVISION_DIR)
+  set(PROVISION_SCRIPT
+    "${DASHBOARD_WORKSPACE}/setup/${PROVISION_DIR}/install_prereqs.sh")
+
+  if(EXISTS "${PROVISION_SCRIPT}")
+    execute_process(COMMAND bash "-c" "yes | sudo ${PROVISION_SCRIPT}"
+      RESULT_VARIABLE INSTALL_PREREQS_RESULT_VARIABLE
+      OUTPUT_VARIABLE INSTALL_PREREQS_OUTPUT_VARIABLE
+      ERROR_VARIABLE INSTALL_PREREQS_ERROR_VARIABLE
+      OUTPUT_STRIP_TRAILING_WHITESPACE)
+    if(NOT INSTALL_PREREQS_RESULT_VARIABLE EQUAL 0)
+      message("${INSTALL_PREREQS_OUTPUT_VARIABLE}")
+      message("${INSTALL_PREREQS_ERROR_VARIABLE}")
+      fatal("provisioning script did not complete successfully")
+    endif()
+  else()
+    fatal("provisioning script not available for this platform")
+  endif()
+endif()
