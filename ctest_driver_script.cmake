@@ -46,7 +46,11 @@ set(CTEST_GIT_COMMAND "git")
 set(CTEST_UPDATE_COMMAND "${CTEST_GIT_COMMAND}")
 set(CTEST_UPDATE_VERSION_ONLY ON)
 
-set(DASHBOARD_CONFIGURATION_TYPE "Release")
+if(DEBUG)
+  set(DASHBOARD_CONFIGURATION_TYPE "Debug")
+else()
+  set(DASHBOARD_CONFIGURATION_TYPE "Release")
+endif()
 
 set(DASHBOARD_INSTALL ON)
 set(DASHBOARD_TEST ON)
@@ -63,15 +67,6 @@ endif()
 # Set up status variables
 set(DASHBOARD_FAILURE OFF)
 set(DASHBOARD_FAILURES "")
-
-if(NOT MINIMAL AND NOT OPEN_SOURCE AND NOT COMPILER STREQUAL "cpplint")
-  include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
-endif()
-
-set(DASHBOARD_COVERAGE OFF)
-set(DASHBOARD_MEMCHECK OFF)
-
-set(DASHBOARD_LINK_WHAT_YOU_USE OFF)
 
 if(COMPILER MATCHES "^include-what-you-use")
   set(DASHBOARD_INSTALL OFF)
@@ -235,19 +230,12 @@ if(MEMCHECK MATCHES "^([amt]san|valgrind)$")
   set(CTEST_MEMORYCHECK_TYPE "${DASHBOARD_MEMORYCHECK_TYPE}")
 endif()
 
-if(DEBUG)
-  set(DASHBOARD_CONFIGURATION_TYPE "Debug")
-endif()
-
 set(ENV{CMAKE_CONFIG_TYPE} "${DASHBOARD_CONFIGURATION_TYPE}")
 set(CTEST_CONFIGURATION_TYPE "${DASHBOARD_CONFIGURATION_TYPE}")
 
 set(DASHBOARD_VERBOSE_MAKEFILE ON)
 set(ENV{CMAKE_FLAGS}
   "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON $ENV{CMAKE_FLAGS}")  # HACK
-
-include(${DASHBOARD_DRIVER_DIR}/configurations/packages.cmake)
-include(${DASHBOARD_DRIVER_DIR}/configurations/timeout.cmake)
 
 # Invoke the appropriate build driver for the selected configuration
 if(COMPILER STREQUAL "cpplint")

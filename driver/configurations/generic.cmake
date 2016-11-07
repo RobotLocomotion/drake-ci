@@ -1,5 +1,18 @@
+# Set base configuration
 set(CTEST_USE_LAUNCHERS ON)
 set(ENV{CTEST_USE_LAUNCHERS_DEFAULT} 1)
+
+set(DASHBOARD_COVERAGE OFF)
+set(DASHBOARD_MEMCHECK OFF)
+set(DASHBOARD_LINK_WHAT_YOU_USE OFF)
+
+# Include additional configuration information
+include(${DASHBOARD_DRIVER_DIR}/configurations/packages.cmake)
+include(${DASHBOARD_DRIVER_DIR}/configurations/timeout.cmake)
+
+if(NOT MINIMAL AND NOT OPEN_SOURCE AND NOT COMPILER STREQUAL "cpplint")
+  include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
+endif()
 
 # Clean out the old builds and/or installs
 file(REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
