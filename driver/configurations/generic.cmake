@@ -14,6 +14,23 @@ if(NOT MINIMAL AND NOT OPEN_SOURCE AND NOT COMPILER STREQUAL "cpplint")
   include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
 endif()
 
+# Set up diagnostic tools
+if(COMPILER STREQUAL "include-what-you-use")
+  include(${DASHBOARD_DRIVER_DIR}/configurations/include-what-you-use.cmake)
+elseif(COMPILER STREQUAL "link-what-you-use")
+  include(${DASHBOARD_DRIVER_DIR}/configurations/link-what-you-use.cmake)
+elseif(COMPILER STREQUAL "scan-build")
+  include(${DASHBOARD_DRIVER_DIR}/configurations/scan-build.cmake)
+endif()
+
+if(COVERAGE)
+  include(${DASHBOARD_DRIVER_DIR}/configurations/coverage.cmake)
+endif()
+
+if(MEMCHECK MATCHES "^([amt]san|valgrind)$")
+  include(${DASHBOARD_DRIVER_DIR}/configurations/memcheck.cmake)
+endif()
+
 # Clean out the old builds and/or installs
 file(REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
 file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
@@ -333,7 +350,7 @@ else()
   set(CTEST_DROP_LOCATION "/submit.php?project=${DASHBOARD_PROJECT_NAME}")
   set(CTEST_DROP_SITE_CDASH ON)
 
-  if(COMPILER MATCHES "^scan-build")
+  if(COMPILER STREQUAL "scan-build")
     file(REMOVE_RECURSE "${DASHBOARD_CCC_ANALYZER_HTML}")
     file(MAKE_DIRECTORY "${DASHBOARD_CCC_ANALYZER_HTML}")
   endif()

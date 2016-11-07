@@ -45,6 +45,20 @@ function(set_path VAR)
 endfunction()
 
 #------------------------------------------------------------------------------
+# Prepend entries to a flags (space separated) variable
+#------------------------------------------------------------------------------
+function(prepend_flags VAR)
+  list(REVERSE ARGN)
+  foreach(_flag ${ARGN})
+    if(NOT "${VAR}" STREQUAL "")
+      set(${VAR} "${_flag} ${${VAR}}")
+    else()
+      set(${VAR} "${_flag}")
+    endif()
+  endforeach()
+endfunction()
+
+#------------------------------------------------------------------------------
 # Create a temporary file
 #------------------------------------------------------------------------------
 function(mktemp OUTVAR NAME MESSAGE)

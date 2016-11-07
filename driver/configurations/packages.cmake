@@ -80,7 +80,7 @@ else()
     disable_package(SWIGMAKE)
   endif()
 
-  if(MEMCHECK STREQUAL "msan" OR COMPILER MATCHES "^scan-build")
+  if(MEMCHECK STREQUAL "msan" OR COMPILER STREQUAL "scan-build")
     disable_package(IPOPT)
   endif()
 
