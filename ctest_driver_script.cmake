@@ -109,6 +109,10 @@ else()
     PARALLEL_LEVEL ${DASHBOARD_PROCESSOR_COUNT})
 endif()
 
+# Set up status variables
+set(DASHBOARD_FAILURE OFF)
+set(DASHBOARD_FAILURES "")
+
 if(GENERATOR STREQUAL "ninja")
   set(CTEST_CMAKE_GENERATOR "Ninja")
 else()
@@ -116,10 +120,6 @@ else()
   if(NOT DASHBOARD_PROCESSOR_COUNT EQUAL 0)
     set(CTEST_BUILD_FLAGS "-j${DASHBOARD_PROCESSOR_COUNT}")
   endif()
-endif()
-if(NOT COMPILER STREQUAL "cpplint")
-  set(CTEST_USE_LAUNCHERS ON)
-  set(ENV{CTEST_USE_LAUNCHERS_DEFAULT} 1)
 endif()
 
 # check for compiler settings
@@ -197,19 +197,11 @@ endif()
 file(REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
 file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
 
-set(DASHBOARD_CONFIGURE_AND_BUILD_SUPERBUILD ON)
-set(DASHBOARD_CONFIGURE ON)
 set(DASHBOARD_INSTALL ON)
 set(DASHBOARD_TEST ON)
 
 set(DASHBOARD_COVERAGE OFF)
 set(DASHBOARD_MEMCHECK OFF)
-
-if(COMPILER STREQUAL "cpplint")
-  set(DASHBOARD_CONFIGURE OFF)
-  set(DASHBOARD_INSTALL OFF)
-  set(DASHBOARD_TEST OFF)
-endif()
 
 # clean out any old installs
 file(REMOVE_RECURSE "${DASHBOARD_INSTALL_PREFIX}")
@@ -427,7 +419,12 @@ if(UNIX)
   set(DASHBOARD_UNIX ON)
 endif()
 
-include(${DASHBOARD_DRIVER_DIR}/configurations/generic.cmake)
+# Invoke the appropriate build driver for the selected configuration
+if(COMPILER STREQUAL "cpplint")
+  include(${DASHBOARD_DRIVER_DIR}/configurations/cpplint.cmake)
+else()
+  include(${DASHBOARD_DRIVER_DIR}/configurations/generic.cmake)
+endif()
 
 # Remove any temporary files that we created
 foreach(_file ${DASHBOARD_TEMPORARY_FILES})
