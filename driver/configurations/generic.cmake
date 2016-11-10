@@ -69,102 +69,69 @@ cache_append(LONG_RUNNING_TESTS BOOL ${DASHBOARD_LONG_RUNNING_TESTS})
 cache_append(SKIP_DRAKE_BUILD BOOL ON)
 
 # Report build configuration
-message("
-  ------------------------------------------------------------------------------
-  CC                                  = $ENV{CC}
-  CCC_CC                              = $ENV{CCC_CC}
-  CCC_CXX                             = $ENV{CCC_CXX}
-  CXX                                 = $ENV{CXX}
-  F77                                 = $ENV{F77}
-  FC                                  = $ENV{FC}
-  ------------------------------------------------------------------------------
-  GTEST_DEATH_TEST_USE_FORK           = $ENV{GTEST_DEATH_TEST_USE_FORK}
-  ------------------------------------------------------------------------------
-  ROS_DISTRO                          = $ENV{ROS_DISTRO}
-  ROS_ETC_DIR                         = $ENV{ROS_ETC_DIR}
-  ROS_HOME                            = $ENV{ROS_HOME}
-  ROS_MASTER_URI                      = $ENV{ROS_MASTER_URI}
-  ROS_PACKAGE_PATH                    = $ENV{ROS_PACKAGE_PATH}
-  ROS_ROOT                            = $ENV{ROS_ROOT}
-  ------------------------------------------------------------------------------
-  UNIX                                = ${DASHBOARD_UNIX}
-  UNIX_DISTRIBUTION                   = ${DASHBOARD_UNIX_DISTRIBUTION}
-  UNIX_DISTRIBUTION_VERSION           = ${DASHBOARD_UNIX_DISTRIBUTION_VERSION}
-  APPLE                               = ${DASHBOARD_APPLE}
-  ------------------------------------------------------------------------------
-  CMAKE_VERSION                       = ${CMAKE_VERSION}
-  ------------------------------------------------------------------------------
-  CMAKE_C_FLAGS                      += ${DASHBOARD_C_FLAGS}
-  CMAKE_C_INCLUDE_WHAT_YOU_USE        = ${DASHBOARD_C_INCLUDE_WHAT_YOU_USE}
-  CMAKE_CXX_FLAGS                    += ${DASHBOARD_CXX_FLAGS}
-  CMAKE_CXX_INCLUDE_WHAT_YOU_USE      = ${DASHBOARD_CXX_INCLUDE_WHAT_YOU_USE}
-  CMAKE_CXX_STANDARD                  = ${DASHBOARD_CXX_STANDARD}
-  CMAKE_CXX_STANDARD_REQUIRED         = ${DASHBOARD_CXX_STANDARD_REQUIRED}
-  CMAKE_EXE_LINKER_FLAGS             += ${DASHBOARD_EXE_LINKER_FLAGS}
-  CMAKE_Fortran_FLAGS                += ${DASHBOARD_FORTRAN_FLAGS}
-  CMAKE_INSTALL_PREFIX                = ${DASHBOARD_INSTALL_PREFIX}
-  CMAKE_LINK_WHAT_YOU_USE             = ${DASHBOARD_LINK_WHAT_YOU_USE}
-  CMAKE_POSITION_INDEPENDENT_CODE     = ${DASHBOARD_POSITION_INDEPENDENT_CODE}
-  CMAKE_SHARED_LINKER_FLAGS          += ${DASHBOARD_SHARED_LINKER_FLAGS}
-  CMAKE_STATIC_LINKER_FLAGS          += ${DASHBOARD_STATIC_LINKER_FLAGS}
-  CMAKE_VERBOSE_MAKEFILE              = ${DASHBOARD_VERBOSE_MAKEFILE}
-  ------------------------------------------------------------------------------
-  CTEST_BUILD_NAME                    = ${DASHBOARD_BUILD_NAME}
-  CTEST_CHANGE_ID                     = ${CTEST_CHANGE_ID}
-  CTEST_BUILD_FLAGS                   = ${CTEST_BUILD_FLAGS}
-  CTEST_CMAKE_GENERATOR               = ${CTEST_CMAKE_GENERATOR}
-  CTEST_CONFIGURATION_TYPE            = ${CTEST_CONFIGURATION_TYPE}
-  CTEST_CONFIGURE_COMMAND             = ${CTEST_CONFIGURE_COMMAND}
-  CTEST_COVERAGE_COMMAND              = ${CTEST_COVERAGE_COMMAND}
-  CTEST_COVERAGE_EXTRA_FLAGS          = ${CTEST_COVERAGE_EXTRA_FLAGS}
-  CTEST_GIT_COMMAND                   = ${CTEST_GIT_COMMAND}
-  CTEST_MEMORYCHECK_COMMAND           = ${CTEST_MEMORYCHECK_COMMAND}
-  CTEST_MEMORYCHECK_COMMAND_OPTIONS   = ${CTEST_MEMORYCHECK_COMMAND_OPTIONS}
-  CTEST_MEMORYCHECK_SUPPRESSIONS_FILE = ${CTEST_MEMORYCHECK_SUPPRESSIONS_FILE}
-  CTEST_MEMORYCHECK_TYPE              = ${CTEST_MEMORYCHECK_TYPE}
-  CTEST_SITE                          = ${CTEST_SITE}
-  CTEST_TEST_TIMEOUT                  = ${CTEST_TEST_TIMEOUT}
-  CTEST_UPDATE_COMMAND                = ${CTEST_UPDATE_COMMAND}
-  CTEST_UPDATE_VERSION_ONLY           = ${CTEST_UPDATE_VERSION_ONLY}
-  CTEST_USE_LAUNCHERS                 = ${CTEST_USE_LAUNCHERS}
-  ------------------------------------------------------------------------------
-  BUILD_DOCUMENTATION                 = ${DASHBOARD_BUILD_DOCUMENTATION}
-  LONG_RUNNING_TESTS                  = ${DASHBOARD_LONG_RUNNING_TESTS}
-  TEST_TIMEOUT_MULTIPLIER             = ${DASHBOARD_TEST_TIMEOUT_MULTIPLIER}
-  ------------------------------------------------------------------------------
-  WITH_AVL                            = ${DASHBOARD_WITH_AVL}
-  WITH_BOT_CORE_LCMTYPES              = ${DASHBOARD_WITH_BOT_CORE_LCMTYPES}
-  WITH_BULLET                         = ${DASHBOARD_WITH_BULLET}
-  WITH_DIRECTOR                       = ${DASHBOARD_WITH_DIRECTOR}
-  WITH_DRAKE                          = ${DASHBOARD_WITH_DRAKE}
-  WITH_DREAL                          = ${DASHBOARD_WITH_DREAL}
-  WITH_EIGEN                          = ${DASHBOARD_WITH_EIGEN}
-  WITH_FCL                            = ${DASHBOARD_WITH_FCL}
-  WITH_GFLAGS                         = ${DASHBOARD_WITH_GFLAGS}
-  WITH_GOOGLE_STYLEGUIDE              = ${DASHBOARD_WITH_GOOGLE_STYLEGUIDE}
-  WITH_GOOGLETEST                     = ${DASHBOARD_WITH_GOOGLETEST}
-  WITH_GUROBI                         = ${DASHBOARD_WITH_GUROBI}
-  WITH_IPOPT                          = ${DASHBOARD_WITH_IPOPT}
-  WITH_IRIS                           = ${DASHBOARD_WITH_IRIS}
-  WITH_LCM                            = ${DASHBOARD_WITH_LCM}
-  WITH_LIBBOT                         = ${DASHBOARD_WITH_LIBBOT}
-  WITH_LIBCCD                         = ${DASHBOARD_WITH_LIBCCD}
-  WITH_MESHCONVERTERS                 = ${DASHBOARD_WITH_MESHCONVERTERS}
-  WITH_MOSEK                          = ${DASHBOARD_WITH_MOSEK}
-  WITH_NLOPT                          = ${DASHBOARD_WITH_NLOPT}
-  WITH_OCTOMAP                        = ${DASHBOARD_WITH_OCTOMAP}
-  WITH_SEDUMI                         = ${DASHBOARD_WITH_SEDUMI}
-  WITH_SIGNALSCOPE                    = ${DASHBOARD_WITH_SIGNALSCOPE}
-  WITH_SNOPT                          = ${DASHBOARD_WITH_SNOPT}
-  WITH_SPDLOG                         = ${DASHBOARD_WITH_SPDLOG}
-  WITH_SPOTLESS                       = ${DASHBOARD_WITH_SPOTLESS}
-  WITH_SWIG_MATLAB                    = ${DASHBOARD_WITH_SWIG_MATLAB}
-  WITH_SWIGMAKE                       = ${DASHBOARD_WITH_SWIGMAKE}
-  WITH_TEXTBOOK                       = ${DASHBOARD_WITH_TEXTBOOK}
-  WITH_XFOIL                          = ${DASHBOARD_WITH_XFOIL}
-  WITH_YALMIP                         = ${DASHBOARD_WITH_YALMIP}
-  WITH_YAML_CPP                       = ${DASHBOARD_WITH_YAML_CPP}
-  ------------------------------------------------------------------------------
+report_configuration(".38
+  ==================================== ENV
+  CC
+  CCC_CC
+  CCC_CXX
+  CXX
+  F77
+  FC
+  ==================================== ENV
+  GTEST_DEATH_TEST_USE_FORK
+  ==================================== ENV
+  ROS_DISTRO
+  ROS_ETC_DIR
+  ROS_HOME
+  ROS_MASTER_URI
+  ROS_PACKAGE_PATH
+  ROS_ROOT
+  ==================================== >DASHBOARD_
+  UNIX
+  UNIX_DISTRIBUTION
+  UNIX_DISTRIBUTION_VERSION
+  APPLE
+  ====================================
+  CMAKE_VERSION
+  ==================================== >DASHBOARD_ <CMAKE_
+  C_FLAGS
+  CXX_FLAGS
+  CXX_STANDARD
+  FORTRAN_FLAGS
+  INSTALL_PREFIX
+  INCLUDE_WHAT_YOU_USE
+  LINK_WHAT_YOU_USE
+  POSITION_INDEPENDENT_CODE
+  EXE_LINKER_FLAGS(SHARED_LINKER_FLAGS)
+  SHARED_LINKER_FLAGS
+  STATIC_LINKER_FLAGS
+  VERBOSE_MAKEFILE
+  ====================================
+  CTEST_BUILD_NAME(DASHBOARD_BUILD_NAME)
+  CTEST_CHANGE_ID
+  CTEST_BUILD_FLAGS
+  CTEST_CMAKE_GENERATOR
+  CTEST_CONFIGURATION_TYPE
+  CTEST_CONFIGURE_COMMAND
+  CTEST_COVERAGE_COMMAND
+  CTEST_COVERAGE_EXTRA_FLAGS
+  CTEST_GIT_COMMAND
+  CTEST_MEMORYCHECK_COMMAND
+  CTEST_MEMORYCHECK_COMMAND_OPTIONS
+  CTEST_MEMORYCHECK_SUPPRESSIONS_FILE
+  CTEST_MEMORYCHECK_TYPE
+  CTEST_SITE
+  CTEST_TEST_TIMEOUT
+  CTEST_UPDATE_COMMAND
+  CTEST_UPDATE_VERSION_ONLY
+  CTEST_USE_LAUNCHERS
+  ==================================== >DASHBOARD_
+  BUILD_DOCUMENTATION
+  LONG_RUNNING_TESTS
+  TEST_TIMEOUT_MULTIPLIER
+  ==================================== <WITH_ >DASHBOARD_WITH_
+  ${DASHBOARD_PACKAGES}
+  ====================================
   ")
 
 set(DASHBOARD_CDASH_SERVER "drake-cdash.csail.mit.edu")

@@ -1,10 +1,22 @@
 #------------------------------------------------------------------------------
+# Pad a string with specified fill character
+#------------------------------------------------------------------------------
+function(fill VAR TEXT FILLER LENGTH)
+  string(LENGTH "${TEXT}${FILLER}" _n)
+  if(_n LESS LENGTH)
+    fill(_out "${TEXT}" "${FILLER}${FILLER}" ${LENGTH})
+  else()
+    string(SUBSTRING "${TEXT}${FILLER}" 0 ${LENGTH} _out)
+  endif()
+  set(${VAR} "${_out}" PARENT_SCOPE)
+endfunction()
+
+#------------------------------------------------------------------------------
 # Display one or more formatted notice messages
 #------------------------------------------------------------------------------
 function(notice)
-  set(_hr "
-  ------------------------------------------------------------------------------
-  ")
+  fill(_hr "  " "-" 80)
+  set(_hr "\n${_hr}\n")
   set(_text "${_hr}")
   foreach(_message ${ARGN})
     set(_text "${_text}  *** ${_message}${_hr}")
@@ -24,6 +36,74 @@ function(fatal MESSAGE)
   endif()
   string(TOUPPER "${MESSAGE}" MESSAGE)
   message(FATAL_ERROR "*** CTest Result: FAILURE BECAUSE ${MESSAGE}")
+endfunction()
+
+#------------------------------------------------------------------------------
+# Report build configuration
+#------------------------------------------------------------------------------
+function(report_configuration)
+  set(_report_align 32)
+  message("")
+
+  # Convert input to token list
+  string(REGEX REPLACE "[ \t\n]+" ";" _args "${ARGN}")
+
+  # Iterate over tokens
+  foreach(_token ${_args})
+    # Group separator directive
+    if(_token MATCHES "^=+$")
+
+      fill(_hr "  " "-" 80)
+      message("${_hr}")
+
+      set(_env OFF)
+      set(_display_prefix "")
+      set(_value_prefix "")
+
+    elseif(_token STREQUAL "ENV")
+
+      # Environment variables directive
+      set(_env ON)
+
+    elseif(_token MATCHES "^[.]")
+
+      # Align column directive
+      string(SUBSTRING "${_token}" 1 -1 _report_align)
+
+    elseif(_token MATCHES "^<")
+
+      # Display name prefix directive
+      string(SUBSTRING "${_token}" 1 -1 _display_prefix)
+
+    elseif(_token MATCHES "^>")
+
+      # Value name prefix directive
+      string(SUBSTRING "${_token}" 1 -1 _value_prefix)
+
+    else()
+
+      # Get name and value
+      if(_token MATCHES "(.+)[(](.+)[)]")
+        set(_name ${_display_prefix}${CMAKE_MATCH_1})
+        set(_value ${_value_prefix}${CMAKE_MATCH_2})
+      else()
+        set(_name ${_display_prefix}${_token})
+        set(_value ${_value_prefix}${_token})
+      endif()
+
+      # Report value
+      if(_env)
+        fill(_aligned_name "  ${_name}" " " ${_report_align})
+        message("${_aligned_name} = $ENV{${_value}}")
+      else()
+        fill(_aligned_name "  ${_name}" " " ${_report_align})
+        message("${_aligned_name} = ${${_value}}")
+      endif()
+
+    endif()
+  endforeach()
+
+  message("")
 endfunction()
 
 #------------------------------------------------------------------------------
