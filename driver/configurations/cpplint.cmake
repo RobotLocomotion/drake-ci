@@ -1,25 +1,24 @@
 # Report build configuration
-message("
-  ------------------------------------------------------------------------------
-  UNIX                                = ${DASHBOARD_UNIX}
-  UNIX_DISTRIBUTION                   = ${DASHBOARD_UNIX_DISTRIBUTION}
-  UNIX_DISTRIBUTION_VERSION           = ${DASHBOARD_UNIX_DISTRIBUTION_VERSION}
-  APPLE                               = ${DASHBOARD_APPLE}
-  ------------------------------------------------------------------------------
-  CMAKE_VERSION                       = ${CMAKE_VERSION}
-  ------------------------------------------------------------------------------
-  CTEST_BUILD_NAME                    = ${DASHBOARD_BUILD_NAME}
-  CTEST_CHANGE_ID                     = ${CTEST_CHANGE_ID}
-  CTEST_BUILD_FLAGS                   = ${CTEST_BUILD_FLAGS}
-  CTEST_CMAKE_GENERATOR               = ${CTEST_CMAKE_GENERATOR}
-  CTEST_CONFIGURATION_TYPE            = ${CTEST_CONFIGURATION_TYPE}
-  CTEST_CONFIGURE_COMMAND             = ${CTEST_CONFIGURE_COMMAND}
-  CTEST_GIT_COMMAND                   = ${CTEST_GIT_COMMAND}
-  CTEST_SITE                          = ${CTEST_SITE}
-  CTEST_UPDATE_COMMAND                = ${CTEST_UPDATE_COMMAND}
-  CTEST_UPDATE_VERSION_ONLY           = ${CTEST_UPDATE_VERSION_ONLY}
-  CTEST_USE_LAUNCHERS                 = ${CTEST_USE_LAUNCHERS}
-  ------------------------------------------------------------------------------
+report_configuration("
+  ==================================== >DASHBOARD_
+  UNIX
+  UNIX_DISTRIBUTION
+  UNIX_DISTRIBUTION_VERSION
+  APPLE
+  ====================================
+  CMAKE_VERSION
+  ====================================
+  CTEST_BUILD_NAME(DASHBOARD_BUILD_NAME)
+  CTEST_CHANGE_ID
+  CTEST_BUILD_FLAGS
+  CTEST_CMAKE_GENERATOR
+  CTEST_CONFIGURATION_TYPE
+  CTEST_CONFIGURE_COMMAND
+  CTEST_GIT_COMMAND
+  CTEST_SITE
+  CTEST_UPDATE_COMMAND
+  CTEST_UPDATE_VERSION_ONLY
+  ====================================
   ")
 
 set(DASHBOARD_CDASH_SERVER "drake-cdash.csail.mit.edu")
