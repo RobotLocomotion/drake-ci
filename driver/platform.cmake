@@ -33,7 +33,7 @@ include(${DASHBOARD_DRIVER_DIR}/platform/unix.cmake)
 # Execute provisioning script, if requested
 if(PROVISION)
   string(TOLOWER
-    "${UNIX_DISTRIBUTION}/${UNIX_DISTRIBUTION_VERSION}"
+    "${DASHBOARD_UNIX_DISTRIBUTION}/${DASHBOARD_UNIX_DISTRIBUTION_VERSION}"
     PROVISION_DIR)
   set(PROVISION_SCRIPT
     "${DASHBOARD_WORKSPACE}/setup/${PROVISION_DIR}/install_prereqs.sh")

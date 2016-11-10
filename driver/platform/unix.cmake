@@ -24,17 +24,18 @@ endif()
 
 # Get distribution information
 if(APPLE)
-  set(UNIX_DISTRIBUTION "OS X")
+  set(DASHBOARD_UNIX_DISTRIBUTION "OS X")
   # TODO version
 elseif(EXISTS "/etc/os-release")
   file(READ "/etc/os-release" DISTRIBUTION_INFO)
   if(DISTRIBUTION_INFO MATCHES "(^|\n)NAME=\"?([^\n\"]+)\"?(\n|\$)")
-    set(UNIX_DISTRIBUTION "${CMAKE_MATCH_2}")
+    set(DASHBOARD_UNIX_DISTRIBUTION "${CMAKE_MATCH_2}")
   endif()
   if(DISTRIBUTION_INFO MATCHES "(^|\n)VERSION=\"?([0-9]+([.][0-9]+)?)")
-    set(UNIX_DISTRIBUTION_VERSION "${CMAKE_MATCH_2}")
+    set(DASHBOARD_UNIX_DISTRIBUTION_VERSION "${CMAKE_MATCH_2}")
   endif()
-  if(NOT DEFINED UNIX_DISTRIBUTION OR NOT DEFINED UNIX_DISTRIBUTION_VERSION)
+  if(NOT DEFINED DASHBOARD_UNIX_DISTRIBUTION OR
+     NOT DEFINED DASHBOARD_UNIX_DISTRIBUTION_VERSION)
     fatal("unable to determine platform distribution information")
   endif()
 else()

@@ -134,8 +134,8 @@ message("
   ROS_ROOT                            = $ENV{ROS_ROOT}
   ------------------------------------------------------------------------------
   UNIX                                = ${DASHBOARD_UNIX}
-  UNIX_DISTRIBUTION                   = ${UNIX_DISTRIBUTION}
-  UNIX_DISTRIBUTION_VERSION           = ${UNIX_DISTRIBUTION_VERSION}
+  UNIX_DISTRIBUTION                   = ${DASHBOARD_UNIX_DISTRIBUTION}
+  UNIX_DISTRIBUTION_VERSION           = ${DASHBOARD_UNIX_DISTRIBUTION_VERSION}
   APPLE                               = ${DASHBOARD_APPLE}
   ------------------------------------------------------------------------------
   CMAKE_VERSION                       = ${CMAKE_VERSION}
@@ -202,7 +202,6 @@ message("
   WITH_SEDUMI                         = ${DASHBOARD_WITH_SEDUMI}
   WITH_SIGNALSCOPE                    = ${DASHBOARD_WITH_SIGNALSCOPE}
   WITH_SNOPT                          = ${DASHBOARD_WITH_SNOPT}
-  WITH_SNOPT_PRECOMPILED              = ${DASHBOARD_WITH_SNOPT_PRECOMPILED}
   WITH_SPDLOG                         = ${DASHBOARD_WITH_SPDLOG}
   WITH_SPOTLESS                       = ${DASHBOARD_WITH_SPOTLESS}
   WITH_SWIG_MATLAB                    = ${DASHBOARD_WITH_SWIG_MATLAB}
