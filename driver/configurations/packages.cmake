@@ -129,6 +129,5 @@ else()
 endif()
 
 foreach(_package ${DASHBOARD_PACKAGES})
-  set(CACHE_WITH_${_package}
-    "WITH_${_package}:BOOL=${DASHBOARD_WITH_${_package}}")
+  cache_append(WITH_${_package} BOOL ${DASHBOARD_WITH_${_package}})
 endforeach()
