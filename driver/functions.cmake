@@ -56,6 +56,41 @@ function(prepend_flags VAR)
       set(${VAR} "${_flag}")
     endif()
   endforeach()
+  set(${VAR} "${${VAR}}" PARENT_SCOPE)
+endfunction()
+
+#------------------------------------------------------------------------------
+# Add an entry to the generated CMake cache
+#------------------------------------------------------------------------------
+macro(cache_append_literal STRING)
+  set(CACHE_CONTENT "${CACHE_CONTENT}${STRING}\n")
+endmacro()
+
+#------------------------------------------------------------------------------
+# Add an entry to the generated CMake cache
+#------------------------------------------------------------------------------
+macro(cache_append NAME TYPE VALUE)
+  cache_append_literal("${NAME}:${TYPE}=${VALUE}")
+endmacro()
+
+#------------------------------------------------------------------------------
+# Add flags to the generated CMake cache
+#------------------------------------------------------------------------------
+function(cache_flag NAME TYPE)
+  cmake_parse_arguments("_cf" "" "" "NAMES;EXTRA" ${ARGN})
+  if(DASHBOARD_${NAME})
+    if(DEFINED _cf_NAMES)
+      foreach(_name ${_cf_NAMES})
+        cache_append(${_name} ${TYPE} "${DASHBOARD_${NAME}}")
+      endforeach()
+    else()
+      cache_append(CMAKE_${NAME} ${TYPE} "${DASHBOARD_${NAME}}")
+    endif()
+    foreach(_extra ${_cf_EXTRA})
+      cache_append_literal("${_extra}")
+    endforeach()
+    set(CACHE_CONTENT "${CACHE_CONTENT}" PARENT_SCOPE)
+  endif()
 endfunction()
 
 #------------------------------------------------------------------------------
