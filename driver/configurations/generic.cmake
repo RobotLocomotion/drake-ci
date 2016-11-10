@@ -133,8 +133,10 @@ message("
   ROS_PACKAGE_PATH                    = $ENV{ROS_PACKAGE_PATH}
   ROS_ROOT                            = $ENV{ROS_ROOT}
   ------------------------------------------------------------------------------
-  APPLE                               = ${DASHBOARD_APPLE}
   UNIX                                = ${DASHBOARD_UNIX}
+  UNIX_DISTRIBUTION                   = ${UNIX_DISTRIBUTION}
+  UNIX_DISTRIBUTION_VERSION           = ${UNIX_DISTRIBUTION_VERSION}
+  APPLE                               = ${DASHBOARD_APPLE}
   ------------------------------------------------------------------------------
   CMAKE_VERSION                       = ${CMAKE_VERSION}
   ------------------------------------------------------------------------------

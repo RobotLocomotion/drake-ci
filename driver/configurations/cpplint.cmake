@@ -1,8 +1,10 @@
 # Report build configuration
 message("
   ------------------------------------------------------------------------------
-  APPLE                               = ${DASHBOARD_APPLE}
   UNIX                                = ${DASHBOARD_UNIX}
+  UNIX_DISTRIBUTION                   = ${UNIX_DISTRIBUTION}
+  UNIX_DISTRIBUTION_VERSION           = ${UNIX_DISTRIBUTION_VERSION}
+  APPLE                               = ${DASHBOARD_APPLE}
   ------------------------------------------------------------------------------
   CMAKE_VERSION                       = ${CMAKE_VERSION}
   ------------------------------------------------------------------------------
