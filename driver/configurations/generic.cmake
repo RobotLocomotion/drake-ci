@@ -150,14 +150,7 @@ set(CTEST_DROP_LOCATION
   "/submit.php?project=${DASHBOARD_SUPERBUILD_PROJECT_NAME}")
 set(CTEST_DROP_SITE_CDASH ON)
 
-set(DASHBOARD_SUPERBUILD_START_MESSAGE
-  "*** CTest Status: CONFIGURING / BUILDING SUPERBUILD")
-
-message("
-  ------------------------------------------------------------------------------
-  ${DASHBOARD_SUPERBUILD_START_MESSAGE}
-  ------------------------------------------------------------------------------
-  ")
+notice("CTest Status: CONFIGURING / BUILDING SUPERBUILD")
 
 ctest_start("${DASHBOARD_MODEL}" TRACK "${DASHBOARD_TRACK}" QUIET)
 ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}"
@@ -203,7 +196,7 @@ endif()
 string(REPLACE ";" " / " DASHBOARD_STEPS_STRING "${DASHBOARD_STEPS}")
 
 if(DASHBOARD_SUPERBUILD_FAILURE)
-  set(DASHBOARD_START_MESSAGE "*** CTest Status: NOT CONTINUING BECAUSE SUPERBUILD (PRE-DRAKE) WAS NOT SUCCESSFUL")
+  notice("CTest Status: NOT CONTINUING BECAUSE SUPERBUILD (PRE-DRAKE) WAS NOT SUCCESSFUL")
 else()
   set(DASHBOARD_PROJECT_NAME "Drake")
 
@@ -225,16 +218,8 @@ else()
     file(MAKE_DIRECTORY "${DASHBOARD_CCC_ANALYZER_HTML}")
   endif()
 
-  set(DASHBOARD_START_MESSAGE "*** CTest Status: ${DASHBOARD_STEPS_STRING} DRAKE")
-endif()
+  notice("CTest Status: ${DASHBOARD_STEPS_STRING} DRAKE")
 
-message("
-  ------------------------------------------------------------------------------
-  ${DASHBOARD_START_MESSAGE}
-  ------------------------------------------------------------------------------
-  ")
-
-if(NOT DASHBOARD_SUPERBUILD_FAILURE)
   ctest_start("${DASHBOARD_MODEL}" TRACK "${DASHBOARD_TRACK}" QUIET)
   ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}"
     RETURN_VALUE DASHBOARD_UPDATE_RETURN_VALUE QUIET)
@@ -289,13 +274,7 @@ if(NOT DASHBOARD_SUPERBUILD_FAILURE)
   endif()
 
   if(DASHBOARD_FAILURE)
-    set(DASHBOARD_BUILD_FAILURE_MESSAGE
-      "*** CTest Status: NOT CONTINUING BECAUSE BUILD WAS NOT SUCCESSFUL")
-    message("
-  ------------------------------------------------------------------------------
-  ${DASHBOARD_BUILD_FAILURE_MESSAGE}
-  ------------------------------------------------------------------------------
-    ")
+    notice("CTest Status: NOT CONTINUING BECAUSE BUILD WAS NOT SUCCESSFUL")
 
     set(DASHBOARD_INSTALL OFF)
     set(DASHBOARD_TEST OFF)
@@ -377,6 +356,7 @@ if(NOT DASHBOARD_SUPERBUILD_FAILURE)
   endif()
 endif()
 
+# Determine build result
 set(DASHBOARD_WARNING OFF)
 
 if(DASHBOARD_FAILURE)
@@ -384,14 +364,13 @@ if(DASHBOARD_FAILURE)
   set(DASHBOARD_MESSAGE "FAILURE DURING ${DASHBOARD_FAILURES_STRING}")
   file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
 else()
-  if(DASHBOARD_NUMBER_BUILD_WARNINGS EQUAL 1)
+  format_plural(DASHBOARD_MESSAGE
+    ZERO "SUCCESS"
+    ONE "SUCCESS BUT WITH 1 BUILD WARNING"
+    MANY "SUCCESS BUT WITH # BUILD WARNINGS"
+    ${DASHBOARD_NUMBER_BUILD_WARNINGS})
+  if(DASHBOARD_NUMBER_BUILD_WARNINGS GREATER 0)
     set(DASHBOARD_WARNING ON)
-    set(DASHBOARD_MESSAGE "SUCCESS BUT WITH 1 BUILD WARNING")
-  elseif(DASHBOARD_NUMBER_BUILD_WARNINGS GREATER 1)
-    set(DASHBOARD_WARNING ON)
-    set(DASHBOARD_MESSAGE "SUCCESS BUT WITH ${DASHBOARD_NUMBER_BUILD_WARNINGS} BUILD WARNINGS")
-  else()
-    set(DASHBOARD_MESSAGE "SUCCESS")
   endif()
 
   set(DASHBOARD_UNSTABLE OFF)
@@ -429,19 +408,15 @@ else()
   endif()
 endif()
 
+# Publish documentation, if requested, and if build succeeded
 if(DOCUMENTATION STREQUAL "publish")
   if(DASHBOARD_FAILURE OR DASHBOARD_UNSTABLE)
     set(DASHBOARD_PUBLISH_DOCUMENTATION OFF)
-    set(DASHBOARD_PUBLISH_DOCUMENTATION_MESSAGE "*** CTest Status: NOT PUBLISHING DOCUMENTATION BECAUSE BUILD WAS NOT SUCCESSFUL")
+    notice("CTest Status: NOT PUBLISHING DOCUMENTATION BECAUSE BUILD WAS NOT SUCCESSFUL")
   else()
     set(DASHBOARD_PUBLISH_DOCUMENTATION ON)
-    set(DASHBOARD_PUBLISH_DOCUMENTATION_MESSAGE "*** CTest Status: PUBLISHING DOCUMENTATION")
+    notice("CTest Status: PUBLISHING DOCUMENTATION")
   endif()
-  message("
-    ------------------------------------------------------------------------------
-    ${DASHBOARD_PUBLISH_DOCUMENTATION_MESSAGE}
-    ------------------------------------------------------------------------------
-  ")
   if(DASHBOARD_PUBLISH_DOCUMENTATION)
     execute_process(COMMAND "${DASHBOARD_TOOLS_DIR}/publish_documentation.bash"
       WORKING_DIRECTORY "${DASHBOARD_WORKSPACE}"
@@ -458,32 +433,8 @@ if(DOCUMENTATION STREQUAL "publish")
   endif()
 endif()
 
-set(DASHBOARD_MESSAGE "*** CTest Result: ${DASHBOARD_MESSAGE}")
-
-if(DASHBOARD_LABEL)
-  set(DASHBOARD_CDASH_SUPERBUILD_URL_MESSAGE
-    "*** CDash Superbuild URL: https://${DASHBOARD_CDASH_SERVER}/index.php?project=${DASHBOARD_SUPERBUILD_PROJECT_NAME}&showfilters=1&filtercount=2&showfilters=1&filtercombine=and&field1=label&compare1=61&value1=${DASHBOARD_LABEL}&field2=buildstarttime&compare2=84&value2=now")
-else()
-  set(DASHBOARD_CDASH_SUPERBUILD_URL_MESSAGE "*** CDash Superbuild URL:")
-endif()
-
-if(NOT DASHBOARD_SUPERBUILD_FAILURE AND DASHBOARD_LABEL)
-  set(DASHBOARD_CDASH_URL_MESSAGE
-    "*** CDash URL: https://${DASHBOARD_CDASH_SERVER}/index.php?project=${DASHBOARD_PROJECT_NAME}&showfilters=1&filtercount=2&showfilters=1&filtercombine=and&field1=label&compare1=61&value1=${DASHBOARD_LABEL}&field2=buildstarttime&compare2=84&value2=now")
-else()
-  set(DASHBOARD_CDASH_URL_MESSAGE "*** CDash URL:")
-endif()
-
-# Report build result and CDash links
-message("
-  ------------------------------------------------------------------------------
-  ${DASHBOARD_MESSAGE}
-  ------------------------------------------------------------------------------
-  ${DASHBOARD_CDASH_SUPERBUILD_URL_MESSAGE}
-  ------------------------------------------------------------------------------
-  ${DASHBOARD_CDASH_URL_MESSAGE}
-  ------------------------------------------------------------------------------
-  ")
+# Report dashboard status
+include(${DASHBOARD_DRIVER_DIR}/configurations/common/step-report.cmake)
 
 # Touch "warm" file
 if(NOT APPLE AND NOT DASHBOARD_WARM)
