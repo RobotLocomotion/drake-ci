@@ -25,16 +25,14 @@ report_configuration("
 set(DASHBOARD_CDASH_SERVER "drake-cdash.csail.mit.edu")
 set(DASHBOARD_NIGHTLY_START_TIME "00:00:00 EST")
 
-set(DASHBOARD_SUPERBUILD_FAILURE OFF)
-
 # Execute download step
-include(${DASHBOARD_DRIVER_DIR}/configurations/cpplint/step-download.cmake)
+execute_step(cpplint download)
 
 # Execute lint step (or skip, if download failed)
 if(DASHBOARD_SUPERBUILD_FAILURE)
   notice("CTest Status: NOT CONTINUING BECAUSE SUPERBUILD WAS NOT SUCCESSFUL")
 else()
-  include(${DASHBOARD_DRIVER_DIR}/configurations/cpplint/step-lint.cmake)
+  execute_step(cpplint lint)
 endif()
 
 # Determine build result
@@ -52,4 +50,4 @@ else()
 endif()
 
 # Report dashboard status
-include(${DASHBOARD_DRIVER_DIR}/configurations/common/step-report.cmake)
+execute_step(common report)
