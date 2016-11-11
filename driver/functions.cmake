@@ -12,6 +12,22 @@ function(fill VAR TEXT FILLER LENGTH)
 endfunction()
 
 #------------------------------------------------------------------------------
+# Format a string containing a number
+#------------------------------------------------------------------------------
+function(format_plural VAR)
+  cmake_parse_arguments("" "" "ZERO;ONE;MANY" ${ARGN})
+  set(_count ${_UNPARSED_ARGUMENTS})
+  if(_count EQUAL 0)
+    string(REPLACE "#" ${_count} _result "${_ZERO}")
+  elseif(_count EQUAL 1)
+    string(REPLACE "#" ${_count} _result "${_ONE}")
+  else()
+    string(REPLACE "#" ${_count} _result "${_MANY}")
+  endif()
+  set(${VAR} "${_result}" PARENT_SCOPE)
+endfunction()
+
+#------------------------------------------------------------------------------
 # Display one or more formatted notice messages
 #------------------------------------------------------------------------------
 function(notice)
