@@ -218,3 +218,10 @@ function(chmod PATH PERMISSIONS)
       _chmod_output)
   endif()
 endfunction()
+
+#------------------------------------------------------------------------------
+# Execute a build step
+#------------------------------------------------------------------------------
+macro(execute_step CONFIG NAME)
+  include(${DASHBOARD_DRIVER_DIR}/configurations/${CONFIG}/step-${NAME}.cmake)
+endmacro()
