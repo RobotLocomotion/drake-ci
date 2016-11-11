@@ -19,7 +19,7 @@ export provision=false
 export ros=false
 export track=experimental
 
-export BUILD_ID=0
+export BUILD_ID="$(date -u +'%y%j.%H.%M')"
 export JOB_NAME="unix-${compiler}-experimental"
 export NODE_NAME=$(hostname -s)
 export WORKSPACE="${HOME}/workspace/${JOB_NAME}"
