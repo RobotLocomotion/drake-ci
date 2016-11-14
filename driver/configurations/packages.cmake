@@ -80,7 +80,7 @@ else()
     disable_package(SWIGMAKE)
   endif()
 
-  if(MEMCHECK STREQUAL "msan" OR COMPILER STREQUAL "scan-build")
+  if(MEMCHECK STREQUAL "msan" OR COMPILER MATCHES "^scan-build")
     disable_package(IPOPT)
   endif()
 
@@ -129,5 +129,6 @@ else()
 endif()
 
 foreach(_package ${DASHBOARD_PACKAGES})
-  cache_append(WITH_${_package} BOOL ${DASHBOARD_WITH_${_package}})
+  set(CACHE_WITH_${_package}
+    "WITH_${_package}:BOOL=${DASHBOARD_WITH_${_package}}")
 endforeach()
