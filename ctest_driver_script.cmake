@@ -33,56 +33,7 @@ set(DASHBOARD_TOOLS_DIR ${CMAKE_CURRENT_LIST_DIR}/tools)
 set(DASHBOARD_TEMPORARY_FILES "")
 
 include(${DASHBOARD_DRIVER_DIR}/functions.cmake)
-
-# Set default compiler and generator (if not specified) or copy from environment
-if(NOT DEFINED ENV{compiler})
-  if(APPLE)
-    message(WARNING "*** ENV{compiler} was not set; defaulting to 'clang'")
-    set(COMPILER "clang")
-  else()
-    message(WARNING "*** ENV{compiler} was not set; defaulting to 'gcc'")
-    set(COMPILER "gcc")
-  endif()
-else()
-  set(COMPILER $ENV{compiler})
-endif()
-if(NOT DEFINED ENV{generator})
-  message(WARNING "*** ENV{generator} was not set; defaulting to 'make'")
-  set(GENERATOR "make")
-else()
-  set(GENERATOR $ENV{generator})
-endif()
-
-# Copy remaining configuration from environment
-set(COVERAGE $ENV{coverage})
-set(DEBUG $ENV{debug})
-set(DOCUMENTATION $ENV{documentation})
-set(MATLAB $ENV{matlab})
-set(MEMCHECK $ENV{memcheck})
-set(MINIMAL $ENV{minimal})
-set(OPEN_SOURCE $ENV{openSource})
-set(PROVISION $ENV{provision})
-set(ROS $ENV{ros})
-set(TRACK $ENV{track})
-
-# Verify workspace location and convert to CMake path
-if(NOT DEFINED ENV{WORKSPACE})
-  fatal("ENV{WORKSPACE} was not set")
-endif()
-
-file(TO_CMAKE_PATH "$ENV{WORKSPACE}" DASHBOARD_WORKSPACE)
-
-if(NOT APPLE)
-  set(DASHBOARD_WARM_FILE "/tmp/WARM")
-  if(EXISTS "${DASHBOARD_WARM_FILE}")
-    set(DASHBOARD_WARM ON)
-    set(DASHBOARD_WARM_MESSAGE "*** This EBS volume is warm")
-  else()
-    set(DASHBOARD_WARM OFF)
-    set(DASHBOARD_WARM_MESSAGE "*** This EBS volume is cold")
-  endif()
-  message("${DASHBOARD_WARM_MESSAGE}")
-endif()
+include(${DASHBOARD_DRIVER_DIR}/environment.cmake)
 
 # Set initial configuration
 set(CTEST_TEST_ARGS "")
@@ -95,32 +46,20 @@ set(CTEST_GIT_COMMAND "git")
 set(CTEST_UPDATE_COMMAND "${CTEST_GIT_COMMAND}")
 set(CTEST_UPDATE_VERSION_ONLY ON)
 
+set(DASHBOARD_CONFIGURATION_TYPE "Release")
+
+set(DASHBOARD_INSTALL ON)
+set(DASHBOARD_TEST ON)
+
 # Set up the site and build information
 include(${DASHBOARD_DRIVER_DIR}/site.cmake)
 
-# Set up compiler
-include(ProcessorCount)
-ProcessorCount(DASHBOARD_PROCESSOR_COUNT)
-
-if(DASHBOARD_PROCESSOR_COUNT EQUAL 0)
-  message(WARNING "*** CTEST_TEST_ARGS PARALLEL_LEVEL was not set")
-else()
-  set(CTEST_TEST_ARGS ${CTEST_TEST_ARGS}
-    PARALLEL_LEVEL ${DASHBOARD_PROCESSOR_COUNT})
-endif()
+# Set up the compiler and build platform
+include(${DASHBOARD_DRIVER_DIR}/platform.cmake)
 
 # Set up status variables
 set(DASHBOARD_FAILURE OFF)
 set(DASHBOARD_FAILURES "")
-
-if(GENERATOR STREQUAL "ninja")
-  set(CTEST_CMAKE_GENERATOR "Ninja")
-else()
-  set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
-  if(NOT DASHBOARD_PROCESSOR_COUNT EQUAL 0)
-    set(CTEST_BUILD_FLAGS "-j${DASHBOARD_PROCESSOR_COUNT}")
-  endif()
-endif()
 
 # check for compiler settings
 if(COMPILER MATCHES "^xenial")
@@ -161,52 +100,12 @@ elseif(COMPILER MATCHES "^scan-build")
   set(ENV{CCC_CXX} "clang++")
 endif()
 
-if(APPLE)
-  set(ENV{PATH} "/opt/X11/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:$ENV{PATH}")
-endif()
-
-if(MATLAB)
-  if(APPLE)
-    set(ENV{PATH} "/Applications/MATLAB_R2015b.app/bin:/Applications/MATLAB_R2015b.app/runtime/maci64:$ENV{PATH}")
-  else()
-    set(ENV{PATH} "/usr/local/MATLAB/R2015b/bin:$ENV{PATH}")
-  endif()
-endif()
-
-if(ROS AND EXISTS "/opt/ros/indigo/setup.bash")
-  set(ENV{ROS_ROOT} "/opt/ros/indigo/share/ros")
-  set(ENV{ROS_PACKAGE_PATH} "/opt/ros/indigo/share:/opt/ros/indigo/stacks")
-  set(ENV{ROS_MASTER_URI} "http://localhost:11311")
-  set(ENV{LD_LIBRARY_PATH} "/opt/ros/indigo/lib:$ENV{LD_LIBRARY_PATH}")
-  set(ENV{CPATH} "/opt/ros/indigo/include:$ENV{CPATH}")
-  set(ENV{PATH} "/opt/ros/indigo/bin:$ENV{PATH}")
-  set(ENV{ROSLISP_PACKAGE_DIRECTORIES} "")
-  set(ENV{ROS_DISTRO} "indigo")
-  set(ENV{PYTHONPATH} "/opt/ros/indigo/lib/python2.7/dist-packages:$ENV{PYTHONPATH}")
-  set(ENV{PKG_CONFIG_PATH} "/opt/ros/indigo/lib/pkgconfig:$ENV{PKG_CONFIG_PATH}")
-  set(ENV{CMAKE_PREFIX_PATH} "/opt/ros/indigo")
-  set(ENV{ROS_ETC_DIR} "/opt/ros/indigo/etc/ros")
-  set(ENV{ROS_HOME} "$ENV{WORKSPACE}")
-endif()
-
 if(NOT MINIMAL AND NOT OPEN_SOURCE AND NOT COMPILER STREQUAL "cpplint")
   include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
 endif()
 
-# clean out the old builds
-file(REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
-file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
-
-set(DASHBOARD_INSTALL ON)
-set(DASHBOARD_TEST ON)
-
 set(DASHBOARD_COVERAGE OFF)
 set(DASHBOARD_MEMCHECK OFF)
-
-# clean out any old installs
-file(REMOVE_RECURSE "${DASHBOARD_INSTALL_PREFIX}")
-
-set(DASHBOARD_CONFIGURATION_TYPE "Release")
 
 set(DASHBOARD_C_FLAGS "")
 set(DASHBOARD_CXX_FLAGS "")
@@ -252,21 +151,6 @@ if(COMPILER MATCHES "^scan-build")
   set(DASHBOARD_CCC_ANALYZER_HTML "${DASHBOARD_WORKSPACE}/build/drake/html")
   set(ENV{CCC_ANALYZER_HTML} "${DASHBOARD_CCC_ANALYZER_HTML}")
   file(MAKE_DIRECTORY "${DASHBOARD_CCC_ANALYZER_HTML}")
-endif()
-
-if(PROVISION)
-  if(COMPILER MATCHES "^xenial")
-    execute_process(COMMAND bash "-c" "yes | sudo ${DASHBOARD_WORKSPACE}/setup/ubuntu/16.04/install_prereqs.sh"
-      RESULT_VARIABLE INSTALL_PREREQS_RESULT_VARIABLE
-      OUTPUT_VARIABLE INSTALL_PREREQS_OUTPUT_VARIABLE
-      ERROR_VARIABLE INSTALL_PREREQS_ERROR_VARIABLE
-      OUTPUT_STRIP_TRAILING_WHITESPACE)
-    if(NOT INSTALL_PREREQS_RESULT_VARIABLE EQUAL 0)
-      message("${INSTALL_PREREQS_OUTPUT_VARIABLE}")
-      message("${INSTALL_PREREQS_ERROR_VARIABLE}")
-      fatal("provisioning script did not complete successfully")
-    endif()
-  endif()
 endif()
 
 # set compiler flags for coverage builds
@@ -409,15 +293,6 @@ set(ENV{CMAKE_FLAGS}
 
 include(${DASHBOARD_DRIVER_DIR}/configurations/packages.cmake)
 include(${DASHBOARD_DRIVER_DIR}/configurations/timeout.cmake)
-
-set(DASHBOARD_APPLE OFF)
-set(DASHBOARD_UNIX OFF)
-if(APPLE)
-  set(DASHBOARD_APPLE ON)
-endif()
-if(UNIX)
-  set(DASHBOARD_UNIX ON)
-endif()
 
 # Invoke the appropriate build driver for the selected configuration
 if(COMPILER STREQUAL "cpplint")
