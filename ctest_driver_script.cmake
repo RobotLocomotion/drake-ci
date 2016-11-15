@@ -153,21 +153,6 @@ if(COMPILER MATCHES "^scan-build")
   file(MAKE_DIRECTORY "${DASHBOARD_CCC_ANALYZER_HTML}")
 endif()
 
-if(PROVISION)
-  if(COMPILER MATCHES "^xenial")
-    execute_process(COMMAND bash "-c" "yes | sudo ${DASHBOARD_WORKSPACE}/setup/ubuntu/16.04/install_prereqs.sh"
-      RESULT_VARIABLE INSTALL_PREREQS_RESULT_VARIABLE
-      OUTPUT_VARIABLE INSTALL_PREREQS_OUTPUT_VARIABLE
-      ERROR_VARIABLE INSTALL_PREREQS_ERROR_VARIABLE
-      OUTPUT_STRIP_TRAILING_WHITESPACE)
-    if(NOT INSTALL_PREREQS_RESULT_VARIABLE EQUAL 0)
-      message("${INSTALL_PREREQS_OUTPUT_VARIABLE}")
-      message("${INSTALL_PREREQS_ERROR_VARIABLE}")
-      fatal("provisioning script did not complete successfully")
-    endif()
-  endif()
-endif()
-
 # set compiler flags for coverage builds
 if(COVERAGE)
   set(DASHBOARD_COVERAGE ON)
