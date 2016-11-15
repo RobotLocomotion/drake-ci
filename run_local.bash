@@ -26,5 +26,6 @@ export WORKSPACE="${HOME}/workspace/${JOB_NAME}"
 
 export PATH="/usr/local/bin:${PATH}"
 
+cd /tmp
 ctest -Dbuildname="${JOB_NAME}" -Dsite="${NODE_NAME}" -S "${WORKSPACE}/ci/ctest_driver_script.cmake" --extra-verbose --output-on-failure
 [[ (-e "${WORKSPACE}/SUCCESS" || -e "${WORKSPACE}/UNSTABLE") && ! -e "${WORKSPACE}/FAILURE" ]]
