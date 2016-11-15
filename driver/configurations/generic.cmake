@@ -1,6 +1,12 @@
 set(CTEST_USE_LAUNCHERS ON)
 set(ENV{CTEST_USE_LAUNCHERS_DEFAULT} 1)
 
+# Clean out the old builds and/or installs
+file(REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
+file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
+file(REMOVE_RECURSE "${DASHBOARD_INSTALL_PREFIX}")
+
+# Write initial cache
 set(CACHE_C_FLAGS "")
 set(CACHE_C_INCLUDE_WHAT_YOU_USE "")
 set(CACHE_CXX_FLAGS "")
@@ -102,8 +108,10 @@ message("
   ROS_PACKAGE_PATH                    = $ENV{ROS_PACKAGE_PATH}
   ROS_ROOT                            = $ENV{ROS_ROOT}
   ------------------------------------------------------------------------------
-  APPLE                               = ${DASHBOARD_APPLE}
   UNIX                                = ${DASHBOARD_UNIX}
+  UNIX_DISTRIBUTION                   = ${DASHBOARD_UNIX_DISTRIBUTION}
+  UNIX_DISTRIBUTION_VERSION           = ${DASHBOARD_UNIX_DISTRIBUTION_VERSION}
+  APPLE                               = ${DASHBOARD_APPLE}
   ------------------------------------------------------------------------------
   CMAKE_VERSION                       = ${CMAKE_VERSION}
   ------------------------------------------------------------------------------
