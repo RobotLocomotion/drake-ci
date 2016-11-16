@@ -60,9 +60,7 @@ include(${DASHBOARD_DRIVER_DIR}/site.cmake)
 
 # Set up the compiler and build platform
 include(${DASHBOARD_DRIVER_DIR}/platform.cmake)
-if(NOT COMPILER STREQUAL "cpplint")
-  include(${DASHBOARD_DRIVER_DIR}/compiler.cmake)
-endif()
+include(${DASHBOARD_DRIVER_DIR}/compiler.cmake)
 
 # Set up status variables
 set(DASHBOARD_FAILURE OFF)
