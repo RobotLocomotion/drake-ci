@@ -1,5 +1,35 @@
+# Set base configuration
 set(CTEST_USE_LAUNCHERS ON)
 set(ENV{CTEST_USE_LAUNCHERS_DEFAULT} 1)
+
+set(DASHBOARD_COVERAGE OFF)
+set(DASHBOARD_MEMCHECK OFF)
+set(DASHBOARD_LINK_WHAT_YOU_USE OFF)
+
+# Include additional configuration information
+include(${DASHBOARD_DRIVER_DIR}/configurations/packages.cmake)
+include(${DASHBOARD_DRIVER_DIR}/configurations/timeout.cmake)
+
+if(NOT MINIMAL AND NOT OPEN_SOURCE AND NOT COMPILER STREQUAL "cpplint")
+  include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
+endif()
+
+# Set up diagnostic tools
+if(COMPILER STREQUAL "include-what-you-use")
+  include(${DASHBOARD_DRIVER_DIR}/configurations/include-what-you-use.cmake)
+elseif(COMPILER STREQUAL "link-what-you-use")
+  include(${DASHBOARD_DRIVER_DIR}/configurations/link-what-you-use.cmake)
+elseif(COMPILER STREQUAL "scan-build")
+  include(${DASHBOARD_DRIVER_DIR}/configurations/scan-build.cmake)
+endif()
+
+if(COVERAGE)
+  include(${DASHBOARD_DRIVER_DIR}/configurations/coverage.cmake)
+endif()
+
+if(MEMCHECK MATCHES "^([amt]san|valgrind)$")
+  include(${DASHBOARD_DRIVER_DIR}/configurations/memcheck.cmake)
+endif()
 
 # Clean out the old builds and/or installs
 file(REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
@@ -16,7 +46,6 @@ set(CACHE_CXX_STANDARD_REQUIRED "")
 set(CACHE_EXE_LINKER_FLAGS "")
 set(CACHE_FORTRAN_FLAGS "")
 set(CACHE_INSTALL_PREFIX "")
-set(CACHE_NINJA_LINK_POOL_SIZE "")
 set(CACHE_POSITION_INDEPENDENT_CODE "")
 set(CACHE_SHARED_LINKER_FLAGS "")
 set(CACHE_STATIC_LINKER_FLAGS "")
@@ -48,10 +77,6 @@ if(DASHBOARD_INSTALL_PREFIX)
 endif()
 set(CACHE_LINK_WHAT_YOU_USE
   "CMAKE_LINK_WHAT_YOU_USE:BOOL=${DASHBOARD_LINK_WHAT_YOU_USE}")
-if(DASHBOARD_NINJA_LINK_POOL_SIZE)
-  set(CACHE_NINJA_LINK_POOL_SIZE
-    "CMAKE_NINJA_LINK_POOL_SIZE:STRING=${DASHBOARD_NINJA_LINK_POOL_SIZE}")
-endif()
 if(DASHBOARD_POSITION_INDEPENDENT_CODE)
   set(CACHE_POSITION_INDEPENDENT_CODE
     "CMAKE_POSITION_INDEPENDENT_CODE:BOOL=${DASHBOARD_POSITION_INDEPENDENT_CODE}")
@@ -125,7 +150,6 @@ message("
   CMAKE_Fortran_FLAGS                += ${DASHBOARD_FORTRAN_FLAGS}
   CMAKE_INSTALL_PREFIX                = ${DASHBOARD_INSTALL_PREFIX}
   CMAKE_LINK_WHAT_YOU_USE             = ${DASHBOARD_LINK_WHAT_YOU_USE}
-  CMAKE_NINJA_LINK_POOL_SIZE          = ${DASHBOARD_NINJA_LINK_POOL_SIZE}
   CMAKE_POSITION_INDEPENDENT_CODE     = ${DASHBOARD_POSITION_INDEPENDENT_CODE}
   CMAKE_SHARED_LINKER_FLAGS          += ${DASHBOARD_SHARED_LINKER_FLAGS}
   CMAKE_STATIC_LINKER_FLAGS          += ${DASHBOARD_STATIC_LINKER_FLAGS}
@@ -328,7 +352,7 @@ else()
   set(CTEST_DROP_LOCATION "/submit.php?project=${DASHBOARD_PROJECT_NAME}")
   set(CTEST_DROP_SITE_CDASH ON)
 
-  if(COMPILER MATCHES "^scan-build")
+  if(COMPILER STREQUAL "scan-build")
     file(REMOVE_RECURSE "${DASHBOARD_CCC_ANALYZER_HTML}")
     file(MAKE_DIRECTORY "${DASHBOARD_CCC_ANALYZER_HTML}")
   endif()
@@ -357,7 +381,6 @@ if(NOT DASHBOARD_SUPERBUILD_FAILURE)
     CACHE_C_INCLUDE_WHAT_YOU_USE
     CACHE_CXX_INCLUDE_WHAT_YOU_USE
     CACHE_LINK_WHAT_YOU_USE
-    CACHE_NINJA_LINK_POOL_SIZE
     CACHE_POSITION_INDEPENDENT_CODE
   )
   foreach(DRAKE_CACHE_VAR ${DRAKE_CACHE_VARS})
@@ -376,7 +399,7 @@ if(NOT DASHBOARD_SUPERBUILD_FAILURE)
 
   ctest_read_custom_files("${CTEST_BINARY_DIRECTORY}")
 
-  if(COMPILER MATCHES "^(include|link)-what-you-use")
+  if(COMPILER MATCHES "^(include|link)-what-you-use$")
     set(CTEST_CUSTOM_MAXIMUM_NUMBER_OF_ERRORS 1000)
     set(CTEST_CUSTOM_MAXIMUM_NUMBER_OF_WARNINGS 1000)
   else()
@@ -506,7 +529,7 @@ else()
   set(DASHBOARD_UNSTABLES "")
 
   if(DASHBOARD_WARNING)
-    if(COMPILER MATCHES "^((include|link)-what-you-use|scan-build)")
+    if(COMPILER MATCHES "^((include|link)-what-you-use|scan-build)$")
       set(DASHBOARD_UNSTABLE ON)
       list(APPEND DASHBOARD_UNSTABLES "STATIC ANALYSIS TOOL")
     endif()

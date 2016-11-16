@@ -80,11 +80,11 @@ else()
     disable_package(SWIGMAKE)
   endif()
 
-  if(MEMCHECK STREQUAL "msan" OR COMPILER MATCHES "^scan-build")
+  if(MEMCHECK STREQUAL "msan" OR COMPILER STREQUAL "scan-build")
     disable_package(IPOPT)
   endif()
 
-  if(NOT COVERAGE AND NOT MEMCHECK MATCHES "^[amt]san$" OR NOT COMPILER MATCHES "^(clang|scan-build)")
+  if(NOT COVERAGE AND NOT MEMCHECK MATCHES "^[amt]san$" OR NOT COMPILER MATCHES "^(clang|scan-build)$")
     enable_package(AVL)
     enable_package(XFOIL)
   endif()
