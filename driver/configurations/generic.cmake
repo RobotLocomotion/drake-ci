@@ -21,7 +21,7 @@ endif()
 include(${DASHBOARD_DRIVER_DIR}/configurations/packages.cmake)
 include(${DASHBOARD_DRIVER_DIR}/configurations/timeout.cmake)
 
-if(NOT MINIMAL AND NOT OPEN_SOURCE AND NOT COMPILER STREQUAL "cpplint")
+if(NOT MINIMAL AND NOT OPEN_SOURCE)
   include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
 endif()
 
