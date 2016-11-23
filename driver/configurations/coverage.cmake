@@ -17,6 +17,7 @@ prepend_flags(DASHBOARD_FORTRAN_FLAGS
 prepend_flags(DASHBOARD_SHARED_LINKER_FLAGS
   ${DASHBOARD_COVERAGE_FLAGS})
 
+# Find coverage tool
 if(COMPILER STREQUAL "clang")
   if(APPLE)
     find_program(DASHBOARD_XCRUN_COMMAND xcrun)
@@ -57,3 +58,8 @@ list(APPEND CTEST_CUSTOM_COVERAGE_EXCLUDE
   ".*/thirdParty/.*"
   ".*/test/.*"
 )
+
+# Disable Fortran if using clang, as they do not play nicely together
+if(COMPILER MATCHES "^(clang|scan-build)$")
+  cache_append(DISABLE_FORTRAN BOOL ON)
+endif()
