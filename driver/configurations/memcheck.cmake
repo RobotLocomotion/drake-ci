@@ -59,3 +59,10 @@ else()
 endif()
 
 set(CTEST_MEMORYCHECK_TYPE "${DASHBOARD_MEMORYCHECK_TYPE}")
+
+# Disable Python (and maybe Fortran) when using Valgrind or sanitizers, as
+# they tend to make more trouble than they are worth
+cache_append(DISABLE_PYTHON BOOL ON)
+if(MEMCHECK MATCHES "^([amt]san|valgrind)$")
+  cache_append(DISABLE_FORTRAN BOOL ON)
+endif()
