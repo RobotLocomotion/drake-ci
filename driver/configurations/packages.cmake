@@ -84,11 +84,6 @@ else()
     disable_package(IPOPT)
   endif()
 
-  if(NOT COVERAGE AND NOT MEMCHECK MATCHES "^[amt]san$" OR NOT COMPILER MATCHES "^(clang|scan-build)$")
-    enable_package(AVL)
-    enable_package(XFOIL)
-  endif()
-
   if(NOT OPEN_SOURCE)
     if(APPLE)
       set(DASHBOARD_GUROBI_DISTRO "$ENV{HOME}/gurobi6.0.5a_mac64.pkg")
@@ -105,7 +100,9 @@ else()
   endif()
 
   if(MATLAB)
+    enable_package(AVL)
     enable_package(SPOTLESS)
+    enable_package(XFOIL)
     enable_package(YALMIP)
 
     if(APPLE)
