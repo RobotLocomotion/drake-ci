@@ -67,70 +67,7 @@ cache_append(LONG_RUNNING_TESTS BOOL ${DASHBOARD_LONG_RUNNING_TESTS})
 cache_append(SKIP_DRAKE_BUILD BOOL ON)
 
 # Report build configuration
-report_configuration(".38
-  ==================================== ENV
-  CC
-  CCC_CC
-  CCC_CXX
-  CXX
-  F77
-  FC
-  ==================================== ENV
-  GTEST_DEATH_TEST_USE_FORK
-  ==================================== ENV
-  ROS_DISTRO
-  ROS_ETC_DIR
-  ROS_HOME
-  ROS_MASTER_URI
-  ROS_PACKAGE_PATH
-  ROS_ROOT
-  ==================================== >DASHBOARD_
-  UNIX
-  UNIX_DISTRIBUTION
-  UNIX_DISTRIBUTION_VERSION
-  APPLE
-  ====================================
-  CMAKE_VERSION
-  ==================================== >DASHBOARD_ <CMAKE_
-  C_FLAGS
-  CXX_FLAGS
-  CXX_STANDARD
-  FORTRAN_FLAGS
-  INSTALL_PREFIX
-  INCLUDE_WHAT_YOU_USE
-  LINK_WHAT_YOU_USE
-  POSITION_INDEPENDENT_CODE
-  EXE_LINKER_FLAGS(SHARED_LINKER_FLAGS)
-  SHARED_LINKER_FLAGS
-  STATIC_LINKER_FLAGS
-  VERBOSE_MAKEFILE
-  ====================================
-  CTEST_BUILD_NAME(DASHBOARD_BUILD_NAME)
-  CTEST_CHANGE_ID
-  CTEST_BUILD_FLAGS
-  CTEST_CMAKE_GENERATOR
-  CTEST_CONFIGURATION_TYPE
-  CTEST_CONFIGURE_COMMAND
-  CTEST_COVERAGE_COMMAND
-  CTEST_COVERAGE_EXTRA_FLAGS
-  CTEST_GIT_COMMAND
-  CTEST_MEMORYCHECK_COMMAND
-  CTEST_MEMORYCHECK_COMMAND_OPTIONS
-  CTEST_MEMORYCHECK_SUPPRESSIONS_FILE
-  CTEST_MEMORYCHECK_TYPE
-  CTEST_SITE
-  CTEST_TEST_TIMEOUT
-  CTEST_UPDATE_COMMAND
-  CTEST_UPDATE_VERSION_ONLY
-  CTEST_USE_LAUNCHERS
-  ==================================== >DASHBOARD_
-  ENABLE_DOCUMENTATION
-  LONG_RUNNING_TESTS
-  TEST_TIMEOUT_MULTIPLIER
-  ==================================== <WITH_ >DASHBOARD_WITH_
-  ${DASHBOARD_PACKAGES}
-  ====================================
-  ")
+execute_step(common report-configuration)
 
 # Prepare to start build
 set(DASHBOARD_CDASH_SERVER "drake-cdash.csail.mit.edu")
