@@ -11,3 +11,5 @@ set(DASHBOARD_INCLUDE_WHAT_YOU_USE
   "${DASHBOARD_INCLUDE_WHAT_YOU_USE_COMMAND}"
   "-Xiwyu"
   "--mapping_file=${DASHBOARD_WORKSPACE}/drake/include-what-you-use.imp")
+
+list(APPEND TOOLING_FLAGS INCLUDE_WHAT_YOU_USE)
