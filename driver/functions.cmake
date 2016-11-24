@@ -59,6 +59,7 @@ endfunction()
 #------------------------------------------------------------------------------
 function(report_configuration)
   set(_report_align 32)
+  set(_empty_section FALSE)
   message("")
 
   # Convert input to token list
@@ -69,12 +70,15 @@ function(report_configuration)
     # Group separator directive
     if(_token MATCHES "^=+$")
 
-      fill(_hr "  " "-" 80)
-      message("${_hr}")
+      if(NOT _empty_section)
+        fill(_hr "  " "-" 80)
+        message("${_hr}")
+      endif()
 
       set(_env OFF)
       set(_display_prefix "")
       set(_value_prefix "")
+      set(_empty_section TRUE)
 
     elseif(_token STREQUAL "ENV")
 
@@ -115,6 +119,7 @@ function(report_configuration)
         fill(_aligned_name "  ${_name}" " " ${_report_align})
         message("${_aligned_name} = ${${_value}}")
       endif()
+      set(_empty_section FALSE)
 
     endif()
   endforeach()
