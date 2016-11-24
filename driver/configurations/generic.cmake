@@ -209,7 +209,7 @@ if(DOCUMENTATION STREQUAL "publish")
 endif()
 
 # Report dashboard status
-execute_step(common report)
+execute_step(common report-status)
 
 # Touch "warm" file
 if(NOT APPLE AND NOT DASHBOARD_WARM)
