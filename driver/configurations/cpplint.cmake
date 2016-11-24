@@ -50,4 +50,4 @@ else()
 endif()
 
 # Report dashboard status
-execute_step(common report)
+execute_step(common report-status)
