@@ -59,6 +59,7 @@ endfunction()
 #------------------------------------------------------------------------------
 function(report_configuration)
   set(_report_align 32)
+  set(_empty_section FALSE)
   message("")
 
   # Convert input to token list
@@ -69,12 +70,15 @@ function(report_configuration)
     # Group separator directive
     if(_token MATCHES "^=+$")
 
-      fill(_hr "  " "-" 80)
-      message("${_hr}")
+      if(NOT _empty_section)
+        fill(_hr "  " "-" 80)
+        message("${_hr}")
+      endif()
 
       set(_env OFF)
       set(_display_prefix "")
       set(_value_prefix "")
+      set(_empty_section TRUE)
 
     elseif(_token STREQUAL "ENV")
 
@@ -115,6 +119,7 @@ function(report_configuration)
         fill(_aligned_name "  ${_name}" " " ${_report_align})
         message("${_aligned_name} = ${${_value}}")
       endif()
+      set(_empty_section FALSE)
 
     endif()
   endforeach()
@@ -216,6 +221,43 @@ function(chmod PATH PERMISSIONS)
   if(NOT _chmod_result EQUAL 0)
     fatal("setting permissions on ${MESSAGE} was not successful"
       _chmod_output)
+  endif()
+endfunction()
+
+#------------------------------------------------------------------------------
+# Start a dashboard submission
+#------------------------------------------------------------------------------
+function(begin_stage)
+  cmake_parse_arguments("_bs"
+    ""
+    "URL_NAME;BUILD_NAME;PROJECT_NAME"
+    ""
+    ${ARGN})
+
+  set(CTEST_BUILD_NAME "${_bs_BUILD_NAME}" PARENT_SCOPE)
+  set(CTEST_PROJECT_NAME "${_bs_PROJECT_NAME}" PARENT_SCOPE)
+  set(CTEST_NIGHTLY_START_TIME "${DASHBOARD_NIGHTLY_START_TIME}" PARENT_SCOPE)
+  set(CTEST_DROP_METHOD "https" PARENT_SCOPE)
+  set(CTEST_DROP_SITE "${DASHBOARD_CDASH_SERVER}" PARENT_SCOPE)
+  set(CTEST_DROP_LOCATION "/submit.php?project=${_bs_PROJECT_NAME}" PARENT_SCOPE)
+  set(CTEST_DROP_SITE_CDASH ON PARENT_SCOPE)
+
+  if(DEFINED _bs_URL_NAME)
+    set(_preamble "CDash ${_bs_URL_NAME} URL")
+  else()
+    set(_preamble "CDash URL")
+  endif()
+
+  if(NOT DASHBOARD_CDASH_URL_MESSAGES MATCHES "${_preamble}")
+    if(DASHBOARD_LABEL)
+      set(_url_message
+      "${_preamble}: https://${DASHBOARD_CDASH_SERVER}/index.php?project=${_bs_PROJECT_NAME}&showfilters=1&filtercount=2&showfilters=1&filtercombine=and&field1=label&compare1=61&value1=${DASHBOARD_LABEL}&field2=buildstarttime&compare2=84&value2=now")
+    else()
+      set(_url_message "${_preamble}:")
+    endif()
+    set(DASHBOARD_CDASH_URL_MESSAGES
+      ${DASHBOARD_CDASH_URL_MESSAGES} ${_url_message}
+      PARENT_SCOPE)
   endif()
 endfunction()
 

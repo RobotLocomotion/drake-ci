@@ -1,5 +1,3 @@
-set(DASHBOARD_PROJECT_NAME "Drake")
-
 set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_WORKSPACE}/drake")
 set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/build/drake")
 
@@ -19,13 +17,9 @@ notice("CTest Status: ${DASHBOARD_STEPS_STRING} DRAKE")
 
 # Switch the dashboard to the drake only dashboard
 # TODO remove when subprojects arrive
-set(CTEST_BUILD_NAME "${DASHBOARD_BUILD_NAME}-drake")
-set(CTEST_PROJECT_NAME "${DASHBOARD_PROJECT_NAME}")
-set(CTEST_NIGHTLY_START_TIME "${DASHBOARD_NIGHTLY_START_TIME}")
-set(CTEST_DROP_METHOD "https")
-set(CTEST_DROP_SITE "${DASHBOARD_CDASH_SERVER}")
-set(CTEST_DROP_LOCATION "/submit.php?project=${DASHBOARD_PROJECT_NAME}")
-set(CTEST_DROP_SITE_CDASH ON)
+begin_stage(
+  PROJECT_NAME "Drake"
+  BUILD_NAME "${DASHBOARD_BUILD_NAME}-drake")
 
 # Clean out old scan-build output
 if(COMPILER STREQUAL "scan-build")
