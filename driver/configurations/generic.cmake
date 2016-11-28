@@ -69,10 +69,6 @@ cache_append(SKIP_DRAKE_BUILD BOOL ON)
 # Report build configuration
 execute_step(common report-configuration)
 
-# Prepare to start build
-set(DASHBOARD_CDASH_SERVER "drake-cdash.csail.mit.edu")
-set(DASHBOARD_NIGHTLY_START_TIME "00:00:00 EST")
-
 # Build the pre-drake superbuild
 execute_step(generic pre-drake)
 
