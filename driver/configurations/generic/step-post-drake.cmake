@@ -2,15 +2,10 @@ set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_WORKSPACE}")
 set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/build")
 
 # Switch the dashboard (back) to the drake superbuild dashboard
-# TODO remove when subprojects arrive
-set(CTEST_BUILD_NAME "${DASHBOARD_BUILD_NAME}-post-drake")
-set(CTEST_PROJECT_NAME "${DASHBOARD_SUPERBUILD_PROJECT_NAME}")
-set(CTEST_NIGHTLY_START_TIME "${DASHBOARD_NIGHTLY_START_TIME}")
-set(CTEST_DROP_METHOD "https")
-set(CTEST_DROP_SITE "${DASHBOARD_CDASH_SERVER}")
-set(CTEST_DROP_LOCATION
-  "/submit.php?project=${DASHBOARD_SUPERBUILD_PROJECT_NAME}")
-set(CTEST_DROP_SITE_CDASH ON)
+begin_stage(
+  URL_NAME "Superbuild"
+  PROJECT_NAME "drake-superbuild"
+  BUILD_NAME "${DASHBOARD_BUILD_NAME}-post-drake")
 
 # Set up the build
 ctest_start("${DASHBOARD_MODEL}" TRACK "${DASHBOARD_TRACK}" QUIET)
