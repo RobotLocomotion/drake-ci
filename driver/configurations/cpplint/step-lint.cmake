@@ -1,21 +1,14 @@
-# TODO move to site.cmake when subprojects arrive
-set(DASHBOARD_PROJECT_NAME "Drake")
-
-# now start the actual drake build
 set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_WORKSPACE}/drake")
 set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/build/drake")
 
-# switch the dashboard to the drake only dashboard
-set(CTEST_BUILD_NAME "${DASHBOARD_BUILD_NAME}-drake-cpplint")
-set(CTEST_PROJECT_NAME "${DASHBOARD_PROJECT_NAME}")
-set(CTEST_NIGHTLY_START_TIME "${DASHBOARD_NIGHTLY_START_TIME}")
-set(CTEST_DROP_METHOD "https")
-set(CTEST_DROP_SITE "${DASHBOARD_CDASH_SERVER}")
-set(CTEST_DROP_LOCATION "/submit.php?project=${DASHBOARD_PROJECT_NAME}")
-set(CTEST_DROP_SITE_CDASH ON)
-
 notice("CTest Status: RUNNING CPPLINT")
 
+# Switch the dashboard to the drake only dashboard
+begin_stage(
+  PROJECT_NAME "Drake"
+  BUILD_NAME "${DASHBOARD_BUILD_NAME}-drake-cpplint")
+
+# Now start the actual drake build
 ctest_start("${DASHBOARD_MODEL}" TRACK "${DASHBOARD_TRACK}" QUIET)
 ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}"
   RETURN_VALUE DASHBOARD_UPDATE_RETURN_VALUE QUIET)

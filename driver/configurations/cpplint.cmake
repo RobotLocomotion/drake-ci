@@ -21,10 +21,6 @@ report_configuration("
   ====================================
   ")
 
-# Prepare to start build
-set(DASHBOARD_CDASH_SERVER "drake-cdash.csail.mit.edu")
-set(DASHBOARD_NIGHTLY_START_TIME "00:00:00 EST")
-
 # Execute download step
 execute_step(cpplint download)
 
@@ -50,4 +46,4 @@ else()
 endif()
 
 # Report dashboard status
-execute_step(common report)
+execute_step(common report-status)
