@@ -1,6 +1,6 @@
 # Jenkins passes down the value of JAVA_HOME from master to slave for
 # inexplicable reasons.
-if(UNIX_DISTRIBUTION STREQUAL "Ubuntu" AND UNIX_DISTRIBUTION_VERSION VERSION_EQUAL "16.04")
+if(DASHBOARD_UNIX_DISTRIBUTION STREQUAL "Ubuntu" AND DASHBOARD_UNIX_DISTRIBUTION_VERSION VERSION_EQUAL "16.04")
   set(ENV{JAVA_HOME} "/usr/lib/jvm/java-8-openjdk-amd64")
 endif()
 
