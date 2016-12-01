@@ -4,16 +4,14 @@
 #
 #   ENV{BUILD_ID}         optional    value of Jenkins BUILD_ID
 #   ENV{WORKSPACE}        required    value of Jenkins WORKSPACE
-#
-#   ENV{generator}        optional    "make" | "ninja"
 #   ENV{compiler}         optional    "gcc" | "clang" | "scan-build" |
 #                                     "include-what-you-use" |
 #                                     "link-what-you-use" |
-#                                     "cpplint" |
-#                                     "xenial-gcc" | "xenial-clang"
+#                                     "cpplint"
 #   ENV{coverage}         optional    boolean
 #   ENV{debug}            optional    boolean
 #   ENV{documentation}    optional    boolean | "publish"
+#   ENV{generator}        optional    "bazel" | "make" | "ninja"
 #   ENV{ghprbPullId}      optional    value for CTEST_CHANGE_ID
 #   ENV{matlab}           optional    boolean
 #   ENV{memcheck}         optional    "asan" | "msan" | "tsan" | "valgrind"
@@ -80,6 +78,8 @@ set(ENV{CMAKE_FLAGS}
 # Invoke the appropriate build driver for the selected configuration
 if(COMPILER STREQUAL "cpplint")
   include(${DASHBOARD_DRIVER_DIR}/configurations/cpplint.cmake)
+elseif(GENERATOR STREQUAL "bazel")
+  include(${DASHBOARD_DRIVER_DIR}/configurations/bazel.cmake)
 else()
   include(${DASHBOARD_DRIVER_DIR}/configurations/generic.cmake)
 endif()
