@@ -1,6 +1,6 @@
 # Jenkins passes down the value of JAVA_HOME from master to slave for
 # inexplicable reasons.
-if(UNIX_DISTRIBUTION STREQUAL "Ubuntu" AND UNIX_DISTRIBUTION_VERSION STREQUAL "16.04")
+if(UNIX_DISTRIBUTION STREQUAL "Ubuntu" AND UNIX_DISTRIBUTION_VERSION VERSION_EQUAL "16.04")
   set(ENV{JAVA_HOME} "/usr/lib/jvm/java-8-openjdk-amd64")
 endif()
 
@@ -21,6 +21,8 @@ if(DASHBOARD_BAZEL_VERSION_RESULT_VARIABLE EQUAL 0)
   if(DASHBOARD_BAZEL_REGEX_MATCH_OUTPUT_VARIABLE)
     set(DASHBOARD_BAZEL_VERSION "${CMAKE_MATCH_1}")
   endif()
+else()
+  fatal("could not determine bazel version")
 endif()
 
 set(DASHBOARD_BAZEL_STARTUP_OPTIONS
