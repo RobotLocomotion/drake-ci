@@ -71,6 +71,16 @@ macro(append_step_status STEP STATUS)
 endmacro()
 
 #------------------------------------------------------------------------------
+# Set dashboard status message and write status file for specified status
+#------------------------------------------------------------------------------
+function(report_status STATUS MESSAGE)
+  string(REPLACE ";" " / " _steps "${DASHBOARD_${STATUS}S}")
+  string(REPLACE "%STEPS%" "${_steps}" _message "${MESSAGE}")
+  set(DASHBOARD_MESSAGE "${_message}" PARENT_SCOPE)
+  file(WRITE "${DASHBOARD_WORKSPACE}/${STATUS}")
+endfunction()
+
+#------------------------------------------------------------------------------
 # Report build configuration
 #------------------------------------------------------------------------------
 function(report_configuration)

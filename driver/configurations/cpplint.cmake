@@ -31,19 +31,13 @@ else()
   execute_step(cpplint lint)
 endif()
 
-# Determine build result
-if(DASHBOARD_FAILURE)
-  string(REPLACE ";" " / " DASHBOARD_FAILURES_STRING "${DASHBOARD_FAILURES}")
-  set(DASHBOARD_MESSAGE "FAILURE DURING ${DASHBOARD_FAILURES_STRING}")
-  file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
-else()
+# Determine build result and report dashboard status
+if(NOT DASHBOARD_FAILURE)
   format_plural(DASHBOARD_MESSAGE
     ZERO "SUCCESS"
     ONE "SUCCESS BUT WITH 1 BUILD WARNING"
     MANY "SUCCESS BUT WITH # BUILD WARNINGS"
     ${DASHBOARD_NUMBER_BUILD_WARNINGS})
-  file(WRITE "${DASHBOARD_WORKSPACE}/SUCCESS")
 endif()
 
-# Report dashboard status
 execute_step(common report-status)
