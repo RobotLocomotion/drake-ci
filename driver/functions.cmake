@@ -55,6 +55,22 @@ function(fatal MESSAGE)
 endfunction()
 
 #------------------------------------------------------------------------------
+# Clear status flag and list of causes
+#------------------------------------------------------------------------------
+macro(clear_status STATUS)
+  set(DASHBOARD_${STATUS} OFF)
+  set(DASHBOARD_${STATUS}S "")
+endmacro()
+
+#------------------------------------------------------------------------------
+# Set status flag and append step to causes for said flag
+#------------------------------------------------------------------------------
+macro(append_step_status STEP STATUS)
+  set(DASHBOARD_${STATUS} ON)
+  list(APPEND DASHBOARD_${STATUS}S "${STEP}")
+endmacro()
+
+#------------------------------------------------------------------------------
 # Report build configuration
 #------------------------------------------------------------------------------
 function(report_configuration)
