@@ -64,8 +64,8 @@ include(${DASHBOARD_DRIVER_DIR}/platform.cmake)
 include(${DASHBOARD_DRIVER_DIR}/compiler.cmake)
 
 # Set up status variables
-set(DASHBOARD_FAILURE OFF)
-set(DASHBOARD_FAILURES "")
+clear_status(FAILURE)
+clear_status(UNSTABLE)
 set(DASHBOARD_CDASH_URL_MESSAGES "")
 
 set(ENV{CMAKE_CONFIG_TYPE} "${DASHBOARD_CONFIGURATION_TYPE}")

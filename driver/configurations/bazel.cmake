@@ -23,6 +23,7 @@ else()
   fatal("could not determine bazel version")
 endif()
 
+# Set bazel options
 set(DASHBOARD_BAZEL_STARTUP_OPTIONS
   "--output_user_root=${CTEST_BINARY_DIRECTORY}")
 set(DASHBOARD_BAZEL_BUILD_OPTIONS "--compilation_mode")
@@ -33,6 +34,7 @@ else()
   set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS}=opt")
 endif()
 
+# Report build configuration
 report_configuration("
   ==================================== >DASHBOARD_
   UNIX
@@ -58,19 +60,17 @@ report_configuration("
   ====================================
   ")
 
+# Run the build
 execute_step(bazel build)
 
-if(DASHBOARD_FAILURE)
-  string(REPLACE ";" " / " DASHBOARD_FAILURES_STRING "${DASHBOARD_FAILURES}")
-  set(DASHBOARD_MESSAGE "FAILURE DURING ${DASHBOARD_FAILURES_STRING}")
-  file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
-else()
+# Determine build result
+if(NOT DASHBOARD_FAILURE)
   format_plural(DASHBOARD_MESSAGE
     ZERO "SUCCESS"
     ONE "SUCCESS BUT WITH 1 BUILD WARNING"
     MANY "SUCCESS BUT WITH # BUILD WARNINGS"
     ${DASHBOARD_NUMBER_BUILD_WARNINGS})
-  file(WRITE "${DASHBOARD_WORKSPACE}/SUCCESS")
 endif()
 
+# Report dashboard status
 execute_step(common report-status)
