@@ -1,5 +1,5 @@
-set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_WORKSPACE}/drake")
-set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/build/drake")
+set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}/drake")
+set(CTEST_BINARY_DIRECTORY "${DASHBOARD_BINARY_DIRECTORY}/drake")
 
 # Identify actions to be performed and report what we are doing
 set(DASHBOARD_STEPS "")
