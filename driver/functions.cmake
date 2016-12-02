@@ -55,6 +55,32 @@ function(fatal MESSAGE)
 endfunction()
 
 #------------------------------------------------------------------------------
+# Clear status flag and list of causes
+#------------------------------------------------------------------------------
+macro(clear_status STATUS)
+  set(DASHBOARD_${STATUS} OFF)
+  set(DASHBOARD_${STATUS}S "")
+endmacro()
+
+#------------------------------------------------------------------------------
+# Set status flag and append step to causes for said flag
+#------------------------------------------------------------------------------
+macro(append_step_status STEP STATUS)
+  set(DASHBOARD_${STATUS} ON)
+  list(APPEND DASHBOARD_${STATUS}S "${STEP}")
+endmacro()
+
+#------------------------------------------------------------------------------
+# Set dashboard status message and write status file for specified status
+#------------------------------------------------------------------------------
+function(report_status STATUS MESSAGE)
+  string(REPLACE ";" " / " _steps "${DASHBOARD_${STATUS}S}")
+  string(REPLACE "%STEPS%" "${_steps}" _message "${MESSAGE}")
+  set(DASHBOARD_MESSAGE "${_message}" PARENT_SCOPE)
+  file(WRITE "${DASHBOARD_WORKSPACE}/${STATUS}")
+endfunction()
+
+#------------------------------------------------------------------------------
 # Report build configuration
 #------------------------------------------------------------------------------
 function(report_configuration)
