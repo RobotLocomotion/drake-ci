@@ -11,6 +11,8 @@ endif()
 
 if(GENERATOR STREQUAL "ninja")
   set(CTEST_CMAKE_GENERATOR "Ninja")
+elseif(GENERATOR STREQUAL "xcode")
+  set(CTEST_CMAKE_GENERATOR "Xcode")
 else()
   set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
   if(NOT DASHBOARD_PROCESSOR_COUNT EQUAL 0)

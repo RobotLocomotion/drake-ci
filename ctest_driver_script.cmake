@@ -11,7 +11,7 @@
 #   ENV{coverage}         optional    boolean
 #   ENV{debug}            optional    boolean
 #   ENV{documentation}    optional    boolean | "publish"
-#   ENV{generator}        optional    "bazel" | "make" | "ninja"
+#   ENV{generator}        optional    "bazel" | "make" | "ninja" | "xcode"
 #   ENV{ghprbPullId}      optional    value for CTEST_CHANGE_ID
 #   ENV{matlab}           optional    boolean
 #   ENV{memcheck}         optional    "asan" | "msan" | "tsan" | "valgrind"
