@@ -36,6 +36,19 @@ endif()
 
 file(TO_CMAKE_PATH "$ENV{WORKSPACE}" DASHBOARD_WORKSPACE)
 
+# Determine location of git working tree
+if(EXISTS "${DASHBOARD_WORKSPACE}/.git")
+  set(DASHBOARD_SOURCE_DIRECTORY "${DASHBOARD_WORKSPACE}")
+elseif(EXISTS ${DASHBOARD_WORKSPACE}/src/.git)
+  set(DASHBOARD_SOURCE_DIRECTORY "${DASHBOARD_WORKSPACE}/src")
+else()
+  fatal("git working tree was not found")
+endif()
+
+# Set the build tree
+# TODO(jamiesnape) make this ${DASHBOARD_WORKSPACE}/build
+set(DASHBOARD_BINARY_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}/build")
+
 # Determine if build machine is "warm"
 if(NOT APPLE)
   set(DASHBOARD_WARM_FILE "/tmp/WARM")
