@@ -50,8 +50,6 @@ report_configuration("
   CTEST_SITE
   CTEST_UPDATE_COMMAND
   CTEST_UPDATE_VERSION_ONLY
-  ==================================== ENV
-  JAVA_HOME
   ==================================== >DASHBOARD_
   BAZEL_COMMAND
   BAZEL_VERSION
