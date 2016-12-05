@@ -1,5 +1,3 @@
-set(DASHBOARD_MESSAGE "CTest Result: ${DASHBOARD_MESSAGE}")
-
 # Determine build result and (possibly) set status message
 if(DASHBOARD_FAILURE)
   report_status(FAILURE "FAILURE DURING %STEPS%")
@@ -13,6 +11,6 @@ endif()
 
 # Report build result and CDash links
 notice(
-  ${DASHBOARD_MESSAGE}
+  "CTest Result: ${DASHBOARD_MESSAGE}"
   ${DASHBOARD_CDASH_URL_MESSAGES}
 )
