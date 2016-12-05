@@ -49,10 +49,10 @@ elseif(MEMCHECK STREQUAL "valgrind")
   find_program(DASHBOARD_MEMORYCHECK_COMMAND NAMES "valgrind")
   set(CTEST_MEMORYCHECK_COMMAND "${DASHBOARD_MEMORYCHECK_COMMAND}")
   set(CTEST_MEMORYCHECK_COMMAND_OPTIONS
-    "--show-leak-kinds=definite,possible --trace-children=yes --trace-children-skip=/bin/*,/usr/bin/*,/usr/local/bin/*,/usr/local/MATLAB/*,/Applications/*,${DASHBOARD_WORKSPACE}/build/install/bin/directorPython")
+    "--show-leak-kinds=definite,possible --trace-children=yes --trace-children-skip=/bin/*,/usr/bin/*,/usr/local/bin/*,/usr/local/MATLAB/*,/Applications/*,${DASHBOARD_INSTALL_PREFIX}/bin/directorPython")
   set(CTEST_MEMORYCHECK_SUPPRESSIONS_FILE
-    "${DASHBOARD_WORKSPACE}/drake/valgrind.supp")
-  if(NOT EXISTS "${DASHBOARD_WORKSPACE}/drake/valgrind.supp")
+    "${DASHBOARD_SOURCE_DIRECTORY}/drake/valgrind.supp")
+  if(NOT EXISTS "${CTEST_MEMORYCHECK_SUPPRESSIONS_FILE}")
     fatal("CTEST_MEMORYCHECK_SUPPRESSIONS_FILE was not found")
   endif()
   set(ENV{GTEST_DEATH_TEST_USE_FORK} 1)

@@ -38,7 +38,7 @@ if(PROVISION)
     "${DASHBOARD_UNIX_DISTRIBUTION}/${DASHBOARD_UNIX_DISTRIBUTION_VERSION}"
     PROVISION_DIR)
   set(PROVISION_SCRIPT
-    "${DASHBOARD_WORKSPACE}/setup/${PROVISION_DIR}/install_prereqs.sh")
+    "${DASHBOARD_SOURCE_DIRECTORY}/setup/${PROVISION_DIR}/install_prereqs.sh")
 
   if(EXISTS "${PROVISION_SCRIPT}")
     execute_process(COMMAND bash "-c" "yes | sudo ${PROVISION_SCRIPT}"

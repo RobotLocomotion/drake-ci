@@ -1,8 +1,11 @@
 #!/bin/bash -ex
+workspace="$1"
+installation="$2"
+
 export PATH="/usr/local/bin:${PATH}"
-git clone --quiet --single-branch git@github.com:RobotLocomotion/RobotLocomotion.github.io.git "${WORKSPACE}/gh-pages"
-rsync --archive --delete --exclude=.git --exclude=.gitignore --exclude=LICENSE --exclude=README --quiet "${WORKSPACE}/build/install/share/doc/" "${WORKSPACE}/gh-pages/"
-cd "${WORKSPACE}/gh-pages"
+git clone --quiet --single-branch git@github.com:RobotLocomotion/RobotLocomotion.github.io.git "${workspace}/gh-pages"
+rsync --archive --delete --exclude=.git --exclude=.gitignore --exclude=LICENSE --exclude=README --quiet "${installation}/share/doc/" "${workspace}/gh-pages/"
+cd "${workspace}/gh-pages"
 git add --all
 if git diff-index --quiet HEAD; then
   echo "*** Documentation is unchanged"
