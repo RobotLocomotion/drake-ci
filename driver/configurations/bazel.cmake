@@ -2,6 +2,9 @@
 # inexplicable reasons.
 unset(ENV{JAVA_HOME})
 
+set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}/drake")
+set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/_bazel_$ENV{USER}")
+
 find_program(DASHBOARD_BAZEL_COMMAND bazel)
 if(NOT DASHBOARD_BAZEL_COMMAND)
   fatal("bazel was not found")
