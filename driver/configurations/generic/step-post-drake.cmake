@@ -7,9 +7,6 @@ begin_stage(
   PROJECT_NAME "drake-superbuild"
   BUILD_NAME "${DASHBOARD_BUILD_NAME}-post-drake")
 
-# Set up the build
-ctest_start("${DASHBOARD_MODEL}" TRACK "${DASHBOARD_TRACK}" QUIET)
-
 # Reconfigure the build, turning on post-drake externals
 ctest_configure(BUILD "${CTEST_BINARY_DIRECTORY}"
   OPTIONS "-DSKIP_DRAKE_BUILD:BOOL=OFF"
@@ -25,12 +22,6 @@ ctest_build(BUILD "${CTEST_BINARY_DIRECTORY}" APPEND
 if(DASHBOARD_SUPERBUILD_NUMBER_BUILD_ERRORS GREATER 0)
   append_step_status("BUILD SUPERBUILD (POST-DRAKE)" FAILURE)
 endif()
-
-# Upload the Jenkins job URL to add link on CDash
-set(DASHBOARD_BUILD_URL_FILE
-  "${CTEST_BINARY_DIRECTORY}/${DASHBOARD_BUILD_NAME}.url")
-file(WRITE "${DASHBOARD_BUILD_URL_FILE}" "$ENV{BUILD_URL}")
-ctest_upload(FILES "${DASHBOARD_BUILD_URL_FILE}" QUIET)
 
 # Submit the results
 ctest_submit(RETRY_COUNT 4 RETRY_DELAY 15
