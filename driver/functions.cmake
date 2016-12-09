@@ -296,7 +296,6 @@ function(begin_stage)
     "${CTEST_BINARY_DIRECTORY}/${_bs_BUILD_NAME}.url")
   file(WRITE "${DASHBOARD_BUILD_URL_FILE}" "$ENV{BUILD_URL}")
   ctest_upload(FILES "${DASHBOARD_BUILD_URL_FILE}" QUIET)
-  ctest_submit(PARTS Upload QUIET)
 
   # Set CTest variables in parent scope
   set(_vars
@@ -305,7 +304,6 @@ function(begin_stage)
   foreach(_var ${_vars})
     set(CTEST_${_var} "${CTEST_${_var}}" PARENT_SCOPE)
   endforeach()
-
 endfunction()
 
 #------------------------------------------------------------------------------

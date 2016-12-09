@@ -25,13 +25,17 @@ foreach(PKG ${ROS_PACKAGES_LIST})
     if(NOT DASHBOARD_TEST_RETURN_VALUE EQUAL 0)
       append_step_status("${PKG} TEST" UNSTABLE)
     endif()
-    ctest_submit(PARTS Test QUIET)
   endif()
 endforeach()
+
+# Run coverage checks, if enabled
 if(DASHBOARD_COVERAGE)
   ctest_coverage(RETURN_VALUE DASHBOARD_COVERAGE_RETURN_VALUE QUIET)
   if(NOT DASHBOARD_COVERAGE_RETURN_VALUE EQUAL 0)
     append_step_status("COVERAGE TOOL" UNSTABLE)
   endif()
-  ctest_submit(PARTS Coverage QUIET)
 endif()
+
+# Submit the results
+ctest_submit(RETRY_COUNT 4 RETRY_DELAY 15
+  RETURN_VALUE DASHBOARD_SUBMIT_RETURN_VALUE QUIET)
