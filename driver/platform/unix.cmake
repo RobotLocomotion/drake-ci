@@ -1,5 +1,5 @@
 # Set paths for ROS
-if(ROS AND EXISTS "/opt/ros/indigo/setup.bash")
+if(ROS)
   set(ENV{ROS_HOME} "$ENV{WORKSPACE}")
   set(ENV{ROS_ROOT} /opt/ros/indigo/share/ros)
   set(ENV{ROS_ETC_DIR} /opt/ros/indigo/etc/ros)
@@ -15,6 +15,10 @@ if(ROS AND EXISTS "/opt/ros/indigo/setup.bash")
   prepend_path(PKG_CONFIG_PATH /opt/ros/indigo/lib/pkgconfig)
   prepend_path(PYTHONPATH /opt/ros/indigo/lib/python2.7/dist-packages)
   prepend_path(CMAKE_PREFIX_PATH /opt/ros/indigo)
+
+  # Set TERM to dumb to work around tput errors from catkin-tools
+  # https://github.com/catkin/catkin_tools/issues/157#issuecomment-221975716
+  set(ENV{TERM} "dumb")
 endif()
 
 # Set (non-Apple) paths for MATLAB
