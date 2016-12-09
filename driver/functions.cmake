@@ -261,13 +261,13 @@ function(begin_stage)
     ${ARGN})
 
   # Set dashboard parameters
-  set(CTEST_BUILD_NAME "${_bs_BUILD_NAME}" PARENT_SCOPE)
-  set(CTEST_PROJECT_NAME "${_bs_PROJECT_NAME}" PARENT_SCOPE)
-  set(CTEST_NIGHTLY_START_TIME "${DASHBOARD_NIGHTLY_START_TIME}" PARENT_SCOPE)
-  set(CTEST_DROP_METHOD "https" PARENT_SCOPE)
-  set(CTEST_DROP_SITE "${DASHBOARD_CDASH_SERVER}" PARENT_SCOPE)
-  set(CTEST_DROP_LOCATION "/submit.php?project=${_bs_PROJECT_NAME}" PARENT_SCOPE)
-  set(CTEST_DROP_SITE_CDASH ON PARENT_SCOPE)
+  set(CTEST_BUILD_NAME "${_bs_BUILD_NAME}")
+  set(CTEST_PROJECT_NAME "${_bs_PROJECT_NAME}")
+  set(CTEST_NIGHTLY_START_TIME "${DASHBOARD_NIGHTLY_START_TIME}")
+  set(CTEST_DROP_METHOD "https")
+  set(CTEST_DROP_SITE "${DASHBOARD_CDASH_SERVER}")
+  set(CTEST_DROP_LOCATION "/submit.php?project=${_bs_PROJECT_NAME}")
+  set(CTEST_DROP_SITE_CDASH ON)
 
   # Prepare message to report CDash URL to Jenkins
   if(DEFINED _bs_URL_NAME)
@@ -297,6 +297,15 @@ function(begin_stage)
   file(WRITE "${DASHBOARD_BUILD_URL_FILE}" "$ENV{BUILD_URL}")
   ctest_upload(FILES "${DASHBOARD_BUILD_URL_FILE}" QUIET)
   ctest_submit(PARTS Upload QUIET)
+
+  # Set CTest variables in parent scope
+  set(_vars
+    BUILD_NAME PROJECT_NAME NIGHTLY_START_TIME
+    DROP_METHOD DROP_SITE DROP_LOCATION DROP_SITE_CDASH)
+  foreach(_var ${_vars})
+    set(CTEST_${_var} "${CTEST_${_var}}" PARENT_SCOPE)
+  endforeach()
+
 endfunction()
 
 #------------------------------------------------------------------------------
