@@ -15,20 +15,19 @@ string(REPLACE ";" " / " DASHBOARD_STEPS_STRING "${DASHBOARD_STEPS}")
 
 notice("CTest Status: ${DASHBOARD_STEPS_STRING} DRAKE")
 
-# Switch the dashboard to the drake only dashboard
-# TODO remove when subprojects arrive
-begin_stage(
-  PROJECT_NAME "Drake"
-  BUILD_NAME "${DASHBOARD_BUILD_NAME}-drake")
-
 # Clean out old scan-build output
 if(COMPILER STREQUAL "scan-build")
   file(REMOVE_RECURSE "${DASHBOARD_CCC_ANALYZER_HTML}")
   file(MAKE_DIRECTORY "${DASHBOARD_CCC_ANALYZER_HTML}")
 endif()
 
-# Set up the build and update the sources
-ctest_start("${DASHBOARD_MODEL}" TRACK "${DASHBOARD_TRACK}" QUIET)
+# Switch the dashboard to the drake only dashboard
+# TODO remove when subprojects arrive
+begin_stage(
+  PROJECT_NAME "Drake"
+  BUILD_NAME "${DASHBOARD_BUILD_NAME}-drake")
+
+# Update the sources
 ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}"
   RETURN_VALUE DASHBOARD_UPDATE_RETURN_VALUE QUIET)
 
@@ -121,12 +120,6 @@ if(DASHBOARD_MEMCHECK)
   ctest_memcheck(RETURN_VALUE DASHBOARD_MEMCHECK_RETURN_VALUE
     DEFECT_COUNT DASHBOARD_MEMCHECK_DEFECT_COUNT QUIET)
 endif()
-
-# Upload the Jenkins job URL to add link on CDash
-set(DASHBOARD_BUILD_URL_FILE
-  "${CTEST_BINARY_DIRECTORY}/${DASHBOARD_BUILD_NAME}.url")
-file(WRITE "${DASHBOARD_BUILD_URL_FILE}" "$ENV{BUILD_URL}")
-ctest_upload(FILES "${DASHBOARD_BUILD_URL_FILE}" QUIET)
 
 # Submit the results
 ctest_submit(RETRY_COUNT 4 RETRY_DELAY 15

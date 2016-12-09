@@ -260,6 +260,7 @@ function(begin_stage)
     ""
     ${ARGN})
 
+  # Set dashboard parameters
   set(CTEST_BUILD_NAME "${_bs_BUILD_NAME}" PARENT_SCOPE)
   set(CTEST_PROJECT_NAME "${_bs_PROJECT_NAME}" PARENT_SCOPE)
   set(CTEST_NIGHTLY_START_TIME "${DASHBOARD_NIGHTLY_START_TIME}" PARENT_SCOPE)
@@ -268,6 +269,7 @@ function(begin_stage)
   set(CTEST_DROP_LOCATION "/submit.php?project=${_bs_PROJECT_NAME}" PARENT_SCOPE)
   set(CTEST_DROP_SITE_CDASH ON PARENT_SCOPE)
 
+  # Prepare message to report CDash URL to Jenkins
   if(DEFINED _bs_URL_NAME)
     set(_preamble "CDash ${_bs_URL_NAME} URL")
   else()
@@ -285,6 +287,16 @@ function(begin_stage)
       ${DASHBOARD_CDASH_URL_MESSAGES} ${_url_message}
       PARENT_SCOPE)
   endif()
+
+  # Set up the dashboard
+  ctest_start("${DASHBOARD_MODEL}" TRACK "${DASHBOARD_TRACK}" QUIET)
+
+  # Upload the Jenkins job URL to add link on CDash
+  set(DASHBOARD_BUILD_URL_FILE
+    "${CTEST_BINARY_DIRECTORY}/${_bs_BUILD_NAME}.url")
+  file(WRITE "${DASHBOARD_BUILD_URL_FILE}" "$ENV{BUILD_URL}")
+  ctest_upload(FILES "${DASHBOARD_BUILD_URL_FILE}" QUIET)
+  ctest_submit(PARTS Upload QUIET)
 endfunction()
 
 #------------------------------------------------------------------------------
