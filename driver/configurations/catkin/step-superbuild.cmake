@@ -15,7 +15,6 @@ set(CTEST_CUSTOM_ERROR_EXCEPTION
 
 # Update the sources
 ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}" QUIET)
-ctest_submit(PARTS Update QUIET)
 
 # Create ROS symlink
 if(NOT DASHBOARD_FAILURE)
@@ -45,7 +44,6 @@ if(NOT DASHBOARD_FAILURE)
   ctest_configure(BUILD "${DASHBOARD_WORKSPACE}"
                   SOURCE "${DASHBOARD_WORKSPACE}"
                   RETURN_VALUE DASHBOARD_CONFIGURE_RETURN_VALUE QUIET APPEND)
-  ctest_submit(PARTS Configure QUIET)
   if(NOT DASHBOARD_CONFIGURE_RETURN_VALUE EQUAL 0)
     append_step_status("CATKIN CONFIGURE" FAILURE)
   endif()
@@ -57,7 +55,6 @@ if(NOT DASHBOARD_FAILURE)
   ctest_build(BUILD "${DASHBOARD_WORKSPACE}" APPEND
     RETURN_VALUE DASHBOARD_BUILD_RETURN_VALUE
     NUMBER_ERRORS DASHBOARD_NUMBER_BUILD_ERRORS QUIET)
-  ctest_submit(PARTS Build QUIET)
 
   # ERROR detection doesn't work correctly with catkin... use error code instead
   if(NOT DASHBOARD_BUILD_RETURN_VALUE EQUAL 0)
@@ -67,3 +64,7 @@ if(NOT DASHBOARD_FAILURE)
     set(DASHBOARD_MESSAGE "SUCCESS")
   endif()
 endif()
+
+# Submit the results
+ctest_submit(RETRY_COUNT 4 RETRY_DELAY 15
+  RETURN_VALUE DASHBOARD_SUBMIT_RETURN_VALUE QUIET)
