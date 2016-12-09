@@ -55,9 +55,20 @@ set(CTEST_COVERAGE_COMMAND "${DASHBOARD_COVERAGE_COMMAND}")
 set(CTEST_COVERAGE_EXTRA_FLAGS "${DASHBOARD_COVERAGE_EXTRA_FLAGS}")
 
 list(APPEND CTEST_CUSTOM_COVERAGE_EXCLUDE
-  ".*/thirdParty/.*"
+  ".*/python/.*"
   ".*/test/.*"
+  ".*/thirdParty/.*"
 )
+
+if(NOT MATLAB)
+  list(APPEND CTEST_CUSTOM_COVERAGE_EXCLUDE
+    ".*/bindings/.*"
+    ".*/matlab/.*"
+  )
+endif()
+
+# Disable Python because SWIG generation fails
+cache_append(DISABLE_PYTHON BOOL ON)
 
 # Disable Fortran if using clang, as they do not play nicely together
 if(COMPILER MATCHES "^(clang|scan-build)$")
