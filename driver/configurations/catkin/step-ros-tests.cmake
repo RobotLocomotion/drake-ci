@@ -1,9 +1,10 @@
 # Collect a list of all the ROS packages in the workspace
 execute_process(COMMAND catkin list -u
-                WORKING_DIRECTORY ${DASHBOARD_WORKSPACE}
-                RESULT_VARIABLE RUN_RESULT
-                OUTPUT_VARIABLE ROS_PACKAGES
-                OUTPUT_STRIP_TRAILING_WHITESPACE)
+  WORKING_DIRECTORY ${DASHBOARD_WORKSPACE}
+  RESULT_VARIABLE RUN_RESULT
+  OUTPUT_VARIABLE ROS_PACKAGES
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
+
 # Replace newlines with ; to turn output into a list
 string(REPLACE "\n" ";" ROS_PACKAGES_LIST "${ROS_PACKAGES}")
 

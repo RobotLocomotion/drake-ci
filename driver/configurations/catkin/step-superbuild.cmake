@@ -8,9 +8,9 @@ begin_stage(
 
 # Set the following to suppress false positives
 set(CTEST_CUSTOM_ERROR_EXCEPTION
-   ${CTEST_CUSTOM_ERROR_EXCEPTION}
-   "configure.ac:[0-9]*: installing"
-   "swig/Makefile.am:30: installing './py-compile'"
+  ${CTEST_CUSTOM_ERROR_EXCEPTION}
+  "configure.ac:[0-9]*: installing"
+  "swig/Makefile.am:30: installing './py-compile'"
 )
 
 # Update the sources
@@ -20,9 +20,10 @@ ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}"
 # Create ROS symlink
 if(NOT DASHBOARD_FAILURE)
   set(CTEST_CONFIGURE_COMMAND "cmake -E create_symlink ${DASHBOARD_WORKSPACE}/src/drake/ros ${DASHBOARD_WORKSPACE}/src/drake_ros_integration")
-  ctest_configure(BUILD "${DASHBOARD_WORKSPACE}"
-                  SOURCE "${DASHBOARD_WORKSPACE}"
-                  RETURN_VALUE DASHBOARD_CONFIGURE_RETURN_VALUE QUIET)
+  ctest_configure(
+    BUILD "${DASHBOARD_WORKSPACE}"
+    SOURCE "${DASHBOARD_WORKSPACE}"
+    RETURN_VALUE DASHBOARD_CONFIGURE_RETURN_VALUE QUIET)
   if(NOT DASHBOARD_CONFIGURE_RETURN_VALUE EQUAL 0)
     append_step_status("ROS SYMLINK CREATION" FAILURE)
   endif()
@@ -31,9 +32,10 @@ endif()
 # Run catkin init step
 if(NOT DASHBOARD_FAILURE)
   set(CTEST_CONFIGURE_COMMAND "catkin init")
-  ctest_configure(BUILD "${DASHBOARD_WORKSPACE}"
-                  SOURCE "${DASHBOARD_WORKSPACE}"
-                  RETURN_VALUE DASHBOARD_CONFIGURE_RETURN_VALUE QUIET APPEND)
+  ctest_configure(
+    BUILD "${DASHBOARD_WORKSPACE}"
+    SOURCE "${DASHBOARD_WORKSPACE}"
+    RETURN_VALUE DASHBOARD_CONFIGURE_RETURN_VALUE QUIET APPEND)
   if(NOT DASHBOARD_CONFIGURE_RETURN_VALUE EQUAL 0)
     append_step_status("CATKIN INIT" FAILURE)
   endif()
@@ -42,9 +44,10 @@ endif()
 # Run catkin configure step
 if(NOT DASHBOARD_FAILURE)
   set(CTEST_CONFIGURE_COMMAND "catkin config ${DASHBOARD_CONFIGURE_ARGS} -DCATKIN_ENABLE_TESTING=True")
-  ctest_configure(BUILD "${DASHBOARD_WORKSPACE}"
-                  SOURCE "${DASHBOARD_WORKSPACE}"
-                  RETURN_VALUE DASHBOARD_CONFIGURE_RETURN_VALUE QUIET APPEND)
+  ctest_configure(
+    BUILD "${DASHBOARD_WORKSPACE}"
+    SOURCE "${DASHBOARD_WORKSPACE}"
+    RETURN_VALUE DASHBOARD_CONFIGURE_RETURN_VALUE QUIET APPEND)
   if(NOT DASHBOARD_CONFIGURE_RETURN_VALUE EQUAL 0)
     append_step_status("CATKIN CONFIGURE" FAILURE)
   endif()

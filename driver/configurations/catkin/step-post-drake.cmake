@@ -5,14 +5,16 @@ begin_stage(
   BUILD_NAME "${DASHBOARD_BUILD_NAME}-post-drake")
 
 # Update the sources
-ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}" QUIET)
+ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}"
+  RETURN_VALUE DASHBOARD_UPDATE_RETURN_VALUE QUIET)
 
 # Drake is built; blacklist to collect build info for drake_ros_integration
 # only so that catkin does not attempt to re-build drake
 set(CTEST_CONFIGURE_COMMAND "catkin config --blacklist drake")
-ctest_configure(BUILD "${DASHBOARD_WORKSPACE}"
-                SOURCE "${DASHBOARD_WORKSPACE}"
-                RETURN_VALUE DASHBOARD_CONFIGURE_RETURN_VALUE QUIET)
+ctest_configure(
+  BUILD "${DASHBOARD_WORKSPACE}"
+  SOURCE "${DASHBOARD_WORKSPACE}"
+  RETURN_VALUE DASHBOARD_CONFIGURE_RETURN_VALUE QUIET)
 if(NOT DASHBOARD_CONFIGURE_RETURN_VALUE EQUAL 0)
   append_step_status("CATKIN CONFIGURE" FAILURE)
 endif()
