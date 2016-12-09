@@ -4,7 +4,8 @@ begin_stage(
   BUILD_NAME "${DASHBOARD_BUILD_NAME}-drake")
 
 # Update the sources
-ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}" QUIET)
+ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}"
+  RETURN_VALUE DASHBOARD_UPDATE_RETURN_VALUE QUIET)
 
 # Run Drake's tests
 ctest_test(BUILD "${DASHBOARD_WORKSPACE}/build/drake/drake" ${CTEST_TEST_ARGS}
