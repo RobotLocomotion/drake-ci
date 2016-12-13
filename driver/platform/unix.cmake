@@ -17,6 +17,9 @@ if(ROS AND EXISTS "/opt/ros/indigo/setup.bash")
   prepend_path(CMAKE_PREFIX_PATH /opt/ros/indigo)
 endif()
 
+# Override git executable
+cache_append(GIT_EXECUTABLE PATH "${DASHBOARD_TOOLS_DIR}/git-wrapper.bash")
+
 # Set (non-Apple) paths for MATLAB
 if(MATLAB AND NOT APPLE)
   prepend_path(PATH /usr/local/MATLAB/R2015b/bin)
