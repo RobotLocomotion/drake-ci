@@ -20,7 +20,7 @@ set_path(ROSLISP_PACKAGE_DIRECTORIES}
 
 # Loop through all detected packages and run tests
 foreach(PKG ${ROS_PACKAGES_LIST})
-  if (NOT ${PKG} STREQUAL "drake")
+  if(NOT ${PKG} STREQUAL "drake")
     ctest_test(BUILD "${DASHBOARD_WORKSPACE}/build/${PKG}" ${CTEST_TEST_ARGS}
       CAPTURE_CMAKE_ERROR DASHBOARD_TEST_RETURN_VALUE QUIET APPEND)
     if(NOT DASHBOARD_TEST_RETURN_VALUE EQUAL 0)
