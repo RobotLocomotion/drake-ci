@@ -12,6 +12,7 @@ for (( i = 0; i < tries; ++i )); do
   $trace git "$@" && break
   result=$?
   touch "$WORKSPACE/GIT_ERROR"
+  sleep $(( 2 ** i ))
 done
 
 exit $result
