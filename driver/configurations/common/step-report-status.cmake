@@ -1,3 +1,9 @@
+# Check for git errors
+# TODO: Remove when no longer trying to track down underlying cause
+if(EXISTS "${DASHBOARD_WORKSPACE}/GIT_ERROR")
+  append_step_status("GIT" UNSTABLE)
+endif()
+
 # Determine build result and (possibly) set status message
 if(DASHBOARD_FAILURE)
   report_status(FAILURE "FAILURE DURING %STEPS%")

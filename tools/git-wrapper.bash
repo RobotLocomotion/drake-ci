@@ -10,4 +10,8 @@ tries=${GIT_RETRIES:-5}
 
 for (( i = 0; i < tries; ++i )); do
   $trace git "$@" && break
+  result=$?
+  touch "$WORKSPACE/GIT_ERROR"
 done
+
+exit $result
