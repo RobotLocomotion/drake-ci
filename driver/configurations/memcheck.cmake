@@ -3,7 +3,7 @@ set(DASHBOARD_INSTALL ON)
 set(DASHBOARD_CONFIGURATION_TYPE "Debug")
 
 # Set extra compile and link flags
-set(DASHBOARD_EXTRA_DEBUG_FLAGS "-O1 -fno-omit-frame-pointer")
+set(DASHBOARD_EXTRA_DEBUG_FLAGS "-fno-omit-frame-pointer")
 prepend_flags(DASHBOARD_C_FLAGS ${DASHBOARD_EXTRA_DEBUG_FLAGS})
 prepend_flags(DASHBOARD_CXX_FLAGS ${DASHBOARD_EXTRA_DEBUG_FLAGS})
 prepend_flags(DASHBOARD_FORTRAN_FLAGS ${DASHBOARD_EXTRA_DEBUG_FLAGS})
@@ -43,13 +43,12 @@ elseif(MEMCHECK STREQUAL "tsan")
   prepend_flags(DASHBOARD_CXX_FLAGS ${DASHBOARD_SANITIZE_FLAGS})
   prepend_flags(DASHBOARD_Fortran_FLAGS ${DASHBOARD_SANITIZE_FLAGS})
   prepend_flags(DASHBOARD_SHARED_LINKER_FLAGS ${DASHBOARD_SANITIZE_FLAGS})
-  set(DASHBOARD_POSITION_INDEPENDENT_CODE ON)
 elseif(MEMCHECK STREQUAL "valgrind")
   set(DASHBOARD_MEMORYCHECK_TYPE "Valgrind")
   find_program(DASHBOARD_MEMORYCHECK_COMMAND NAMES "valgrind")
   set(CTEST_MEMORYCHECK_COMMAND "${DASHBOARD_MEMORYCHECK_COMMAND}")
   set(CTEST_MEMORYCHECK_COMMAND_OPTIONS
-    "--show-leak-kinds=definite,possible --trace-children=yes --trace-children-skip=/bin/*,/usr/bin/*,/usr/local/bin/*,/usr/local/MATLAB/*,/Applications/*,${DASHBOARD_INSTALL_PREFIX}/bin/directorPython")
+    "--show-leak-kinds=definite,possible --trace-children=yes --trace-children-skip=/bin/*,/usr/bin/*,/usr/local/bin/*")
   set(CTEST_MEMORYCHECK_SUPPRESSIONS_FILE
     "${DASHBOARD_SOURCE_DIRECTORY}/drake/valgrind.supp")
   if(NOT EXISTS "${CTEST_MEMORYCHECK_SUPPRESSIONS_FILE}")
