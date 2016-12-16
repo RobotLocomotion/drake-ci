@@ -38,7 +38,7 @@ if(COVERAGE)
   include(${DASHBOARD_DRIVER_DIR}/configurations/coverage.cmake)
 endif()
 
-if(MEMCHECK MATCHES "^([amt]san|valgrind)$")
+if(MEMCHECK MATCHES "^(asan|lsan|msan|tsan|ubsan|valgrind)$")
   include(${DASHBOARD_DRIVER_DIR}/configurations/memcheck.cmake)
 endif()
 
