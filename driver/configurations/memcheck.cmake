@@ -48,7 +48,7 @@ elseif(MEMCHECK STREQUAL "valgrind")
   find_program(DASHBOARD_MEMORYCHECK_COMMAND NAMES "valgrind")
   set(CTEST_MEMORYCHECK_COMMAND "${DASHBOARD_MEMORYCHECK_COMMAND}")
   set(CTEST_MEMORYCHECK_COMMAND_OPTIONS
-    "--show-leak-kinds=definite,possible --trace-children=yes --trace-children-skip=/bin/*,/usr/bin/*,/usr/local/bin/*")
+    "--show-leak-kinds=definite,possible --trace-children=yes --trace-children-skip=/bin/*,/usr/bin/*,/usr/local/bin/* --track-origins=yes")
   set(CTEST_MEMORYCHECK_SUPPRESSIONS_FILE
     "${DASHBOARD_SOURCE_DIRECTORY}/drake/valgrind.supp")
   if(NOT EXISTS "${CTEST_MEMORYCHECK_SUPPRESSIONS_FILE}")
