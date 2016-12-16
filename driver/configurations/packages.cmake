@@ -119,7 +119,7 @@ else()
     enable_package(SNOPT)
   endif()
 
-  if(MEMCHECK MATCHES "^[amt]san$")
+  if(MEMCHECK MATCHES "^(asan|lsan|msan|tsan|ubsan)$")
     disable_package(DIRECTOR)
     disable_package(LIBBOT)
   endif()
