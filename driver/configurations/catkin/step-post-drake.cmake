@@ -6,7 +6,7 @@ begin_stage(
 
 # Update the sources
 ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}"
-  CAPTURE_CMAKE_ERROR DASHBOARD_UPDATE_RETURN_VALUE QUIET)
+  RETURN_VALUE DASHBOARD_UPDATE_RETURN_VALUE QUIET)
 
 # Drake is built; blacklist to collect build info for drake_ros_integration
 # only so that catkin does not attempt to re-build drake
@@ -14,7 +14,7 @@ set(CTEST_CONFIGURE_COMMAND "catkin config --blacklist drake")
 ctest_configure(
   BUILD "${DASHBOARD_WORKSPACE}"
   SOURCE "${DASHBOARD_WORKSPACE}"
-  CAPTURE_CMAKE_ERROR DASHBOARD_CONFIGURE_RETURN_VALUE QUIET)
+  RETURN_VALUE DASHBOARD_CONFIGURE_RETURN_VALUE QUIET)
 if(NOT DASHBOARD_CONFIGURE_RETURN_VALUE EQUAL 0)
   append_step_status("CATKIN CONFIGURE" FAILURE)
 endif()
@@ -23,7 +23,7 @@ if(NOT DASHBOARD_FAILURE)
   # (Re)run catkin build step
   set(CTEST_BUILD_COMMAND "catkin build --no-status -v -i")
   ctest_build(BUILD "${DASHBOARD_WORKSPACE}" APPEND
-    CAPTURE_CMAKE_ERROR DASHBOARD_BUILD_RETURN_VALUE
+    RETURN_VALUE DASHBOARD_BUILD_RETURN_VALUE
     NUMBER_ERRORS DASHBOARD_NUMBER_BUILD_ERRORS QUIET)
 
   # ERROR detection doesn't work correctly with catkin... use error code instead
@@ -37,4 +37,4 @@ endif()
 
 # Submit the results
 ctest_submit(RETRY_COUNT 4 RETRY_DELAY 15
-  CAPTURE_CMAKE_ERROR DASHBOARD_SUBMIT_RETURN_VALUE QUIET)
+  RETURN_VALUE DASHBOARD_SUBMIT_RETURN_VALUE QUIET)
