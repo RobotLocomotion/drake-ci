@@ -4,12 +4,16 @@
 # git sometimes cannot lock the submodule config file.
 # See https://github.com/RobotLocomotion/drake/issues/4034
 trace=
-[ $(type -t strace) = 'file' ] && trace='strace -f -e trace=file'
+if [ $(type -t strace) = 'file' ]; then
+  log=".git-$(date -u +%F-%T.%N)-$$"
+  trace="strace -f -e trace=file"
+  echo "git $@" > $log.cmd
+fi
 
 tries=${GIT_RETRIES:-5}
 
 for (( i = 0; i < tries; ++i )); do
-  $trace git "$@" && break
+  ${trace:+$trace -o $log.trace.$i} git "$@" && break
   result=$?
   touch "$WORKSPACE/GIT_ERROR"
   sleep $(( 2 ** i ))
