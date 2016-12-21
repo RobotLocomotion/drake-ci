@@ -55,7 +55,7 @@ cache_append(ENABLE_DOCUMENTATION BOOL OFF)
 cache_append(LONG_RUNNING_TESTS BOOL ${DASHBOARD_LONG_RUNNING_TESTS})
 cache_append(CMAKE_BUILD_TYPE STRING ${DASHBOARD_CONFIGURATION_TYPE})
 
-string(REGEX REPLACE "\n([A-Za-z_]+)" " -D\1"
+string(REGEX REPLACE "\n([0-9A-Za-z_]+)" " -D\\1"
   DASHBOARD_CONFIGURE_ARGS "\n${CACHE_CONTENT}")
 
 # Report build configuration
