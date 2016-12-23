@@ -120,8 +120,11 @@ else()
   endif()
 
   if(MEMCHECK MATCHES "^(asan|lsan|msan|tsan|ubsan)$")
+    disable_package(BOT_CORE_LCMTYPES)
     disable_package(DIRECTOR)
+    disable_package(LCM)
     disable_package(LIBBOT)
+    disable_package(ROBOTLOCOMOTION_LCMTYPES)
   endif()
 endif()
 
