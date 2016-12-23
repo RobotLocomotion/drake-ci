@@ -77,6 +77,7 @@ else()
 
   if(GENERATOR STREQUAL "xcode")
      disable_package(DREAL)
+     disable_package(FCL)
   endif()
 
   if(MEMCHECK)
