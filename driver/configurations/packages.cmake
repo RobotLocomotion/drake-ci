@@ -75,6 +75,10 @@ else()
     disable_package(GOOGLE_STYLEGUIDE)
   endif()
 
+  if(GENERATOR STREQUAL "xcode")
+     disable_package(DREAL)
+  endif()
+
   if(MEMCHECK)
     disable_package(GOOGLE_STYLEGUIDE)
     disable_package(SWIG_MATLAB)
