@@ -7,7 +7,7 @@
 # 2. Clone drake into the path specified in $WORKSPACE.
 # 3. Run this script.
 
-export compiler=gcc
+export compiler=clang
 export generator=ninja
 export coverage=false
 export debug=false
