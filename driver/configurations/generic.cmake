@@ -32,6 +32,11 @@ if(NOT MINIMAL AND NOT OPEN_SOURCE)
   include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
 endif()
 
+# Clean out the old builds and/or installs
+file(REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
+file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
+file(REMOVE_RECURSE "${DASHBOARD_INSTALL_PREFIX}")
+
 # Set up diagnostic tools
 if(COMPILER STREQUAL "include-what-you-use")
   include(${DASHBOARD_DRIVER_DIR}/configurations/include-what-you-use.cmake)
@@ -48,11 +53,6 @@ endif()
 if(MEMCHECK MATCHES "^(asan|lsan|msan|tsan|ubsan|valgrind)$")
   include(${DASHBOARD_DRIVER_DIR}/configurations/memcheck.cmake)
 endif()
-
-# Clean out the old builds and/or installs
-file(REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
-file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
-file(REMOVE_RECURSE "${DASHBOARD_INSTALL_PREFIX}")
 
 # Prepare initial cache
 cache_flag(C_FLAGS STRING)

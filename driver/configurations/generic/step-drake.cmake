@@ -15,12 +15,6 @@ string(REPLACE ";" " / " DASHBOARD_STEPS_STRING "${DASHBOARD_STEPS}")
 
 notice("CTest Status: ${DASHBOARD_STEPS_STRING} DRAKE")
 
-# Clean out old scan-build output
-if(COMPILER STREQUAL "scan-build")
-  file(REMOVE_RECURSE "${DASHBOARD_CCC_ANALYZER_HTML}")
-  file(MAKE_DIRECTORY "${DASHBOARD_CCC_ANALYZER_HTML}")
-endif()
-
 # Switch the dashboard to the drake only dashboard
 # TODO remove when subprojects arrive
 begin_stage(
