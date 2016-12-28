@@ -38,7 +38,8 @@ set(DRAKE_CACHE_VARS
 )
 foreach(DRAKE_CACHE_VAR ${DRAKE_CACHE_VARS})
   if(CACHE_CONTENT MATCHES "(^|\n)(${DRAKE_CACHE_VAR}:[^\n]+)\n")
-    list(APPEND DRAKE_CONFIGURE_ARGS "-D${CMAKE_MATCH_2}")
+    string(REPLACE ";" "\\;" _cache_value "${CMAKE_MATCH_2}")
+    list(APPEND DRAKE_CONFIGURE_ARGS "-D${_cache_value}")
   endif()
 endforeach()
 
