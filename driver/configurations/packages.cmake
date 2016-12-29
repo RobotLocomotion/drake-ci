@@ -125,12 +125,15 @@ else()
     enable_package(SNOPT)
   endif()
 
-  if(MEMCHECK MATCHES "^(asan|lsan|msan|tsan|ubsan)$")
+  if(MEMCHECK STREQUAL "lsan")
     disable_package(BOT_CORE_LCMTYPES)
-    disable_package(DIRECTOR)
     disable_package(LCM)
-    disable_package(LIBBOT)
     disable_package(ROBOTLOCOMOTION_LCMTYPES)
+  endif()
+
+  if(MEMCHECK MATCHES "^(asan|lsan|msan|tsan|ubsan)$")
+    disable_package(DIRECTOR)
+    disable_package(LIBBOT)
   endif()
 endif()
 
