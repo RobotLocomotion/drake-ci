@@ -1,0 +1,2 @@
+# AddressSanitizer: global-buffer-overflow (libsnopt_c.*) in lc_auth_data
+fun:snprnt_
