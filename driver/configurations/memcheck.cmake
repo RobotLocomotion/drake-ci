@@ -27,11 +27,10 @@ set(MEMCHECK_FLAGS CTEST_MEMORYCHECK_TYPE)
 if(MEMCHECK STREQUAL "asan")
   set(DASHBOARD_MEMORYCHECK_TYPE "AddressSanitizer")
   set(DASHBOARD_SANITIZE_FLAGS "-fsanitize=address")
-  # TODO(jamiesnape): Enable when lcm-gen is fixed.
-  # if(COMPILER STREQUAL "clang")
-  #   set(DASHBOARD_SANITIZE_FLAGS
-  #     "${DASHBOARD_SANITIZE_FLAGS} -fsanitize-address-use-after-scope -fsanitize-blacklist=${DASHBOARD_SOURCE_DIRECTORY}/tools/blacklist.txt")
-  # endif()
+  if(COMPILER STREQUAL "clang")
+    set(DASHBOARD_SANITIZE_FLAGS
+      "${DASHBOARD_SANITIZE_FLAGS} -fsanitize-address-use-after-scope -fsanitize-blacklist=${DASHBOARD_SOURCE_DIRECTORY}/tools/blacklist.txt")
+  endif()
   prepend_flags(DASHBOARD_C_FLAGS ${DASHBOARD_SANITIZE_FLAGS})
   prepend_flags(DASHBOARD_CXX_FLAGS ${DASHBOARD_SANITIZE_FLAGS})
   prepend_flags(DASHBOARD_Fortran_FLAGS ${DASHBOARD_SANITIZE_FLAGS})
@@ -54,9 +53,8 @@ elseif(MEMCHECK STREQUAL "lsan")
 elseif(MEMCHECK STREQUAL "msan")
   set(DASHBOARD_MEMORYCHECK_TYPE "MemorySanitizer")
   set(DASHBOARD_SANITIZE_FLAGS "-fsanitize=memory")
-  # TODO(jamiesnape): Enable when lcm-gen is fixed.
-  # set(DASHBOARD_SANITIZE_FLAGS
-  #   "-fsanitize=memory -fsanitize-blacklist=${DASHBOARD_SOURCE_DIRECTORY}/tools/blacklist.txt -fsanitize-memory-track-origins")
+  set(DASHBOARD_SANITIZE_FLAGS
+    "-fsanitize=memory -fsanitize-blacklist=${DASHBOARD_SOURCE_DIRECTORY}/tools/blacklist.txt -fsanitize-memory-track-origins")
   prepend_flags(DASHBOARD_C_FLAGS ${DASHBOARD_SANITIZE_FLAGS})
   prepend_flags(DASHBOARD_CXX_FLAGS ${DASHBOARD_SANITIZE_FLAGS})
   prepend_flags(DASHBOARD_Fortran_FLAGS ${DASHBOARD_SANITIZE_FLAGS})
@@ -94,7 +92,7 @@ elseif(MEMCHECK STREQUAL "valgrind")
   find_program(DASHBOARD_MEMORYCHECK_COMMAND NAMES "valgrind")
   set(CTEST_MEMORYCHECK_COMMAND "${DASHBOARD_MEMORYCHECK_COMMAND}")
   set(CTEST_MEMORYCHECK_COMMAND_OPTIONS
-    "--show-leak-kinds=definite,possible --trace-children=yes --trace-children-skip=/bin/*,/usr/bin/*,/usr/local/bin/* --track-origins=yes")
+    "--leak-check=full --show-leak-kinds=definite,possible --trace-children=yes --trace-children-skip=/bin/*,/usr/bin/*,/usr/local/bin/* --track-origins=yes")
   set(CTEST_MEMORYCHECK_SUPPRESSIONS_FILE
     "${DASHBOARD_SOURCE_DIRECTORY}/tools/valgrind-cmake.supp")
   if(NOT EXISTS "${CTEST_MEMORYCHECK_SUPPRESSIONS_FILE}")
