@@ -54,6 +54,9 @@ if(MEMCHECK MATCHES "^(asan|lsan|msan|tsan|ubsan|valgrind)$")
   include(${DASHBOARD_DRIVER_DIR}/configurations/memcheck.cmake)
 endif()
 
+set(ENV{CMAKE_CONFIG_TYPE} "${DASHBOARD_CONFIGURATION_TYPE}")
+set(CTEST_CONFIGURATION_TYPE "${DASHBOARD_CONFIGURATION_TYPE}")
+
 # Prepare initial cache
 cache_flag(C_FLAGS STRING)
 cache_flag(CXX_FLAGS STRING)
