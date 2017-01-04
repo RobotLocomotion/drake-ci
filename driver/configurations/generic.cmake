@@ -26,7 +26,6 @@ endif()
 
 # Include additional configuration information
 include(${DASHBOARD_DRIVER_DIR}/configurations/packages.cmake)
-include(${DASHBOARD_DRIVER_DIR}/configurations/timeout.cmake)
 
 if(NOT MINIMAL AND NOT OPEN_SOURCE)
   include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
@@ -56,6 +55,8 @@ endif()
 
 set(ENV{CMAKE_CONFIG_TYPE} "${DASHBOARD_CONFIGURATION_TYPE}")
 set(CTEST_CONFIGURATION_TYPE "${DASHBOARD_CONFIGURATION_TYPE}")
+
+include(${DASHBOARD_DRIVER_DIR}/configurations/timeout.cmake)
 
 # Prepare initial cache
 cache_flag(C_FLAGS STRING)
