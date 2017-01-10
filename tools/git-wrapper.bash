@@ -13,7 +13,7 @@ fi
 tries=${GIT_RETRIES:-5}
 
 for (( i = 0; i < tries; ++i )); do
-  ${trace:+$trace -o $log.trace.$i} git "$@" && break
+  ${trace:+$trace -o $log.trace.$i} git "$@" && exit 0
   result=$?
   touch "$WORKSPACE/GIT_ERROR"
   sleep $(( 2 ** i ))
