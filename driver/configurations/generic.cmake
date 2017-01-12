@@ -18,6 +18,10 @@ set(DASHBOARD_LONG_RUNNING_TESTS OFF)
 
 if(DOCUMENTATION OR DOCUMENTATION STREQUAL "publish")
   set(DASHBOARD_ENABLE_DOCUMENTATION ON)
+
+  if(DOCUMENTATION STREQUAL "publish")
+    set(ENV{OXYGEN_DIR} "/usr/local/oxygen")
+  endif()
 endif()
 
 if(NOT DEFINED ENV{ghprbPullId})
