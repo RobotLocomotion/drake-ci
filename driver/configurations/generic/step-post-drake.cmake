@@ -31,7 +31,7 @@ if(DASHBOARD_TEST)
   else()
     # TODO: Work out why RETURN_VALUE and RETURN_VALUE are returning
     # different values.
-    ctest_test(BUILD "${CTEST_BINARY_DIRECTORY}" ${CTEST_TEST_ARGS}
+    ctest_test(BUILD "${CTEST_BINARY_DIRECTORY}"
       RETURN_VALUE DASHBOARD_SUPERBUILD_TEST_RETURN_VALUE QUIET)
   endif()
 endif()
