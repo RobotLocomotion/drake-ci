@@ -32,7 +32,6 @@ if(DASHBOARD_TEST)
     # TODO: Work out why RETURN_VALUE and RETURN_VALUE are returning
     # different values.
     ctest_test(BUILD "${CTEST_BINARY_DIRECTORY}" ${CTEST_TEST_ARGS}
-      PARALLEL_LEVEL 1
       RETURN_VALUE DASHBOARD_SUPERBUILD_TEST_RETURN_VALUE QUIET)
   endif()
 endif()
