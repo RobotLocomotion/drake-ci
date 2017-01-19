@@ -37,6 +37,8 @@ else()
   set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS}=opt")
 endif()
 
+set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --keep_going")
+
 # Report build configuration
 report_configuration("
   ==================================== >DASHBOARD_
