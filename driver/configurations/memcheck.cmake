@@ -35,8 +35,12 @@ if(MEMCHECK STREQUAL "asan")
   prepend_flags(DASHBOARD_CXX_FLAGS ${DASHBOARD_SANITIZE_FLAGS})
   prepend_flags(DASHBOARD_Fortran_FLAGS ${DASHBOARD_SANITIZE_FLAGS})
   prepend_flags(DASHBOARD_SHARED_LINKER_FLAGS ${DASHBOARD_SANITIZE_FLAGS})
+  set(CTEST_MEMORYCHECK_SANITIZER_OPTIONS
+    "check_initialization_order=1:detect_stack_use_after_return=1")
+  set(CTEST_MEMORYCHECK_SUPPRESSIONS_FILE
+    "${DASHBOARD_SOURCE_DIRECTORY}/tools/asan.supp")
   set(ENV{ASAN_OPTIONS}
-    "check_initialization_order=1:detect_stack_use_after_return=1:suppressions=${DASHBOARD_SOURCE_DIRECTORY}/tools/asan.supp")
+    "${CTEST_MEMORYCHECK_SANITIZER_OPTIONS}:suppressions=${CTEST_MEMORYCHECK_SUPPRESSIONS_FILE}")
 elseif(MEMCHECK STREQUAL "lsan")
   set(DASHBOARD_MEMORYCHECK_TYPE "AddressSanitizer")
   set(DASHBOARD_SANITIZE_FLAGS "-fsanitize=leak")
@@ -48,19 +52,20 @@ elseif(MEMCHECK STREQUAL "lsan")
   prepend_flags(DASHBOARD_CXX_FLAGS ${DASHBOARD_SANITIZE_FLAGS})
   prepend_flags(DASHBOARD_Fortran_FLAGS ${DASHBOARD_SANITIZE_FLAGS})
   prepend_flags(DASHBOARD_SHARED_LINKER_FLAGS ${DASHBOARD_SANITIZE_FLAGS})
-  set(ENV{LSAN_OPTIONS}
-    "suppressions=${DASHBOARD_SOURCE_DIRECTORY}/tools/lsan.supp")
+  set(CTEST_MEMORYCHECK_SUPPRESSIONS_FILE
+    "${DASHBOARD_SOURCE_DIRECTORY}/tools/lsan.supp")
+  set(ENV{LSAN_OPTIONS} "suppressions=${CTEST_MEMORYCHECK_SUPPRESSIONS_FILE}")
 elseif(MEMCHECK STREQUAL "msan")
   set(DASHBOARD_MEMORYCHECK_TYPE "MemorySanitizer")
-  set(DASHBOARD_SANITIZE_FLAGS "-fsanitize=memory")
   set(DASHBOARD_SANITIZE_FLAGS
     "-fsanitize=memory -fsanitize-blacklist=${DASHBOARD_SOURCE_DIRECTORY}/tools/blacklist.txt -fsanitize-memory-track-origins")
   prepend_flags(DASHBOARD_C_FLAGS ${DASHBOARD_SANITIZE_FLAGS})
   prepend_flags(DASHBOARD_CXX_FLAGS ${DASHBOARD_SANITIZE_FLAGS})
   prepend_flags(DASHBOARD_Fortran_FLAGS ${DASHBOARD_SANITIZE_FLAGS})
   prepend_flags(DASHBOARD_SHARED_LINKER_FLAGS ${DASHBOARD_SANITIZE_FLAGS})
-  set(ENV{MSAN_OPTIONS}
-    "suppressions=${DASHBOARD_SOURCE_DIRECTORY}/tools/msan.supp")
+  set(CTEST_MEMORYCHECK_SUPPRESSIONS_FILE
+    "${DASHBOARD_SOURCE_DIRECTORY}/tools/msan.supp")
+  set(ENV{MSAN_OPTIONS} "suppressions=${CTEST_MEMORYCHECK_SUPPRESSIONS_FILE}")
 elseif(MEMCHECK STREQUAL "tsan")
   set(DASHBOARD_MEMORYCHECK_TYPE "ThreadSanitizer")
   set(DASHBOARD_SANITIZE_FLAGS "-fsanitize=thread")
@@ -72,8 +77,12 @@ elseif(MEMCHECK STREQUAL "tsan")
   prepend_flags(DASHBOARD_CXX_FLAGS ${DASHBOARD_SANITIZE_FLAGS})
   prepend_flags(DASHBOARD_Fortran_FLAGS ${DASHBOARD_SANITIZE_FLAGS})
   prepend_flags(DASHBOARD_SHARED_LINKER_FLAGS ${DASHBOARD_SANITIZE_FLAGS})
+  set(CTEST_MEMORYCHECK_SANITIZER_OPTIONS
+    "detect_deadlocks=1:second_deadlock_stack=1")
+  set(CTEST_MEMORYCHECK_SUPPRESSIONS_FILE
+    "${DASHBOARD_SOURCE_DIRECTORY}/tools/tsan.supp")
   set(ENV{TSAN_OPTIONS}
-    "detect_deadlocks=1:second_deadlock_stack=1:suppressions=${DASHBOARD_SOURCE_DIRECTORY}/tools/tsan.supp")
+    "${CTEST_MEMORYCHECK_SANITIZER_OPTIONS}:suppressions=${CTEST_MEMORYCHECK_SUPPRESSIONS_FILE}")
 elseif(MEMCHECK STREQUAL "ubsan")
   set(DASHBOARD_MEMORYCHECK_TYPE "UndefinedBehaviorSanitizer")
   set(DASHBOARD_SANITIZE_FLAGS "-fsanitize=undefined")
@@ -85,8 +94,9 @@ elseif(MEMCHECK STREQUAL "ubsan")
   prepend_flags(DASHBOARD_CXX_FLAGS ${DASHBOARD_SANITIZE_FLAGS})
   prepend_flags(DASHBOARD_Fortran_FLAGS ${DASHBOARD_SANITIZE_FLAGS})
   prepend_flags(DASHBOARD_SHARED_LINKER_FLAGS ${DASHBOARD_SANITIZE_FLAGS})
-  set(ENV{UBSAN_OPTIONS}
-    "suppressions=${DASHBOARD_SOURCE_DIRECTORY}/tools/ubsan.supp")
+  set(CTEST_MEMORYCHECK_SUPPRESSIONS_FILE
+    "${DASHBOARD_SOURCE_DIRECTORY}/tools/ubsan.supp")
+  set(ENV{UBSAN_OPTIONS} "suppressions=${CTEST_MEMORYCHECK_SUPPRESSIONS_FILE}")
 elseif(MEMCHECK STREQUAL "valgrind")
   set(DASHBOARD_MEMORYCHECK_TYPE "Valgrind")
   find_program(DASHBOARD_MEMORYCHECK_COMMAND NAMES "valgrind")
