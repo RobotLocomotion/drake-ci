@@ -62,7 +62,7 @@ endif()
 # Set up some testing parameters
 ctest_read_custom_files("${CTEST_BINARY_DIRECTORY}")
 
-if(COMPILER MATCHES "^(include|link)-what-you-use$")
+if(COMPILER MATCHES "^((include|link)-what-you-use|scan-build)$")
   set(CTEST_CUSTOM_MAXIMUM_NUMBER_OF_ERRORS 1000)
   set(CTEST_CUSTOM_MAXIMUM_NUMBER_OF_WARNINGS 1000)
 else()
