@@ -102,13 +102,20 @@ else()
     else()
       set(DASHBOARD_GUROBI_DISTRO "$ENV{HOME}/gurobi6.0.5_linux64.tar.gz")
     endif()
+
     if(EXISTS "${DASHBOARD_GUROBI_DISTRO}")
       enable_package(GUROBI)
       set(ENV{GUROBI_DISTRO} "${DASHBOARD_GUROBI_DISTRO}")
     else()
       message(WARNING "*** GUROBI_DISTRO was not found")
     endif()
+
+    if(APPLE OR COMPILER STREQUAL "gcc")
+      enable_package(IRIS)
+    endif()
+
     enable_package(MOSEK)
+    enable_package(SNOPT)
   endif()
 
   if(MATLAB)
@@ -122,13 +129,8 @@ else()
     endif()
 
     if(NOT OPEN_SOURCE)
-      enable_package(IRIS)
       enable_package(SEDUMI)
     endif()
-  endif()
-
-  if(NOT OPEN_SOURCE)
-    enable_package(SNOPT)
   endif()
 
   if(MEMCHECK MATCHES "^(asan|lsan|msan|tsan|ubsan)$")
