@@ -12,6 +12,7 @@ export generator=ninja
 export coverage=false
 export debug=false
 export documentation=false
+export everything=false
 export matlab=false
 export minimal=false
 export openSource=true
