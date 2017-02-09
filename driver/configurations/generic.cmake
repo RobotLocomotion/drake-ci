@@ -93,7 +93,7 @@ else()
   # Now start the actual drake build
   execute_step(generic drake)
 
-  if(NOT DASHBOARD_FAILURE)
+  if(DASHBOARD_WITH_DIRECTOR AND NOT DASHBOARD_FAILURE)
     # Build the post-drake superbuild
     execute_step(generic post-drake)
   endif()
@@ -123,7 +123,7 @@ if(NOT DASHBOARD_FAILURE)
       append_step_status("DRAKE TEST" UNSTABLE)
     endif()
 
-    if(NOT DASHBOARD_SUPERBUILD_TEST_RETURN_VALUE EQUAL 0)
+    if(DASHBOARD_WITH_DIRECTOR AND NOT DASHBOARD_SUPERBUILD_TEST_RETURN_VALUE EQUAL 0)
       append_step_status("SUPERBUILD TEST" UNSTABLE)
     endif()
   endif()
