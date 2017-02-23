@@ -44,15 +44,19 @@ endif()
 
 if(EVERYTHING)
   include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
-  set(DASHBOARD_GUROBI_DISTRO "$ENV{HOME}/gurobi6.0.5_linux64.tar.gz")
-  if(EXISTS "${DASHBOARD_GUROBI_DISTRO}")
-    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${DASHBOARD_GUROBI_DISTRO}
-                      WORKING_DIRECTORY $ENV{HOME})
-    set(ENV{GUROBI_PATH} "$ENV{HOME}/gurobi605/linux64")
-    set(DASHBOARD_BAZEL_BUILD_TEST_OPTIONS "${DASHBOARD_BAZEL_BUILD_TEST_OPTIONS} --config=everything --action_env=GIT_SSH")
-  else()
-    message(WARNING "*** DASHBOARD_GUROBI_DISTRO was not found")
+  if(NOT APPLE)
+    set(DASHBOARD_GUROBI_DISTRO "$ENV{HOME}/gurobi6.0.5_linux64.tar.gz")
+    if(EXISTS "${DASHBOARD_GUROBI_DISTRO}")
+      execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${DASHBOARD_GUROBI_DISTRO}
+                        WORKING_DIRECTORY $ENV{HOME})
+      set(ENV{GUROBI_PATH} "$ENV{HOME}/gurobi605/linux64")
+    else()
+      message(WARNING "*** DASHBOARD_GUROBI_DISTRO was not found")
+    endif()
   endif()
+
+  set(DASHBOARD_BAZEL_BUILD_TEST_OPTIONS
+    "${DASHBOARD_BAZEL_BUILD_TEST_OPTIONS} --config=everything --action_env=GIT_SSH")
 endif()
 
 set(DASHBOARD_BAZEL_BUILD_TEST_OPTIONS "${DASHBOARD_BAZEL_BUILD_TEST_OPTIONS} --keep_going")
