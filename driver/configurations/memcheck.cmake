@@ -102,7 +102,7 @@ elseif(MEMCHECK STREQUAL "valgrind")
   find_program(DASHBOARD_MEMORYCHECK_COMMAND NAMES "valgrind")
   set(CTEST_MEMORYCHECK_COMMAND "${DASHBOARD_MEMORYCHECK_COMMAND}")
   set(CTEST_MEMORYCHECK_COMMAND_OPTIONS
-    "--leak-check=full --show-leak-kinds=definite,possible --trace-children=yes --trace-children-skip=/bin/*,/usr/bin/*,/usr/local/bin/* --track-origins=yes")
+    "--gen-suppressions=all --leak-check=full --show-leak-kinds=definite,possible --trace-children=yes --trace-children-skip=/bin/*,/usr/bin/*,/usr/local/bin/* --track-origins=yes")
   set(CTEST_MEMORYCHECK_SUPPRESSIONS_FILE
     "${DASHBOARD_SOURCE_DIRECTORY}/tools/valgrind-cmake.supp")
   if(NOT EXISTS "${CTEST_MEMORYCHECK_SUPPRESSIONS_FILE}")
