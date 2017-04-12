@@ -9,18 +9,18 @@ prepend_flags(DASHBOARD_C_FLAGS ${DASHBOARD_EXTRA_DEBUG_FLAGS})
 prepend_flags(DASHBOARD_CXX_FLAGS ${DASHBOARD_EXTRA_DEBUG_FLAGS})
 prepend_flags(DASHBOARD_FORTRAN_FLAGS ${DASHBOARD_EXTRA_DEBUG_FLAGS})
 
-if(MEMCHECK STREQUAL "msan")
-  prepend_path(LD_LIBRARY_PATH /usr/local/libcxx_msan/lib)
-  prepend_flags(DASHBOARD_C_FLAGS "-I/usr/local/libcxx_msan/include/c++/v1")
-  prepend_flags(DASHBOARD_CXX_FLAGS
-    "-stdlib=libc++"
-    "-I/usr/local/libcxx_msan/include/c++/v1")
-  set(DASHBOARD_CXX_STANDARD 14)
-  prepend_flags(DASHBOARD_SHARED_LINKER_FLAGS
-    "-L/usr/local/libcxx_msan/lib"
-    "-Wl,-rpath,/usr/local/libcxx_msan/lib"
-    "-lc++abi")
-endif()
+# if(MEMCHECK STREQUAL "msan")
+#   prepend_path(LD_LIBRARY_PATH /usr/local/libcxx_msan/lib)
+#   prepend_flags(DASHBOARD_C_FLAGS "-I/usr/local/libcxx_msan/include/c++/v1")
+#   prepend_flags(DASHBOARD_CXX_FLAGS
+#     "-stdlib=libc++"
+#     "-I/usr/local/libcxx_msan/include/c++/v1")
+#   set(DASHBOARD_CXX_STANDARD 14)
+#   prepend_flags(DASHBOARD_SHARED_LINKER_FLAGS
+#     "-L/usr/local/libcxx_msan/lib"
+#     "-Wl,-rpath,/usr/local/libcxx_msan/lib"
+#     "-lc++abi")
+# endif()
 
 set(MEMCHECK_FLAGS CTEST_MEMORYCHECK_TYPE)
 
