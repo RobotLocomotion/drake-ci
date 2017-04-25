@@ -71,6 +71,34 @@ if(APPLE)
   endif()
 endif()
 
+if(COVERAGE STREQUAL "kcov")
+  set(DASHBOARD_BAZEL_BUILD_TEST_OPTIONS
+    "${DASHBOARD_BAZEL_BUILD_TEST_OPTIONS} --config=kcov")
+endif()
+
+if(MEMCHECK STREQUAL "asan")
+  set(DASHBOARD_BAZEL_BUILD_TEST_OPTIONS
+    "${DASHBOARD_BAZEL_BUILD_TEST_OPTIONS} --config=asan")
+  set(ENV{ASAN_OPTIONS}
+    "check_initialization_order=1:detect_stack_use_after_return=1")
+elseif(MEMCHECK STREQUAL "lsan")
+  set(DASHBOARD_BAZEL_BUILD_TEST_OPTIONS
+    "${DASHBOARD_BAZEL_BUILD_TEST_OPTIONS} --config=lsan")
+elseif(MEMCHECK STREQUAL "msan")
+  set(DASHBOARD_BAZEL_BUILD_TEST_OPTIONS
+    "${DASHBOARD_BAZEL_BUILD_TEST_OPTIONS} --config=msan")
+elseif(MEMCHECK STREQUAL "tsan")
+  set(DASHBOARD_BAZEL_BUILD_TEST_OPTIONS
+    "${DASHBOARD_BAZEL_BUILD_TEST_OPTIONS} --config=tsan")
+  set(ENV{TSAN_OPTIONS} "detect_deadlocks=1:second_deadlock_stack=1")
+elseif(MEMCHECK STREQUAL "ubsan")
+  set(DASHBOARD_BAZEL_BUILD_TEST_OPTIONS
+    "${DASHBOARD_BAZEL_BUILD_TEST_OPTIONS} --config=ubsan")
+elseif(MEMCHECK STREQUAL "valgrind")
+  set(DASHBOARD_BAZEL_BUILD_TEST_OPTIONS
+    "${DASHBOARD_BAZEL_BUILD_TEST_OPTIONS} --config=memcheck")
+endif()
+
 # Report build configuration
 report_configuration("
   ==================================== >DASHBOARD_
