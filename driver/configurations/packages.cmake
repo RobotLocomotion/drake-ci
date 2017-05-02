@@ -103,7 +103,7 @@ else()
       message(WARNING "*** GUROBI_DISTRO was not found")
     endif()
 
-    if(NOT MEMCHECK AND (APPLE OR COMPILER STREQUAL "gcc"))
+    if(NOT COVERAGE AND NOT MEMCHECK AND (APPLE OR COMPILER STREQUAL "gcc"))
       enable_package(IRIS)
     endif()
 
