@@ -67,9 +67,6 @@ if(NOT MATLAB)
   )
 endif()
 
-# Disable Python because SWIG generation fails
-cache_append(DISABLE_PYTHON BOOL ON)
-
 # Disable Fortran if using clang, as they do not play nicely together
 if(COMPILER MATCHES "^(clang|scan-build)$")
   cache_append(DISABLE_FORTRAN BOOL ON)
