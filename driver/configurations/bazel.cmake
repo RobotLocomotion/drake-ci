@@ -57,10 +57,6 @@ if(EVERYTHING)
 
   set(DASHBOARD_BAZEL_BUILD_TEST_OPTIONS
     "${DASHBOARD_BAZEL_BUILD_TEST_OPTIONS} --config=everything --action_env=GIT_SSH")
-
-  # https://github.com/RobotLocomotion/drake/issues/5862
-  set(DASHBOARD_BAZEL_BUILD_TEST_OPTIONS
-    "${DASHBOARD_BAZEL_BUILD_TEST_OPTIONS} --test_tag_filters=-gurobi")
 endif()
 
 set(DASHBOARD_BAZEL_BUILD_TEST_OPTIONS "${DASHBOARD_BAZEL_BUILD_TEST_OPTIONS} --keep_going")

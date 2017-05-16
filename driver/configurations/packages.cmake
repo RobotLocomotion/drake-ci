@@ -97,7 +97,7 @@ else()
     endif()
 
     if(EXISTS "${DASHBOARD_GUROBI_DISTRO}")
-      # enable_package(GUROBI)
+      enable_package(GUROBI)
       set(ENV{GUROBI_DISTRO} "${DASHBOARD_GUROBI_DISTRO}")
     else()
       message(WARNING "*** GUROBI_DISTRO was not found")
