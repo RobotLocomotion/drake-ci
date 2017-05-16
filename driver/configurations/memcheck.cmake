@@ -4,7 +4,7 @@ set(DASHBOARD_CONFIGURATION_TYPE "Debug")
 
 # Set extra compile and link flags
 set(DASHBOARD_EXTRA_DEBUG_FLAGS
-  "-fno-omit-frame-pointer -fno-optimize-sibling-calls")
+  "-O1 -fno-omit-frame-pointer -fno-optimize-sibling-calls")
 prepend_flags(DASHBOARD_C_FLAGS ${DASHBOARD_EXTRA_DEBUG_FLAGS})
 prepend_flags(DASHBOARD_CXX_FLAGS ${DASHBOARD_EXTRA_DEBUG_FLAGS})
 prepend_flags(DASHBOARD_FORTRAN_FLAGS ${DASHBOARD_EXTRA_DEBUG_FLAGS})
