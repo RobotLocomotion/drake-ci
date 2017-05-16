@@ -40,6 +40,10 @@ set(DASHBOARD_TEMPORARY_FILES "")
 include(${DASHBOARD_DRIVER_DIR}/functions.cmake)
 include(${DASHBOARD_DRIVER_DIR}/environment.cmake)
 
+# Due to the extent to which we are modularized, CTest needs a little "hint"
+# that we are not a "declarative" CTest script
+set(CTEST_RUN_CURRENT_SCRIPT FALSE)
+
 # Set initial configuration
 set(CTEST_TEST_ARGS "")
 
