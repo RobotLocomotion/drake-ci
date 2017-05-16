@@ -20,9 +20,32 @@ ctest_build(BUILD "${DASHBOARD_SOURCE_DIRECTORY}"
   NUMBER_ERRORS DASHBOARD_NUMBER_BUILD_ERRORS
   NUMBER_WARNINGS DASHBOARD_NUMBER_BUILD_WARNINGS
   RETURN_VALUE DASHBOARD_BUILD_RETURN_VALUE QUIET)
-if(NOT DASHBOARD_BUILD_RETURN_VALUE EQUAL 0)
+
+# https://bazel.build/blog/2016/01/27/continuous-integration.html
+if(DASHBOARD_BUILD_RETURN_VALUE EQUAL 1)
+  # Build failed.
   set(DASHBOARD_FAILURE ON)
   list(APPEND DASHBOARD_FAILURES "BAZEL BUILD")
+elseif(DASHBOARD_BUILD_RETURN_VALUE EQUAL 2)
+  # Command line problem, bad or illegal flags or command combination, or bad
+  # environment variables. Your command line must be modified.
+  set(DASHBOARD_FAILURE ON)
+  list(APPEND DASHBOARD_FAILURES "BAZEL COMMAND OR ENVIRONMENT")
+elseif(DASHBOARD_BUILD_RETURN_VALUE EQUAL 3)
+  # Build OK, but some tests failed or timed out.
+  set(DASHBOARD_UNSTABLE ON)
+  list(APPEND DASHBOARD_UNSTABLES "BAZEL TEST")
+elseif(DASHBOARD_BUILD_RETURN_VALUE EQUAL 4)
+  # Build successful, but no tests were found even though testing was requested.
+  set(DASHBOARD_UNSTABLE ON)
+  list(APPEND DASHBOARD_UNSTABLES "BAZEL TEST")
+elseif(DASHBOARD_BUILD_RETURN_VALUE EQUAL 8)
+  # Build interrupted, but we terminated with an orderly shutdown.
+  set(DASHBOARD_FAILURE ON)
+  list(APPEND DASHBOARD_FAILURES "BAZEL")
+elseif(NOT DASHBOARD_BUILD_RETURN_VALUE EQUAL 0)
+  set(DASHBOARD_FAILURE ON)
+  list(APPEND DASHBOARD_FAILURES "BAZEL")  
 endif()
 
 ctest_submit(RETRY_COUNT 4 RETRY_DELAY 15
