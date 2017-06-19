@@ -91,9 +91,9 @@ else()
 
   if(NOT OPEN_SOURCE)
     if(APPLE)
-      set(DASHBOARD_GUROBI_DISTRO "$ENV{HOME}/gurobi6.0.5a_mac64.pkg")
+      set(DASHBOARD_GUROBI_DISTRO "$ENV{HOME}/gurobi7.0.2_mac64.pkg")
     else()
-      set(DASHBOARD_GUROBI_DISTRO "$ENV{HOME}/gurobi6.0.5_linux64.tar.gz")
+      set(DASHBOARD_GUROBI_DISTRO "$ENV{HOME}/gurobi7.0.2_linux64.tar.gz")
     endif()
 
     if(EXISTS "${DASHBOARD_GUROBI_DISTRO}")
