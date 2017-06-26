@@ -15,6 +15,8 @@ endif()
 set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_WORKSPACE}/src/drake")
 set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/build")
 
+set(ENV{DRAKE_RESOURCE_ROOT} "${CTEST_SOURCE_DIRECTORY}")
+
 # Include additional configuration information
 include(${DASHBOARD_DRIVER_DIR}/configurations/packages.cmake)
 include(${DASHBOARD_DRIVER_DIR}/configurations/timeout.cmake)
