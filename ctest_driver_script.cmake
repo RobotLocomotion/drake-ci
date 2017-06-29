@@ -6,8 +6,7 @@
 #   ENV{WORKSPACE}        required    value of Jenkins WORKSPACE
 #   ENV{compiler}         optional    "gcc" | "clang" | "scan-build" |
 #                                     "include-what-you-use" |
-#                                     "link-what-you-use" |
-#                                     "cpplint"
+#                                     "link-what-you-use"
 #   ENV{coverage}         optional    boolean
 #   ENV{debug}            optional    boolean
 #   ENV{documentation}    optional    boolean | "publish"
@@ -80,9 +79,7 @@ set(ENV{CMAKE_FLAGS}
   "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON $ENV{CMAKE_FLAGS}")  # HACK
 
 # Invoke the appropriate build driver for the selected configuration
-if(COMPILER STREQUAL "cpplint")
-  include(${DASHBOARD_DRIVER_DIR}/configurations/cpplint.cmake)
-elseif(GENERATOR STREQUAL "bazel")
+if(GENERATOR STREQUAL "bazel")
   include(${DASHBOARD_DRIVER_DIR}/configurations/bazel.cmake)
 elseif(ROS)
   include(${DASHBOARD_DRIVER_DIR}/configurations/catkin.cmake)
