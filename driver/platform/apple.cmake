@@ -1,5 +1,6 @@
 prepend_path(PATH
   /opt/X11/bin
+  /usr/local/opt/python/libexec/bin
   /usr/local/bin
   /usr/bin
   /bin
