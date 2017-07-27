@@ -11,13 +11,14 @@
 #   ENV{debug}            optional    boolean
 #   ENV{documentation}    optional    boolean | "publish"
 #   ENV{everything}       optional    boolean
-#   ENV{generator}        optional    "bazel" | "make" | "ninja" | "xcode"
+#   ENV{generator}        optional    "bazel" | "make" | "ninja"
 #   ENV{ghprbPullId}      optional    value for CTEST_CHANGE_ID
 #   ENV{matlab}           optional    boolean
 #   ENV{memcheck}         optional    "asan" | "lsan" | "msan" | "tsan" |
 #                                     "ubsan" | "valgrind"
 #   ENV{minimal}          optional    boolean
 #   ENV{openSource}       optional    boolean
+#   ENV{package}          optional    boolean | "publish"
 #   ENV{provision}        optional    boolean
 #   ENV{ros}              optional    boolean
 #   ENV{track}            optional    "continuous" | "experimental" | "nightly"
