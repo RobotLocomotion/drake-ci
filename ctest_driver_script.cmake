@@ -21,6 +21,7 @@
 #   ENV{package}          optional    boolean | "publish"
 #   ENV{provision}        optional    boolean
 #   ENV{ros}              optional    boolean
+#   ENV{snopt}            optional    boolean
 #   ENV{track}            optional    "continuous" | "experimental" | "nightly"
 #
 #   buildname             optional    value for CTEST_BUILD_NAME
