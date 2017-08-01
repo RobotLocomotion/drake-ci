@@ -67,13 +67,7 @@ endif()
 set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --keep_going")
 
 if(APPLE)
-  if(DEBUG)
-    set(DASHBOARD_BAZEL_TEST_OPTIONS
-      "--test_timeout=120,600,1800,-1")
-  else()
-    set(DASHBOARD_BAZEL_TEST_OPTIONS
-      "--test_timeout=240,1200,3600,-1")
-  endif()
+  set(DASHBOARD_BAZEL_TEST_OPTIONS "--test_timeout=300,1500,4500,-1")
 else()
   set(DASHBOARD_BAZEL_TEST_OPTIONS)
 endif()
