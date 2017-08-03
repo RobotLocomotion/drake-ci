@@ -54,9 +54,6 @@ cache_append(GIT_EXECUTABLE PATH "${DASHBOARD_TOOLS_DIR}/git-wrapper.bash")
 if(MATLAB AND NOT APPLE)
   if(DASHBOARD_UNIX_DISTRIBUTION_VERSION VERSION_LESS 16.04)
     prepend_path(PATH /usr/local/MATLAB/R2015b/bin)
-  else()
-    prepend_path(PATH /usr/local/MATLAB/R2017a/bin)
   endif()
+  prepend_path(PATH /usr/local/MATLAB/R2017a/bin)
 endif()
-
-

@@ -49,13 +49,59 @@ if(EVERYTHING OR PACKAGE OR SNOPT)
   if(EVERYTHING)
     if(NOT APPLE)
       set(DASHBOARD_GUROBI_DISTRO "$ENV{HOME}/gurobi7.0.2_linux64.tar.gz")
+      if(NOT EXISTS "${DASHBOARD_GUROBI_DISTRO}")
+        message(STATUS "Downloading GUROBI archive from AWS S3...")
+        execute_process(
+          COMMAND "${DASHBOARD_AWS_COMMAND}" s3 cp
+            s3://drake-provisioning/gurobi/gurobi7.0.2_linux64.tar.gz
+            "${DASHBOARD_GUROBI_DISTRO}"
+          RESULT_VARIABLE DASHBOARD_AWS_S3_RESULT_VARIABLE
+          OUTPUT_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE
+          ERROR_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE)
+        message("${DASHBOARD_AWS_S3_OUTPUT_VARIABLE}")
+      endif()
       if(EXISTS "${DASHBOARD_GUROBI_DISTRO}")
         execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${DASHBOARD_GUROBI_DISTRO}
           WORKING_DIRECTORY $ENV{HOME})
         set(ENV{GUROBI_PATH} "$ENV{HOME}/gurobi702/linux64")
       else()
-        message(WARNING "*** DASHBOARD_GUROBI_DISTRO was not found")
+        message(WARNING "*** GUROBI archive was NOT found")
       endif()
+    endif()
+    set(DASHBOARD_GUROBI_LICENSE "$ENV{HOME}/gurobi.lic")
+    if(NOT EXISTS "${DASHBOARD_GUROBI_LICENSE}")
+      message(STATUS "Downloading GUROBI license file from AWS S3...")
+      execute_process(
+        COMMAND "${DASHBOARD_AWS_COMMAND}" s3 cp
+          s3://drake-provisioning/gurobi/gurobi.lic
+          "${DASHBOARD_GUROBI_LICENSE}"
+        RESULT_VARIABLE DASHBOARD_AWS_S3_RESULT_VARIABLE
+        OUTPUT_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE
+        ERROR_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE)
+      message("${DASHBOARD_AWS_S3_OUTPUT_VARIABLE}")
+    endif()
+    if(NOT EXISTS "${DASHBOARD_GUROBI_LICENSE}")
+      message(WARNING "*** GUROBI license file was NOT found")
+    endif()
+    set(DASHBOARD_MOSEK_LICENSE "$ENV{HOME}/mosek/mosek.lic")
+    if(NOT EXISTS "${DASHBOARD_MOSEK_LICENSE}")
+      message(STATUS "Downloading MOSEK license file from AWS S3...")
+      execute_process(COMMAND "${CMAKE_COMMAND}" -E make_directory "$ENV{HOME}/mosek"
+        RESULT_VARIABLE MAKE_DIRECTORY_RESULT_VARIABLE
+        OUTPUT_VARIABLE MAKE_DIRECTORY_OUTPUT_VARIABLE
+        ERROR_VARIABLE MAKE_DIRECTORY_OUTPUT_VARIABLE)
+      message("${MAKE_DIRECTORY_OUTPUT_VARIABLE}")
+      execute_process(
+        COMMAND "${DASHBOARD_AWS_COMMAND}" s3 cp
+          s3://drake-provisioning/mosek/mosek.lic
+          "${DASHBOARD_MOSEK_LICENSE}"
+        RESULT_VARIABLE DASHBOARD_AWS_S3_RESULT_VARIABLE
+        OUTPUT_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE
+        ERROR_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE)
+      message("${DASHBOARD_AWS_S3_OUTPUT_VARIABLE}")
+    endif()
+    if(NOT EXISTS "${DASHBOARD_MOSEK_LICENSE}")
+      message(WARNING "*** MOSEK license file was NOT found")
     endif()
     set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=everything")
   endif()
