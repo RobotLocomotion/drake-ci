@@ -1,13 +1,6 @@
 # Set base configuration
-if(GENERATOR STREQUAL "xcode")
-  set(CTEST_USE_LAUNCHERS OFF)
-  list(APPEND CTEST_CUSTOM_ERROR_EXCEPTION
-    "configure.ac:[0-9]*: installing"
-    "swig/Makefile.am:30: installing './py-compile'")
-else()
-  set(CTEST_USE_LAUNCHERS ON)
-  set(ENV{CTEST_USE_LAUNCHERS_DEFAULT} 1)
-endif()
+set(CTEST_USE_LAUNCHERS ON)
+set(ENV{CTEST_USE_LAUNCHERS_DEFAULT} 1)
 
 set(DASHBOARD_ENABLE_DOCUMENTATION OFF)
 set(DASHBOARD_LONG_RUNNING_TESTS OFF)

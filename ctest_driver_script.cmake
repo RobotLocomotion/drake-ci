@@ -8,7 +8,7 @@
 #   ENV{debug}            optional    boolean
 #   ENV{documentation}    optional    boolean | "publish"
 #   ENV{everything}       optional    boolean
-#   ENV{generator}        optional    "bazel" | "make" | "ninja"
+#   ENV{generator}        optional    "bazel" | "make"
 #   ENV{ghprbPullId}      optional    value for CTEST_CHANGE_ID
 #   ENV{matlab}           optional    boolean
 #   ENV{memcheck}         optional    "asan" | "lsan" | "msan" | "tsan" |
