@@ -24,33 +24,22 @@ file(REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
 file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
 file(REMOVE_RECURSE "${DASHBOARD_INSTALL_PREFIX}")
 
-set(ENV{CMAKE_CONFIG_TYPE} "${DASHBOARD_CONFIGURATION_TYPE}")
 set(CTEST_CONFIGURATION_TYPE "${DASHBOARD_CONFIGURATION_TYPE}")
 
 include(${DASHBOARD_DRIVER_DIR}/configurations/timeout.cmake)
 
 # Prepare initial cache
-cache_flag(C_FLAGS STRING)
-cache_flag(CXX_FLAGS STRING)
-cache_flag(CXX_STANDARD STRING EXTRA "CMAKE_CXX_STANDARD_REQUIRED:BOOL=ON")
-cache_flag(FORTRAN_FLAGS STRING NAMES CMAKE_Fortran_FLAGS)
-cache_flag(STATIC_LINKER_FLAGS STRING)
-cache_flag(SHARED_LINKER_FLAGS STRING NAMES
-  CMAKE_EXE_LINKER_FLAGS
-  CMAKE_SHARED_LINKER_FLAGS)
-cache_flag(POSITION_INDEPENDENT_CODE BOOL)
 cache_flag(INSTALL_PREFIX PATH)
 cache_append(LONG_RUNNING_TESTS BOOL ${DASHBOARD_LONG_RUNNING_TESTS})
-cache_append(SKIP_DRAKE_BUILD BOOL ON)
 
 # Report build configuration
 execute_step(common report-configuration)
 
-# Build the pre-drake superbuild
+# Build the superbuild
 execute_step(generic pre-drake)
 
 if(DASHBOARD_SUPERBUILD_FAILURE)
-  notice("CTest Status: NOT CONTINUING BECAUSE SUPERBUILD (PRE-DRAKE) WAS NOT SUCCESSFUL")
+  notice("CTest Status: NOT CONTINUING BECAUSE SUPERBUILD WAS NOT SUCCESSFUL")
 else()
   # Now start the actual drake build
   execute_step(generic drake)

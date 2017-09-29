@@ -25,11 +25,3 @@ else()
   fatal("unknown compiler '${COMPILER}'")
 endif()
 
-# Set base compile options
-set(DASHBOARD_C_FLAGS "")
-set(DASHBOARD_CXX_FLAGS "")
-set(DASHBOARD_CXX_STANDARD "")
-set(DASHBOARD_FORTRAN_FLAGS "")
-set(DASHBOARD_POSITION_INDEPENDENT_CODE OFF)
-set(DASHBOARD_SHARED_LINKER_FLAGS "")
-set(DASHBOARD_STATIC_LINKER_FLAGS "")
