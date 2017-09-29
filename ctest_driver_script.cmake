@@ -13,8 +13,6 @@
 #   ENV{matlab}           optional    boolean
 #   ENV{memcheck}         optional    "asan" | "lsan" | "msan" | "tsan" |
 #                                     "ubsan" | "valgrind"
-#   ENV{minimal}          optional    boolean
-#   ENV{openSource}       optional    boolean
 #   ENV{package}          optional    boolean | "publish"
 #   ENV{provision}        optional    boolean
 #   ENV{snopt}            optional    boolean

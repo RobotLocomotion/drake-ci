@@ -24,12 +24,8 @@ if(NOT DEFINED ENV{ghprbPullId})
   set(DASHBOARD_LONG_RUNNING_TESTS ON)
 endif()
 
-# Include additional configuration information
 include(${DASHBOARD_DRIVER_DIR}/configurations/packages.cmake)
-
-if(NOT MINIMAL AND NOT OPEN_SOURCE)
-  include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
-endif()
+include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
 
 # Clean out the old builds and/or installs
 file(REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
