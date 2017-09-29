@@ -18,9 +18,6 @@ else()
   fatal("unable to determine platform distribution information")
 endif()
 
-# Override git executable
-cache_append(GIT_EXECUTABLE PATH "${DASHBOARD_TOOLS_DIR}/git-wrapper.bash")
-
 # Set (non-Apple) paths for MATLAB
 if(MATLAB AND NOT APPLE)
   if(DASHBOARD_UNIX_DISTRIBUTION_VERSION VERSION_LESS 16.04)
