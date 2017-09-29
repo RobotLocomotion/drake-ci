@@ -17,7 +17,6 @@ if(NOT DEFINED ENV{ghprbPullId})
   set(DASHBOARD_LONG_RUNNING_TESTS ON)
 endif()
 
-include(${DASHBOARD_DRIVER_DIR}/configurations/packages.cmake)
 include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
 
 # Clean out the old builds and/or installs
@@ -41,7 +40,6 @@ cache_flag(SHARED_LINKER_FLAGS STRING NAMES
   CMAKE_SHARED_LINKER_FLAGS)
 cache_flag(POSITION_INDEPENDENT_CODE BOOL)
 cache_flag(INSTALL_PREFIX PATH)
-cache_flag(VERBOSE_MAKEFILE BOOL)
 cache_append(LONG_RUNNING_TESTS BOOL ${DASHBOARD_LONG_RUNNING_TESTS})
 cache_append(SKIP_DRAKE_BUILD BOOL ON)
 
@@ -56,11 +54,6 @@ if(DASHBOARD_SUPERBUILD_FAILURE)
 else()
   # Now start the actual drake build
   execute_step(generic drake)
-
-  if(DASHBOARD_WITH_DIRECTOR AND NOT DASHBOARD_FAILURE)
-    # Build the post-drake superbuild
-    execute_step(generic post-drake)
-  endif()
 endif()
 
 # Determine build result
@@ -76,14 +69,8 @@ if(NOT DASHBOARD_FAILURE)
     set(DASHBOARD_WARNING ON)
   endif()
 
-  if(DASHBOARD_TEST)
-    if(NOT DASHBOARD_TEST_RETURN_VALUE EQUAL 0)
-      append_step_status("DRAKE TEST" UNSTABLE)
-    endif()
-
-    if(DASHBOARD_WITH_DIRECTOR AND NOT DASHBOARD_SUPERBUILD_TEST_RETURN_VALUE EQUAL 0)
-      append_step_status("SUPERBUILD TEST" UNSTABLE)
-    endif()
+  if(DASHBOARD_TEST AND NOT DASHBOARD_TEST_RETURN_VALUE EQUAL 0)
+    append_step_status("DRAKE TEST" UNSTABLE)
   endif()
 endif()
 
