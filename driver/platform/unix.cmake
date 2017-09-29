@@ -20,8 +20,5 @@ endif()
 
 # Set (non-Apple) paths for MATLAB
 if(MATLAB AND NOT APPLE)
-  if(DASHBOARD_UNIX_DISTRIBUTION_VERSION VERSION_LESS 16.04)
-    prepend_path(PATH /usr/local/MATLAB/R2015b/bin)
-  endif()
   prepend_path(PATH /usr/local/MATLAB/R2017a/bin)
 endif()
