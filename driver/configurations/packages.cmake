@@ -47,16 +47,8 @@ if(MINIMAL)
   disable_package(SPDLOG)
   disable_package(YAML_CPP)
 else()
-  if(COVERAGE OR MATLAB OR MEMCHECK)
+  if(MATLAB)
     disable_package(DIRECTOR)
-  endif()
-
-  if(MEMCHECK MATCHES "^(asan|lsan|msan|tsan|ubsan)$")
-    disable_package(LIBBOT)
-  endif()
-
-  if(MEMCHECK STREQUAL "msan")
-    disable_package(IPOPT)
   endif()
 endif()
 

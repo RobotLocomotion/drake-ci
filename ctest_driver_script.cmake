@@ -5,7 +5,6 @@
 #   ENV{BUILD_ID}         optional    value of Jenkins BUILD_ID
 #   ENV{WORKSPACE}        required    value of Jenkins WORKSPACE
 #   ENV{compiler}         optional    "clang" | "gcc"
-#   ENV{coverage}         optional    boolean
 #   ENV{debug}            optional    boolean
 #   ENV{documentation}    optional    boolean | "publish"
 #   ENV{everything}       optional    boolean
