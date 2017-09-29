@@ -11,7 +11,6 @@ endif()
 
 set(DASHBOARD_COVERAGE OFF)
 set(DASHBOARD_MEMCHECK OFF)
-set(DASHBOARD_LINK_WHAT_YOU_USE OFF)
 
 set(DASHBOARD_ENABLE_DOCUMENTATION OFF)
 set(DASHBOARD_LONG_RUNNING_TESTS OFF)
@@ -40,15 +39,6 @@ file(REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
 file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
 file(REMOVE_RECURSE "${DASHBOARD_INSTALL_PREFIX}")
 
-# Set up diagnostic tools
-if(COMPILER STREQUAL "include-what-you-use")
-  include(${DASHBOARD_DRIVER_DIR}/configurations/include-what-you-use.cmake)
-elseif(COMPILER STREQUAL "link-what-you-use")
-  include(${DASHBOARD_DRIVER_DIR}/configurations/link-what-you-use.cmake)
-elseif(COMPILER STREQUAL "scan-build")
-  include(${DASHBOARD_DRIVER_DIR}/configurations/scan-build.cmake)
-endif()
-
 if(COVERAGE)
   include(${DASHBOARD_DRIVER_DIR}/configurations/coverage.cmake)
 endif()
@@ -71,10 +61,6 @@ cache_flag(STATIC_LINKER_FLAGS STRING)
 cache_flag(SHARED_LINKER_FLAGS STRING NAMES
   CMAKE_EXE_LINKER_FLAGS
   CMAKE_SHARED_LINKER_FLAGS)
-cache_flag(INCLUDE_WHAT_YOU_USE STRING NAMES
-  CMAKE_C_INCLUDE_WHAT_YOU_USE
-  CMAKE_CXX_INCLUDE_WHAT_YOU_USE)
-cache_flag(LINK_WHAT_YOU_USE BOOL)
 cache_flag(POSITION_INDEPENDENT_CODE BOOL)
 cache_flag(INSTALL_PREFIX PATH)
 cache_flag(VERBOSE_MAKEFILE BOOL)
@@ -110,12 +96,6 @@ if(NOT DASHBOARD_FAILURE)
     ${DASHBOARD_NUMBER_BUILD_WARNINGS})
   if(DASHBOARD_NUMBER_BUILD_WARNINGS GREATER 0)
     set(DASHBOARD_WARNING ON)
-  endif()
-
-  if(DASHBOARD_WARNING)
-    if(COMPILER MATCHES "^((include|link)-what-you-use|scan-build)$")
-      append_step_status("STATIC ANALYSIS TOOL" UNSTABLE)
-    endif()
   endif()
 
   if(DASHBOARD_TEST)

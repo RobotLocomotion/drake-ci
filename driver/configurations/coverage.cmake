@@ -70,7 +70,7 @@ endif()
 # Disable Fortran if using Clang, as they do not play nicely together. Also
 # disable Python as the Python bindings depend on IPOPT, which depends on
 # Fortran.
-if(COMPILER MATCHES "^(clang|scan-build)$")
+if(COMPILER STREQUAL "clang")
   cache_append(DISABLE_FORTRAN BOOL ON)
   cache_append(DISABLE_PYTHON BOOL ON)
 endif()
