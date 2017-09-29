@@ -8,8 +8,6 @@ report_configuration(".38
   FC
   ==================================== ENV
   GTEST_DEATH_TEST_USE_FORK
-  ==================================== ENV
-  ${ROS_ENVIRONMENT}
   ==================================== >DASHBOARD_
   UNIX
   UNIX_DISTRIBUTION

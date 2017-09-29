@@ -20,7 +20,6 @@
 #   ENV{openSource}       optional    boolean
 #   ENV{package}          optional    boolean | "publish"
 #   ENV{provision}        optional    boolean
-#   ENV{ros}              optional    boolean
 #   ENV{snopt}            optional    boolean
 #   ENV{track}            optional    "continuous" | "experimental" | "nightly"
 #
@@ -83,8 +82,6 @@ set(ENV{CMAKE_FLAGS}
 # Invoke the appropriate build driver for the selected configuration
 if(GENERATOR STREQUAL "bazel")
   include(${DASHBOARD_DRIVER_DIR}/configurations/bazel.cmake)
-elseif(ROS)
-  include(${DASHBOARD_DRIVER_DIR}/configurations/catkin.cmake)
 else()
   include(${DASHBOARD_DRIVER_DIR}/configurations/generic.cmake)
 endif()

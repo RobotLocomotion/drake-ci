@@ -28,7 +28,6 @@ set(MINIMAL $ENV{minimal})
 set(OPEN_SOURCE $ENV{openSource})
 set(PACKAGE $ENV{package})
 set(PROVISION $ENV{provision})
-set(ROS $ENV{ros})
 set(SNOPT $ENV{snopt})
 set(TRACK $ENV{track})
 
