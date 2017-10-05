@@ -121,8 +121,6 @@ endif()
 if(MEMCHECK STREQUAL "asan")
   set(DASHBOARD_BAZEL_BUILD_OPTIONS
     "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=asan")
-  set(ENV{ASAN_OPTIONS}
-    "check_initialization_order=1:detect_stack_use_after_return=1")
 elseif(MEMCHECK STREQUAL "lsan")
   set(DASHBOARD_BAZEL_BUILD_OPTIONS
     "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=lsan")
@@ -132,7 +130,6 @@ elseif(MEMCHECK STREQUAL "msan")
 elseif(MEMCHECK STREQUAL "tsan")
   set(DASHBOARD_BAZEL_BUILD_OPTIONS
     "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=tsan")
-  set(ENV{TSAN_OPTIONS} "detect_deadlocks=1:second_deadlock_stack=1")
 elseif(MEMCHECK STREQUAL "ubsan")
   set(DASHBOARD_BAZEL_BUILD_OPTIONS
     "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=ubsan")
