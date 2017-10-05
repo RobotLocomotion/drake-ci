@@ -118,24 +118,31 @@ else()
   set(DASHBOARD_BAZEL_TEST_OPTIONS)
 endif()
 
+set(MEMCHECK_BAZEL_CONFIG "")
 if(MEMCHECK STREQUAL "asan")
-  set(DASHBOARD_BAZEL_BUILD_OPTIONS
-    "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=asan")
+  set(MEMCHECK_BAZEL_CONFIG "asan")
 elseif(MEMCHECK STREQUAL "lsan")
-  set(DASHBOARD_BAZEL_BUILD_OPTIONS
-    "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=lsan")
+  set(MEMCHECK_BAZEL_CONFIG "lsan")
 elseif(MEMCHECK STREQUAL "msan")
-  set(DASHBOARD_BAZEL_BUILD_OPTIONS
-    "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=msan")
+  set(MEMCHECK_BAZEL_CONFIG "msan")
 elseif(MEMCHECK STREQUAL "tsan")
-  set(DASHBOARD_BAZEL_BUILD_OPTIONS
-    "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=tsan")
+  set(MEMCHECK_BAZEL_CONFIG "tsan")
 elseif(MEMCHECK STREQUAL "ubsan")
-  set(DASHBOARD_BAZEL_BUILD_OPTIONS
-    "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=ubsan")
+  set(MEMCHECK_BAZEL_CONFIG "ubsan")
 elseif(MEMCHECK STREQUAL "valgrind")
-  set(DASHBOARD_BAZEL_BUILD_OPTIONS
-    "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=memcheck")
+  set(MEMCHECK_BAZEL_CONFIG "memcheck")
+endif()
+if(MEMCHECK_BAZEL_CONFIG)
+  if(EVERYTHING)
+    string(REPLACE
+      "--config=everything"
+      "--config=${MEMCHECK_BAZEL_CONFIG}_everything"
+      DASHBOARD_BAZEL_BUILD_OPTIONS
+      "${DASHBOARD_BAZEL_BUILD_OPTIONS}")
+  else()
+    set(DASHBOARD_BAZEL_BUILD_OPTIONS
+      "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=${MEMCHECK_BAZEL_CONFIG}")
+  endif()
 endif()
 
 # Report build configuration
