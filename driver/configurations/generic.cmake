@@ -25,12 +25,10 @@ file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
 file(REMOVE_RECURSE "${DASHBOARD_INSTALL_PREFIX}")
 
 set(CTEST_CONFIGURATION_TYPE "${DASHBOARD_CONFIGURATION_TYPE}")
-
-include(${DASHBOARD_DRIVER_DIR}/configurations/timeout.cmake)
+set(CTEST_TEST_TIMEOUT 300)
 
 # Prepare initial cache
 cache_flag(INSTALL_PREFIX PATH)
-cache_append(LONG_RUNNING_TESTS BOOL ${DASHBOARD_LONG_RUNNING_TESTS})
 
 # Report build configuration
 execute_step(common report-configuration)

@@ -26,7 +26,5 @@ report_configuration(".38
   CTEST_USE_LAUNCHERS
   ==================================== >DASHBOARD_
   ENABLE_DOCUMENTATION
-  LONG_RUNNING_TESTS
-  TEST_TIMEOUT_MULTIPLIER
   ====================================
   ")
