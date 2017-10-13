@@ -43,8 +43,11 @@ if(COMPILER STREQUAL "gcc")
     "${DASHBOARD_BAZEL_BUILD_OPTIONS} --compiler=gcc${DASHBOARD_GNU_COMPILER_SUFFIX}")
 endif()
 
-if(EVERYTHING OR PACKAGE OR SNOPT)
+if(DOCUMENTATION STREQUAL "publish" OR EVERYTHING OR PACKAGE OR SNOPT)
   include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
+endif()
+
+if(EVERYTHING OR PACKAGE OR SNOPT)
   set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --action_env=GIT_SSH")
   if(EVERYTHING)
     if(NOT APPLE)
@@ -180,6 +183,14 @@ if(NOT DASHBOARD_FAILURE)
     ONE "SUCCESS BUT WITH 1 BUILD WARNING"
     MANY "SUCCESS BUT WITH # BUILD WARNINGS"
     ${DASHBOARD_NUMBER_BUILD_WARNINGS})
+endif()
+
+# Build and publish documentation, if requested, and if build succeeded.
+if(DOCUMENTATION)
+  execute_step(bazel build-documentation)
+  if(DOCUMENTATION STREQUAL "publish")
+    execute_step(bazel publish-documentation)
+  endif()
 endif()
 
 # Report dashboard status
