@@ -2,21 +2,6 @@
 set(CTEST_USE_LAUNCHERS ON)
 set(ENV{CTEST_USE_LAUNCHERS_DEFAULT} 1)
 
-set(DASHBOARD_ENABLE_DOCUMENTATION OFF)
-set(DASHBOARD_LONG_RUNNING_TESTS OFF)
-
-if(DOCUMENTATION OR DOCUMENTATION STREQUAL "publish")
-  set(DASHBOARD_ENABLE_DOCUMENTATION ON)
-
-  if(DOCUMENTATION STREQUAL "publish")
-    set(ENV{OXYGEN_DIR} "/usr/local/oxygen")
-  endif()
-endif()
-
-if(NOT DEFINED ENV{ghprbPullId})
-  set(DASHBOARD_LONG_RUNNING_TESTS ON)
-endif()
-
 include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
 
 # Clean out the old builds and/or installs
@@ -59,11 +44,6 @@ if(NOT DASHBOARD_FAILURE)
   if(DASHBOARD_TEST AND NOT DASHBOARD_TEST_RETURN_VALUE EQUAL 0)
     append_step_status("DRAKE TEST" UNSTABLE)
   endif()
-endif()
-
-# Publish documentation, if requested, and if build succeeded
-if(DOCUMENTATION STREQUAL "publish")
-  execute_step(generic publish)
 endif()
 
 # Report dashboard status

@@ -24,7 +24,5 @@ report_configuration(".38
   CTEST_UPDATE_COMMAND
   CTEST_UPDATE_VERSION_ONLY
   CTEST_USE_LAUNCHERS
-  ==================================== >DASHBOARD_
-  ENABLE_DOCUMENTATION
   ====================================
   ")
