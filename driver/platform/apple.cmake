@@ -10,6 +10,6 @@ prepend_path(PATH
 
 if(MATLAB)
   prepend_path(PATH
-    /Applications/MATLAB_R2015b.app/bin
-    /Applications/MATLAB_R2015b.app/runtime/maci64)
+    /Applications/MATLAB_R2017a.app/bin
+    /Applications/MATLAB_R2017a.app/runtime/maci64)
 endif()
