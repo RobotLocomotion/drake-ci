@@ -1,0 +1,3 @@
+build --action_env=GIT_SSH
+build --keep_going
+test --test_summary=short
