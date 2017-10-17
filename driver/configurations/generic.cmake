@@ -1,3 +1,7 @@
+# Jenkins passes down an incorrect value of JAVA_HOME from master to agent for
+# some inexplicable reason.
+unset(ENV{JAVA_HOME})
+
 # Set base configuration
 set(CTEST_USE_LAUNCHERS ON)
 set(ENV{CTEST_USE_LAUNCHERS_DEFAULT} 1)

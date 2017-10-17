@@ -1,5 +1,5 @@
-# Jenkins passes down the value of JAVA_HOME from master to slave for
-# inexplicable reasons.
+# Jenkins passes down an incorrect value of JAVA_HOME from master to agent for
+# some inexplicable reason.
 unset(ENV{JAVA_HOME})
 
 set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}/drake")
