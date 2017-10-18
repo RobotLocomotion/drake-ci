@@ -11,10 +11,6 @@ if(DASHBOARD_UNIX_DISTRIBUTION STREQUAL "Ubuntu")
   endif()
 endif()
 
-# Select appropriate compiler(s)
-set(ENV{F77} "gfortran${DASHBOARD_GNU_COMPILER_SUFFIX}")
-set(ENV{FC} "gfortran${DASHBOARD_GNU_COMPILER_SUFFIX}")
-
 if(COMPILER STREQUAL "clang")
   set(ENV{CC} "clang${DASHBOARD_CLANG_COMPILER_SUFFIX}")
   set(ENV{CXX} "clang++${DASHBOARD_CLANG_COMPILER_SUFFIX}")

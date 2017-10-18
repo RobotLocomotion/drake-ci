@@ -2,7 +2,6 @@ report_configuration(".38
   ==================================== ENV
   CC
   CXX
-  FC
   ==================================== >DASHBOARD_
   UNIX
   UNIX_DISTRIBUTION
