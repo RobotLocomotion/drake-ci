@@ -10,9 +10,11 @@
 #   ENV{everything}       optional    boolean
 #   ENV{generator}        optional    "bazel" | "make"
 #   ENV{ghprbPullId}      optional    value for CTEST_CHANGE_ID
+#   ENV{gurobi}           optional    boolean
 #   ENV{matlab}           optional    boolean
 #   ENV{memcheck}         optional    "asan" | "lsan" | "msan" | "tsan" |
 #                                     "ubsan" | "valgrind"
+#   ENV{mosek}            optional    boolean
 #   ENV{package}          optional    boolean | "publish"
 #   ENV{provision}        optional    boolean
 #   ENV{snopt}            optional    boolean
@@ -28,6 +30,7 @@ set(CTEST_RUN_CURRENT_SCRIPT OFF)  # HACK
 set(DASHBOARD_CDASH_SERVER "drake-cdash.csail.mit.edu")
 set(DASHBOARD_NIGHTLY_START_TIME "00:00:00 EST")
 
+set(DASHBOARD_CI_DIR ${CMAKE_CURRENT_LIST_DIR})
 set(DASHBOARD_DRIVER_DIR ${CMAKE_CURRENT_LIST_DIR}/driver)
 set(DASHBOARD_TOOLS_DIR ${CMAKE_CURRENT_LIST_DIR}/tools)
 set(DASHBOARD_TEMPORARY_FILES "")
@@ -73,6 +76,8 @@ set(CTEST_CONFIGURATION_TYPE "${DASHBOARD_CONFIGURATION_TYPE}")
 # Invoke the appropriate build driver for the selected configuration
 if(GENERATOR STREQUAL "bazel")
   include(${DASHBOARD_DRIVER_DIR}/configurations/bazel.cmake)
+elseif(GENERATOR STREQUAL "cmake")
+  include(${DASHBOARD_DRIVER_DIR}/configurations/cmake.cmake)
 else()
   include(${DASHBOARD_DRIVER_DIR}/configurations/generic.cmake)
 endif()
