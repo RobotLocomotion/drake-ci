@@ -15,6 +15,7 @@ export BUILD_ID="$(date -u +'%y%j.%H.%M')"
 export JOB_NAME="unix-${compiler}-experimental"
 export NODE_NAME=$(hostname -s)
 export WORKSPACE="${HOME}/workspace/${JOB_NAME}"
+export GIT_COMMIT=""
 
 export PATH="/usr/local/bin:${PATH}"
 
