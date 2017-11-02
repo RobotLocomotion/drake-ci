@@ -4,6 +4,7 @@
 #
 #   ENV{BUILD_ID}         optional    value of Jenkins BUILD_ID
 #   ENV{WORKSPACE}        required    value of Jenkins WORKSPACE
+#   ENV{GIT_COMMIT}       optional    value of Jenkins GIT_COMMIT
 #   ENV{compiler}         optional    "clang" | "gcc"
 #   ENV{debug}            optional    boolean
 #   ENV{documentation}    optional    boolean | "publish"
