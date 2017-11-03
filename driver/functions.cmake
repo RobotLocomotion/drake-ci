@@ -277,8 +277,12 @@ function(begin_stage)
   endif()
 
   if(NOT DASHBOARD_CDASH_URL_MESSAGES MATCHES "${_preamble}")
-    set(_url_message
-      "${_preamble}: https://${DASHBOARD_CDASH_SERVER}/index.php?project=${_bs_PROJECT_NAME}&showfilters=1&filtercount=3&filtercombine=and&field1=revision&compare1=63&value1=${DASHBOARD_GIT_COMMIT}&field2=buildstarttime&compare2=84&value2=now&field3=buildname&compare3=63&value3=${_bs_BUILD_NAME}")
+    if(DASHBOARD_LABEL)
+      set(_url_message
+      "${_preamble}: https://${DASHBOARD_CDASH_SERVER}/index.php?project=${_bs_PROJECT_NAME}&showfilters=1&filtercount=2&showfilters=1&filtercombine=and&field1=label&compare1=61&value1=${DASHBOARD_LABEL}&field2=buildstarttime&compare2=84&value2=now")
+    else()
+      set(_url_message "${_preamble}:")
+    endif()
     set(DASHBOARD_CDASH_URL_MESSAGES
       ${DASHBOARD_CDASH_URL_MESSAGES} ${_url_message}
       PARENT_SCOPE)
