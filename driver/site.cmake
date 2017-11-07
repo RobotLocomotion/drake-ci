@@ -48,6 +48,14 @@ else()
   set(DASHBOARD_LABEL "")
 endif()
 
+# Set git commit
+if(DEFINED ENV{GIT_COMMIT})
+  set(DASHBOARD_GIT_COMMIT "$ENV{GIT_COMMIT}")
+else()
+  message(WARNING "*** ENV{GIT_COMMIT} was not set")
+  set(DASHBOARD_GIT_COMMIT "")
+endif()
+
 # Set pull request id
 if(DEFINED ENV{ghprbPullId})
   set(CTEST_CHANGE_ID "$ENV{ghprbPullId}")
