@@ -34,7 +34,7 @@ if(PACKAGE)
     fatal("setting permissions on package output directory was not successful"
       CHMOD_OUTPUT_VARIABLE)
   endif()
-  set(CTEST_BUILD_COMMAND "${DASHBOARD_BAZEL_COMMAND} ${DASHBOARD_BAZEL_STARTUP_OPTIONS} run ${DASHBOARD_BAZEL_BUILD_OPTIONS} //:install -- /opt/drake")
+  set(CTEST_BUILD_COMMAND "${DASHBOARD_BAZEL_COMMAND} ${DASHBOARD_BAZEL_STARTUP_OPTIONS} run ${DASHBOARD_BAZEL_BUILD_OPTIONS} ${DASHBOARD_BUILD_EVENT_OPTION} //:install -- /opt/drake")
 endif()
 
 set(CTEST_CUSTOM_ERROR_EXCEPTION "^WARNING: " ":[0-9]+: Failure$")
