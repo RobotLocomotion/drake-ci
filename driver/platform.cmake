@@ -20,6 +20,10 @@ set(DASHBOARD_UNIX ON)
 
 include(${DASHBOARD_DRIVER_DIR}/platform/unix.cmake)
 
+if(NOT APPLE)
+  set(ENV{DISPLAY} ":99")
+endif()
+
 # Execute provisioning script, if requested
 if(PROVISION)
   if(DASHBOARD_UNIX_DISTRIBUTION STREQUAL "Apple")
