@@ -51,12 +51,12 @@ if(EVERYTHING OR PACKAGE OR SNOPT)
   set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --action_env=GIT_SSH")
   if(EVERYTHING)
     if(NOT APPLE)
-      set(DASHBOARD_GUROBI_DISTRO "$ENV{HOME}/gurobi7.0.2_linux64.tar.gz")
+      set(DASHBOARD_GUROBI_DISTRO "$ENV{HOME}/gurobi7.5.2_linux64.tar.gz")
       if(NOT EXISTS "${DASHBOARD_GUROBI_DISTRO}")
         message(STATUS "Downloading GUROBI archive from AWS S3...")
         execute_process(
           COMMAND "${DASHBOARD_AWS_COMMAND}" s3 cp
-            s3://drake-provisioning/gurobi/gurobi7.0.2_linux64.tar.gz
+            s3://drake-provisioning/gurobi/gurobi7.5.2_linux64.tar.gz
             "${DASHBOARD_GUROBI_DISTRO}"
           RESULT_VARIABLE DASHBOARD_AWS_S3_RESULT_VARIABLE
           OUTPUT_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE
@@ -66,7 +66,7 @@ if(EVERYTHING OR PACKAGE OR SNOPT)
       if(EXISTS "${DASHBOARD_GUROBI_DISTRO}")
         execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${DASHBOARD_GUROBI_DISTRO}
           WORKING_DIRECTORY $ENV{HOME})
-        set(ENV{GUROBI_PATH} "$ENV{HOME}/gurobi702/linux64")
+        set(ENV{GUROBI_PATH} "$ENV{HOME}/gurobi752/linux64")
       else()
         message(WARNING "*** GUROBI archive was NOT found")
       endif()
