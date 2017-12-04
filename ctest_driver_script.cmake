@@ -13,7 +13,7 @@
 #   ENV{ghprbPullId}      optional    value for CTEST_CHANGE_ID
 #   ENV{gurobi}           optional    boolean
 #   ENV{matlab}           optional    boolean
-#   ENV{memcheck}         optional    "asan" | "lsan" | "msan" | "tsan" |
+#   ENV{memcheck}         optional    "asan" | "lsan" | "tsan" |
 #                                     "ubsan" | "valgrind"
 #   ENV{mosek}            optional    boolean
 #   ENV{package}          optional    boolean | "publish"
@@ -24,7 +24,7 @@
 #   buildname             optional    value for CTEST_BUILD_NAME
 #   site                  optional    value for CTEST_SITE
 
-cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.6)
 
 set(CTEST_RUN_CURRENT_SCRIPT OFF)  # HACK
 
@@ -80,7 +80,7 @@ if(GENERATOR STREQUAL "bazel")
 elseif(GENERATOR STREQUAL "cmake")
   include(${DASHBOARD_DRIVER_DIR}/configurations/cmake.cmake)
 else()
-  include(${DASHBOARD_DRIVER_DIR}/configurations/generic.cmake)
+  fatal("generator is invalid")
 endif()
 
 # Remove any temporary files that we created
