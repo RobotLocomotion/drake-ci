@@ -6,6 +6,7 @@
 #   ENV{WORKSPACE}        required    value of Jenkins WORKSPACE
 #   ENV{GIT_COMMIT}       optional    value of Jenkins GIT_COMMIT
 #   ENV{compiler}         optional    "clang" | "gcc"
+#   ENV{coverage}         optional    boolean
 #   ENV{debug}            optional    boolean
 #   ENV{documentation}    optional    boolean | "publish"
 #   ENV{everything}       optional    boolean
