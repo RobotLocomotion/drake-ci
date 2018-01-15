@@ -81,6 +81,9 @@ ctest_submit(CDASH_UPLOAD "${DASHBOARD_BUILD_EVENT_JSON_FILE}"
   QUIET)
 
 if(COVERAGE)
+  set(KCOV_MERGED "${DASHBOARD_SOURCE_DIRECTORY}/bazel-kcov/kcov-merged")
+  execute_process(COMMAND "${CMAKE_COMMAND}" -E copy "${KCOV_MERGED}/cobertura.xml" "${KCOV_MERGED}/coverage.xml")
+  set(ENV{COBERTURADIR} "${KCOV_MERGED}")
   ctest_coverage(RETURN_VALUE DASHBOARD_COVERAGE_RETURN_VALUE QUIET)
   ctest_submit(PARTS Coverage RETRY_COUNT 4 RETRY_DELAY 15 QUIET)
 endif()
