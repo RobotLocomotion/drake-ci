@@ -41,10 +41,21 @@ set(CTEST_CUSTOM_ERROR_EXCEPTION "^WARNING: " ":[0-9]+: Failure$")
 set(CTEST_CUSTOM_ERROR_MATCH "^ERROR: " "^FAIL: " "^TIMEOUT: ")
 set(CTEST_CUSTOM_WARNING_MATCH "^WARNING: ")
 
+if(EXISTS "${CTEST_SOURCE_DIRECTORY}/CTestCustom.cmake.in")
+  execute_process(COMMAND "${CMAKE_COMMAND}" -E copy
+    "${CTEST_SOURCE_DIRECTORY}/CTestCustom.cmake.in"
+    "${CTEST_BINARY_DIRECTORY}/CTestCustom.cmake")
+  ctest_read_custom_files("${CTEST_BINARY_DIRECTORY}")
+endif()
+
 ctest_build(BUILD "${DASHBOARD_SOURCE_DIRECTORY}"
   NUMBER_ERRORS DASHBOARD_NUMBER_BUILD_ERRORS
   NUMBER_WARNINGS DASHBOARD_NUMBER_BUILD_WARNINGS
   RETURN_VALUE DASHBOARD_BUILD_RETURN_VALUE QUIET)
+
+# Number of warnings is not accurate since processing occurs on the CDash
+# server.
+set(DASHBOARD_NUMBER_BUILD_WARNINGS 0)
 
 # https://bazel.build/blog/2016/01/27/continuous-integration.html
 if(DASHBOARD_BUILD_RETURN_VALUE EQUAL 1)
