@@ -133,8 +133,16 @@ else()
 endif()
 
 if(COVERAGE)
-  set(DASHBOARD_BAZEL_BUILD_OPTIONS
-    "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=kcov")
+  if(EVERYTHING)
+    string(REPLACE
+      "--config=everything"
+      "--config=kcov_everything"
+      DASHBOARD_BAZEL_BUILD_OPTIONS
+      "${DASHBOARD_BAZEL_BUILD_OPTIONS}")
+  else()
+    set(DASHBOARD_BAZEL_BUILD_OPTIONS
+      "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=kcov")
+  endif()
 endif()
 
 set(MEMCHECK_BAZEL_CONFIG "")
