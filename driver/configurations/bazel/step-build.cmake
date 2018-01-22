@@ -134,36 +134,58 @@ if(PACKAGE AND NOT DASHBOARD_FAILURE AND NOT DASHBOARD_UNSTABLE)
     endif()
   endif()
   if(PACKAGE STREQUAL "publish")
-    if(NOT DASHBOARD_UNSTABLE)
-      message(STATUS "Uploading package archive 1 of 2 to AWS S3...")
-      execute_process(
-        COMMAND ${DASHBOARD_AWS_COMMAND} s3 cp
-          --acl public-read
-          "${DASHBOARD_WORKSPACE}/${DASHBOARD_PACKAGE_ARCHIVE_NAME}"
-          "s3://drake-packages/drake/nightly/${DASHBOARD_PACKAGE_ARCHIVE_NAME}"
-        RESULT_VARIABLE DASHBOARD_AWS_S3_RESULT_VARIABLE
-        OUTPUT_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE
-        ERROR_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE)
-      message("${DASHBOARD_AWS_S3_OUTPUT_VARIABLE}")
-      if(NOT DASHBOARD_AWS_S3_RESULT_VARIABLE EQUAL 0)
-        set(DASHBOARD_UNSTABLE ON)
-        list(APPEND DASHBOARD_UNSTABLES "BAZEL PACKAGE ARCHIVE UPLOAD 1 OF 2")
+    if(DASHBOARD_TRACK STREQUAL "Continuous")
+      if(NOT DASHBOARD_UNSTABLE)
+        message(STATUS "Uploading unstable package archive 1 of 1 to AWS S3...")
+        execute_process(
+          COMMAND ${DASHBOARD_AWS_COMMAND} s3 cp
+            --acl public-read
+            --cache-control max-age=3600
+            "${DASHBOARD_WORKSPACE}/${DASHBOARD_PACKAGE_ARCHIVE_NAME}"
+            "s3://drake-packages/drake/unstable/drake-unstable-${DASHBOARD_PACKAGE_ARCHIVE_DISTRIBUTION}.tar.gz"
+          RESULT_VARIABLE DASHBOARD_AWS_S3_RESULT_VARIABLE
+          OUTPUT_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE
+          ERROR_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE)
+        message("${DASHBOARD_AWS_S3_OUTPUT_VARIABLE}")
+        if(NOT DASHBOARD_AWS_S3_RESULT_VARIABLE EQUAL 0)
+          set(DASHBOARD_UNSTABLE ON)
+          list(APPEND DASHBOARD_UNSTABLES "BAZEL UNSTABLE PACKAGE ARCHIVE UPLOAD 1 OF 1")
+        endif()
       endif()
-    endif()
-    if(NOT DASHBOARD_UNSTABLE)
-      message(STATUS "Uploading package archive 2 of 2 to AWS S3...")
-      execute_process(
-        COMMAND ${DASHBOARD_AWS_COMMAND} s3 cp
-          --acl public-read
-          "${DASHBOARD_WORKSPACE}/${DASHBOARD_PACKAGE_ARCHIVE_NAME}"
-          "s3://drake-packages/drake/nightly/drake-latest-${DASHBOARD_PACKAGE_ARCHIVE_DISTRIBUTION}.tar.gz"
-        RESULT_VARIABLE DASHBOARD_AWS_S3_RESULT_VARIABLE
-        OUTPUT_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE
-        ERROR_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE)
-      message("${DASHBOARD_AWS_S3_OUTPUT_VARIABLE}")
-      if(NOT DASHBOARD_AWS_S3_RESULT_VARIABLE EQUAL 0)
-        set(DASHBOARD_UNSTABLE ON)
-        list(APPEND DASHBOARD_UNSTABLES "BAZEL PACKAGE ARCHIVE UPLOAD 2 OF 2")
+    elseif(DASHBOARD_TRACK STREQUAL "Nightly")
+      if(NOT DASHBOARD_UNSTABLE)      
+        message(STATUS "Uploading nightly package archive 1 of 2 to AWS S3...")
+        execute_process(
+          COMMAND ${DASHBOARD_AWS_COMMAND} s3 cp
+            --acl public-read
+            --cache-control max-age=31536000
+            "${DASHBOARD_WORKSPACE}/${DASHBOARD_PACKAGE_ARCHIVE_NAME}"
+            "s3://drake-packages/drake/nightly/${DASHBOARD_PACKAGE_ARCHIVE_NAME}"
+          RESULT_VARIABLE DASHBOARD_AWS_S3_RESULT_VARIABLE
+          OUTPUT_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE
+          ERROR_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE)
+        message("${DASHBOARD_AWS_S3_OUTPUT_VARIABLE}")
+        if(NOT DASHBOARD_AWS_S3_RESULT_VARIABLE EQUAL 0)
+          set(DASHBOARD_UNSTABLE ON)
+          list(APPEND DASHBOARD_UNSTABLES "BAZEL NIGHTLY PACKAGE ARCHIVE UPLOAD 1 OF 2")
+        endif()
+      endif()
+      if(NOT DASHBOARD_UNSTABLE)
+        message(STATUS "Uploading nightly package archive 2 of 2 to AWS S3...")
+        execute_process(
+          COMMAND ${DASHBOARD_AWS_COMMAND} s3 cp
+            --acl public-read
+            --cache-control max-age=43200
+            "${DASHBOARD_WORKSPACE}/${DASHBOARD_PACKAGE_ARCHIVE_NAME}"
+            "s3://drake-packages/drake/nightly/drake-latest-${DASHBOARD_PACKAGE_ARCHIVE_DISTRIBUTION}.tar.gz"
+          RESULT_VARIABLE DASHBOARD_AWS_S3_RESULT_VARIABLE
+          OUTPUT_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE
+          ERROR_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE)
+        message("${DASHBOARD_AWS_S3_OUTPUT_VARIABLE}")
+        if(NOT DASHBOARD_AWS_S3_RESULT_VARIABLE EQUAL 0)
+          set(DASHBOARD_UNSTABLE ON)
+          list(APPEND DASHBOARD_UNSTABLES "BAZEL NIGHTLY PACKAGE ARCHIVE UPLOAD 2 OF 2")
+        endif()
       endif()
     endif()
   endif()
