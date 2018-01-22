@@ -132,6 +132,19 @@ else()
   set(DASHBOARD_BAZEL_TEST_OPTIONS)
 endif()
 
+if(COVERAGE)
+  if(EVERYTHING)
+    string(REPLACE
+      "--config=everything"
+      "--config=kcov_everything"
+      DASHBOARD_BAZEL_BUILD_OPTIONS
+      "${DASHBOARD_BAZEL_BUILD_OPTIONS}")
+  else()
+    set(DASHBOARD_BAZEL_BUILD_OPTIONS
+      "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=kcov")
+  endif()
+endif()
+
 set(MEMCHECK_BAZEL_CONFIG "")
 if(MEMCHECK STREQUAL "asan")
   set(MEMCHECK_BAZEL_CONFIG "asan")

@@ -18,6 +18,7 @@ else()
 endif()
 
 # Copy remaining configuration from environment
+set(COVERAGE $ENV{coverage})
 set(DEBUG $ENV{debug})
 set(DOCUMENTATION $ENV{documentation})
 set(EVERYTHING $ENV{everything})
