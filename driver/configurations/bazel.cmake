@@ -4,6 +4,7 @@ unset(ENV{JAVA_HOME})
 
 set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}")
 set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/_bazel_$ENV{USER}")
+configure_file("${CTEST_SOURCE_DIRECTORY}/CTestCustom.cmake.in" "${CTEST_BINARY_DIRECTORY}/CTestCustom.cmake")
 
 find_program(DASHBOARD_BAZEL_COMMAND NAMES bazel)
 if(NOT DASHBOARD_BAZEL_COMMAND)
@@ -130,6 +131,19 @@ if(APPLE)
   set(DASHBOARD_BAZEL_TEST_OPTIONS "--test_timeout=300,1500,4500,-1")
 else()
   set(DASHBOARD_BAZEL_TEST_OPTIONS)
+endif()
+
+if(COVERAGE)
+  if(EVERYTHING)
+    string(REPLACE
+      "--config=everything"
+      "--config=kcov_everything"
+      DASHBOARD_BAZEL_BUILD_OPTIONS
+      "${DASHBOARD_BAZEL_BUILD_OPTIONS}")
+  else()
+    set(DASHBOARD_BAZEL_BUILD_OPTIONS
+      "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=kcov")
+  endif()
 endif()
 
 set(MEMCHECK_BAZEL_CONFIG "")

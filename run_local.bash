@@ -1,6 +1,7 @@
 #!/bin/bash
 
 export compiler=clang
+export coverage=false
 export debug=false
 export documentation=false
 export everything=false
