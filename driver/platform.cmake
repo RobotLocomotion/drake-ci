@@ -29,6 +29,10 @@ if(PROVISION)
   if(DASHBOARD_UNIX_DISTRIBUTION STREQUAL "Apple")
     set(PROVISION_DIR "mac")
     set(PROVISION_SUDO)
+
+    message(STATUS "Removing Homebrew and pip cache directories...")
+    file(REMOVE_RECURSE "$ENV{HOME}/Library/Caches/Homebrew")
+    file(REMOVE_RECURSE "$ENV{HOME}/Library/Caches/pip")
   else()
     if(DASHBOARD_UNIX_DISTRIBUTION_VERSION VERSION_LESS 16.04)
       execute_process(COMMAND bash "-c" "echo 'oracle-java8-installer shared/accepted-oracle-license-v1-1 select true' | sudo debconf-set-selections"
@@ -51,6 +55,7 @@ if(PROVISION)
     "${DASHBOARD_SOURCE_DIRECTORY}/setup/${PROVISION_DIR}/install_prereqs.sh")
 
   if(EXISTS "${PROVISION_SCRIPT}")
+    message(STATUS "Executing provisioning script...")
     execute_process(COMMAND bash "-c" "yes | ${PROVISION_SUDO} ${PROVISION_SCRIPT}"
       RESULT_VARIABLE INSTALL_PREREQS_RESULT_VARIABLE
       OUTPUT_VARIABLE INSTALL_PREREQS_OUTPUT_VARIABLE
@@ -63,4 +68,32 @@ if(PROVISION)
   else()
     fatal("provisioning script not available for this platform")
   endif()
+endif()
+
+if(APPLE)
+  find_program(DASHBOARD_BREW_COMMAND NAMES "brew")
+  if(NOT DASHBOARD_BREW_COMMAND)
+    fatal("brew was not found")
+  endif()
+  execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "list" "--versions"
+    OUTPUT_VARIABLE BREW_LIST_OUTPUT_VARIABLE
+    ERROR_VARIABLE BREW_LIST_OUTPUT_VARIABLE
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+  find_program(DASHBOARD_PIP_COMMAND NAMES "pip2")
+  if(NOT DASHBOARD_PIP_COMMAND)
+    fatal("pip2 was not found")
+  endif()
+  execute_process(COMMAND "${DASHBOARD_PIP_COMMAND}" "list"
+    OUTPUT_VARIABLE PIP_LIST_OUTPUT_VARIABLE
+    ERROR_VARIABLE PIP_LIST_OUTPUT_VARIABLE
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+  message("
+  ====================================
+  ${BREW_LIST_OUTPUT_VARIABLE}
+  ====================================
+  ${PIP_LIST_OUTPUT_VARIABLE}
+  ====================================
+  ")
 endif()
