@@ -28,6 +28,7 @@ set(MEMCHECK $ENV{memcheck})
 set(MOSEK $ENV{mosek})
 set(PACKAGE $ENV{package})
 set(PROVISION $ENV{provision})
+set(REMOTE_CACHE $ENV{remote_cache})
 set(SNOPT $ENV{snopt})
 set(TRACK $ENV{track})
 

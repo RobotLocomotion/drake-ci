@@ -19,6 +19,7 @@
 #   ENV{mosek}            optional    boolean
 #   ENV{package}          optional    boolean | "publish"
 #   ENV{provision}        optional    boolean
+#   ENV{remote_cache}     optional    boolean
 #   ENV{snopt}            optional    boolean
 #   ENV{track}            optional    "continuous" | "experimental" | "nightly"
 #
