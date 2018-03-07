@@ -143,7 +143,7 @@ endif()
 set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --keep_going")
 
 if(REMOTE_CACHE)
-  set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --experimental_remote_spawn_cache --remote_http_cache=http://ip-172-31-18-129.ec2.internal")
+  set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --experimental_remote_spawn_cache --remote_http_cache=http://172.31.18.129")
 endif()
 
 set(DASHBOARD_BAZEL_TEST_OPTIONS "--test_summary=short")
