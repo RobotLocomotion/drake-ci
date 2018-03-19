@@ -135,7 +135,7 @@ endif()
 set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --keep_going")
 
 if(REMOTE_CACHE)
-  set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --experimental_remote_spawn_cache --remote_http_cache=http://172.31.18.129")
+  set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --experimental_remote_spawn_cache --remote_http_cache=http://172.31.30.116")
 
   if(APPLE)
     set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --experimental_remote_retry_max_attempts=10 --remote_timeout=300")
