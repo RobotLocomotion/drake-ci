@@ -87,7 +87,7 @@ endif()
 
 # Remove any temporary files that we created
 foreach(_file ${DASHBOARD_TEMPORARY_FILES})
-  file(REMOVE ${${_file}})
+  file(REMOVE_RECURSE ${${_file}})
 endforeach()
 
 # Report any failures and set return value
