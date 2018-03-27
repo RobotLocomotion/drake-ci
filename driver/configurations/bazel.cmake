@@ -10,8 +10,12 @@ if(NOT DASHBOARD_BAZEL_COMMAND)
   fatal("bazel was not found")
 endif()
 
+# Set bazel options
+set(DASHBOARD_BAZEL_STARTUP_OPTIONS
+  "--output_user_root=${CTEST_BINARY_DIRECTORY}")
+
 # Extract the version. Usually of the form x.y.z-*.
-execute_process(COMMAND ${DASHBOARD_BAZEL_COMMAND} version
+execute_process(COMMAND ${DASHBOARD_BAZEL_COMMAND} ${DASHBOARD_BAZEL_STARTUP_OPTIONS} version
   RESULT_VARIABLE DASHBOARD_BAZEL_VERSION_RESULT_VARIABLE
   OUTPUT_VARIABLE DASHBOARD_BAZEL_VERSION_OUTPUT_VARIABLE)
 
@@ -25,10 +29,6 @@ if(DASHBOARD_BAZEL_VERSION_RESULT_VARIABLE EQUAL 0)
 else()
   fatal("could not determine bazel version")
 endif()
-
-# Set bazel options
-set(DASHBOARD_BAZEL_STARTUP_OPTIONS
-  "--output_user_root=${CTEST_BINARY_DIRECTORY}")
 
 set(DASHBOARD_BAZEL_BUILD_OPTIONS "--compilation_mode")
 
