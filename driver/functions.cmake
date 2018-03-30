@@ -231,7 +231,8 @@ function(mktemp OUTVAR NAME MESSAGE)
   execute_process(COMMAND mktemp -q "/tmp/${NAME}"
     RESULT_VARIABLE _mktemp_result
     OUTPUT_VARIABLE _mktemp_output
-    ERROR_VARIABLE _mktemp_error)
+    ERROR_VARIABLE _mktemp_error
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
   if(NOT _mktemp_result EQUAL 0)
     fatal("creation of ${MESSAGE} was not successful"
       _mktemp_output
