@@ -30,7 +30,7 @@ else()
   fatal("could not determine bazel version")
 endif()
 
-set(DASHBOARD_BAZEL_BUILD_OPTIONS "--compilation_mode")
+set(DASHBOARD_BAZEL_BUILD_OPTIONS "--announce_rc --compilation_mode")
 
 if(DEBUG)
   set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS}=dbg")
