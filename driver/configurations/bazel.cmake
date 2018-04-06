@@ -164,6 +164,12 @@ if(REMOTE_CACHE)
   else()
     message(WARNING "*** Could NOT contact remote HTTP cache")
   endif()
+
+  if(DASHBOARD_TRACK STREQUAL "Nightly")
+    set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --noremote_accept_cached")
+  elseif(DASHBOARD_TRACK STREQUAL "Experimental")
+    set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --noremote_upload_local_results")
+  endif()
 endif()
 
 set(DASHBOARD_BAZEL_TEST_OPTIONS "--test_summary=short")
