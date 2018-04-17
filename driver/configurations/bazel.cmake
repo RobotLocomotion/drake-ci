@@ -72,36 +72,36 @@ if(EVERYTHING OR GUROBI OR MOSEK OR PACKAGE OR SNOPT)
         list(APPEND DASHBOARD_TEMPORARY_FILES DASHBOARD_GUROBI_DISTRO)
         message("${DASHBOARD_AWS_S3_OUTPUT_VARIABLE}")
       endif()
-      if(EXISTS "${DASHBOARD_GUROBI_DISTRO}")
-        execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${DASHBOARD_GUROBI_DISTRO}
-          WORKING_DIRECTORY $ENV{HOME})
-        set(GUROBI_PATH "$ENV{HOME}/gurobi752/linux64")
-        list(APPEND DASHBOARD_TEMPORARY_FILES GUROBI_PATH)
-        set(ENV{GUROBI_PATH} "${GUROBI_PATH}")
-      else()
-        message(WARNING "*** GUROBI archive was NOT found")
+      if(NOT EXISTS "${DASHBOARD_GUROBI_DISTRO}")
+        fatal("Gurobi archive was NOT found")
       endif()
+      execute_process(COMMAND "${CMAKE_COMMAND}" -E tar xzf "${DASHBOARD_GUROBI_DISTRO}"
+        WORKING_DIRECTORY "$ENV{HOME}")
+      set(GUROBI_PATH "$ENV{HOME}/gurobi752/linux64")
+      list(APPEND DASHBOARD_TEMPORARY_FILES GUROBI_PATH)
+      set(ENV{GUROBI_PATH} "${GUROBI_PATH}")
     endif()
-    set(DASHBOARD_GUROBI_LICENSE "$ENV{HOME}/gurobi.lic")
-    if(NOT EXISTS "${DASHBOARD_GUROBI_LICENSE}")
-      message(STATUS "Downloading GUROBI license file from AWS S3...")
+    set(GRB_LICENSE_FILE "$ENV{HOME}/gurobi.lic")
+    if(NOT EXISTS "${GRB_LICENSE_FILE}")
+      message(STATUS "Downloading Gurobi license file from AWS S3...")
       execute_process(
         COMMAND "${DASHBOARD_AWS_COMMAND}" s3 cp
           s3://drake-provisioning/gurobi/gurobi.lic
-          "${DASHBOARD_GUROBI_LICENSE}"
+          "${GRB_LICENSE_FILE}"
         RESULT_VARIABLE DASHBOARD_AWS_S3_RESULT_VARIABLE
         OUTPUT_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE
         ERROR_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE)
-      list(APPEND DASHBOARD_TEMPORARY_FILES DASHBOARD_GUROBI_LICENSE)
+      list(APPEND DASHBOARD_TEMPORARY_FILES GRB_LICENSE_FILE)
       message("${DASHBOARD_AWS_S3_OUTPUT_VARIABLE}")
     endif()
-    if(NOT EXISTS "${DASHBOARD_GUROBI_LICENSE}")
-      message(WARNING "*** GUROBI license file was NOT found")
+    if(NOT EXISTS "${GRB_LICENSE_FILE}")
+      fatal("Gurobi license file was NOT found")
     endif()
+    set(ENV{GRB_LICENSE_FILE} "${GRB_LICENSE_FILE}")
   endif()
   if(EVERYTHING OR MOSEK)
-    set(DASHBOARD_MOSEK_LICENSE "$ENV{HOME}/mosek/mosek.lic")
-    if(NOT EXISTS "${DASHBOARD_MOSEK_LICENSE}")
+    set(MOSEKLM_LICENSE_FILE "$ENV{HOME}/mosek/mosek.lic")
+    if(NOT EXISTS "${MOSEKLM_LICENSE_FILE}")
       message(STATUS "Downloading MOSEK license file from AWS S3...")
       execute_process(COMMAND "${CMAKE_COMMAND}" -E make_directory "$ENV{HOME}/mosek"
         RESULT_VARIABLE MAKE_DIRECTORY_RESULT_VARIABLE
@@ -111,16 +111,17 @@ if(EVERYTHING OR GUROBI OR MOSEK OR PACKAGE OR SNOPT)
       execute_process(
         COMMAND "${DASHBOARD_AWS_COMMAND}" s3 cp
           s3://drake-provisioning/mosek/mosek.lic
-          "${DASHBOARD_MOSEK_LICENSE}"
+          "${MOSEKLM_LICENSE_FILE}"
         RESULT_VARIABLE DASHBOARD_AWS_S3_RESULT_VARIABLE
         OUTPUT_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE
         ERROR_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE)
-      list(APPEND DASHBOARD_TEMPORARY_FILES DASHBOARD_MOSEK_LICENSE)
+      list(APPEND DASHBOARD_TEMPORARY_FILES MOSEKLM_LICENSE_FILE)
       message("${DASHBOARD_AWS_S3_OUTPUT_VARIABLE}")
     endif()
-    if(NOT EXISTS "${DASHBOARD_MOSEK_LICENSE}")
-      message(WARNING "*** MOSEK license file was NOT found")
+    if(NOT EXISTS "${MOSEKLM_LICENSE_FILE}")
+      fatal("MOSEK license file was NOT found")
     endif()
+    set(ENV{MOSEKLM_LICENSE_FILE} "${MOSEKLM_LICENSE_FILE}")
   endif()
   if(EVERYTHING)
     set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=everything --flaky_test_attempts=3")
