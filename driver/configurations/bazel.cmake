@@ -55,32 +55,13 @@ if(DOCUMENTATION STREQUAL "publish" OR EVERYTHING OR GUROBI OR MOSEK OR PACKAGE 
   include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
 endif()
 
+if(NOT APPLE)
+  set(ENV{GUROBI_PATH} "/opt/gurobi752/linux64")
+endif()
+
 if(EVERYTHING OR GUROBI OR MOSEK OR PACKAGE OR SNOPT)
   set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --action_env=GIT_SSH")
   if(EVERYTHING OR GUROBI)
-    if(NOT APPLE)
-      set(DASHBOARD_GUROBI_DISTRO "$ENV{HOME}/gurobi7.5.2_linux64.tar.gz")
-      if(NOT EXISTS "${DASHBOARD_GUROBI_DISTRO}")
-        message(STATUS "Downloading GUROBI archive from AWS S3...")
-        execute_process(
-          COMMAND "${DASHBOARD_AWS_COMMAND}" s3 cp
-            s3://drake-provisioning/gurobi/gurobi7.5.2_linux64.tar.gz
-            "${DASHBOARD_GUROBI_DISTRO}"
-          RESULT_VARIABLE DASHBOARD_AWS_S3_RESULT_VARIABLE
-          OUTPUT_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE
-          ERROR_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE)
-        list(APPEND DASHBOARD_TEMPORARY_FILES DASHBOARD_GUROBI_DISTRO)
-        message("${DASHBOARD_AWS_S3_OUTPUT_VARIABLE}")
-      endif()
-      if(NOT EXISTS "${DASHBOARD_GUROBI_DISTRO}")
-        fatal("Gurobi archive was NOT found")
-      endif()
-      execute_process(COMMAND "${CMAKE_COMMAND}" -E tar xzf "${DASHBOARD_GUROBI_DISTRO}"
-        WORKING_DIRECTORY "$ENV{HOME}")
-      set(GUROBI_PATH "$ENV{HOME}/gurobi752/linux64")
-      list(APPEND DASHBOARD_TEMPORARY_FILES GUROBI_PATH)
-      set(ENV{GUROBI_PATH} "${GUROBI_PATH}")
-    endif()
     set(GRB_LICENSE_FILE "$ENV{HOME}/gurobi.lic")
     if(NOT EXISTS "${GRB_LICENSE_FILE}")
       message(STATUS "Downloading Gurobi license file from AWS S3...")
