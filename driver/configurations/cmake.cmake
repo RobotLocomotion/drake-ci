@@ -13,9 +13,7 @@ file(REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
 file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
 file(REMOVE_RECURSE "${DASHBOARD_INSTALL_PREFIX}")
 
-if(GUROBI OR MOSEK OR SNOPT)
-  include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
-endif()
+include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
 
 if(NOT APPLE)
   set(ENV{GUROBI_PATH} "/opt/gurobi752/linux64")

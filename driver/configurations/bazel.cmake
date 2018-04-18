@@ -30,7 +30,7 @@ else()
   fatal("could not determine bazel version")
 endif()
 
-set(DASHBOARD_BAZEL_BUILD_OPTIONS "--announce_rc --compilation_mode")
+set(DASHBOARD_BAZEL_BUILD_OPTIONS "--action_env=GIT_SSH --announce_rc --compilation_mode")
 
 if(DEBUG)
   set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS}=dbg")
@@ -51,16 +51,13 @@ endif()
 
 set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --jobs=${DASHBOARD_JOBS}")
 
-if(DOCUMENTATION STREQUAL "publish" OR EVERYTHING OR GUROBI OR MOSEK OR PACKAGE OR SNOPT)
-  include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
-endif()
+include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
 
 if(NOT APPLE)
   set(ENV{GUROBI_PATH} "/opt/gurobi752/linux64")
 endif()
 
 if(EVERYTHING OR GUROBI OR MOSEK OR PACKAGE OR SNOPT)
-  set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --action_env=GIT_SSH")
   if(EVERYTHING OR GUROBI)
     set(GRB_LICENSE_FILE "$ENV{HOME}/gurobi.lic")
     if(NOT EXISTS "${GRB_LICENSE_FILE}")

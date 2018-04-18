@@ -11,7 +11,7 @@ list(APPEND DASHBOARD_TEMPORARY_FILES DASHBOARD_SSH_IDENTITY_FILE)
 # Download the identity file
 message(STATUS "Downloading identity file from AWS S3...")
 execute_process(
-  COMMAND ${DASHBOARD_AWS_COMMAND} s3 cp
+  COMMAND "${DASHBOARD_AWS_COMMAND}" s3 cp
     s3://drake-provisioning/id_rsa
     "${DASHBOARD_SSH_IDENTITY_FILE}"
   RESULT_VARIABLE DASHBOARD_AWS_S3_RESULT_VARIABLE
