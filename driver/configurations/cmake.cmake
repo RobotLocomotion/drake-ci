@@ -14,29 +14,10 @@ file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
 file(REMOVE_RECURSE "${DASHBOARD_INSTALL_PREFIX}")
 
 include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
-
-if(NOT APPLE)
-  set(ENV{GUROBI_PATH} "/opt/gurobi752/linux64")
-endif()
+include(${DASHBOARD_DRIVER_DIR}/configurations/gurobi.cmake)
+include(${DASHBOARD_DRIVER_DIR}/configurations/mosek.cmake)
 
 if(GUROBI)
-  set(GRB_LICENSE_FILE "$ENV{HOME}/gurobi.lic")
-  if(NOT EXISTS "${GRB_LICENSE_FILE}")
-    message(STATUS "Downloading Gurobi license file from AWS S3...")
-    execute_process(
-      COMMAND "${DASHBOARD_AWS_COMMAND}" s3 cp
-        s3://drake-provisioning/gurobi/gurobi.lic "${GRB_LICENSE_FILE}"
-      RESULT_VARIABLE DASHBOARD_AWS_S3_RESULT_VARIABLE
-      OUTPUT_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE
-      ERROR_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE)
-    list(APPEND DASHBOARD_TEMPORARY_FILES GRB_LICENSE_FILE)
-    message("${DASHBOARD_AWS_S3_OUTPUT_VARIABLE}")
-  endif()
-  if(NOT EXISTS "${GRB_LICENSE_FILE}")
-    fatal("Gurobi license file was NOT found")
-  endif()
-  set(ENV{GRB_LICENSE_FILE} "${GRB_LICENSE_FILE}")
-
   set(DASHBOARD_WITH_GUROBI ON)
 else()
   set(DASHBOARD_WITH_GUROBI OFF)
@@ -49,28 +30,6 @@ else()
 endif()
 
 if(MOSEK)
-  set(MOSEKLM_LICENSE_FILE "$ENV{HOME}/mosek/mosek.lic")
-  if(NOT EXISTS "${MOSEKLM_LICENSE_FILE}")
-    message(STATUS "Downloading MOSEK license file from AWS S3...")
-    execute_process(COMMAND "${CMAKE_COMMAND}" -E make_directory "$ENV{HOME}/mosek"
-      RESULT_VARIABLE MAKE_DIRECTORY_RESULT_VARIABLE
-      OUTPUT_VARIABLE MAKE_DIRECTORY_OUTPUT_VARIABLE
-      ERROR_VARIABLE MAKE_DIRECTORY_OUTPUT_VARIABLE)
-    message("${MAKE_DIRECTORY_OUTPUT_VARIABLE}")
-    execute_process(
-      COMMAND "${DASHBOARD_AWS_COMMAND}" s3 cp
-        s3://drake-provisioning/mosek/mosek.lic "${MOSEKLM_LICENSE_FILE}"
-      RESULT_VARIABLE DASHBOARD_AWS_S3_RESULT_VARIABLE
-      OUTPUT_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE
-      ERROR_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE)
-    list(APPEND DASHBOARD_TEMPORARY_FILES MOSEKLM_LICENSE_FILE)
-    message("${DASHBOARD_AWS_S3_OUTPUT_VARIABLE}")
-  endif()
-  if(NOT EXISTS "${MOSEKLM_LICENSE_FILE}")
-    fatal("MOSEK license file was NOT found")
-  endif()
-  set(ENV{MOSEKLM_LICENSE_FILE} "${MOSEKLM_LICENSE_FILE}")
-
   set(DASHBOARD_WITH_MOSEK ON)
 else()
   set(DASHBOARD_WITH_MOSEK OFF)
