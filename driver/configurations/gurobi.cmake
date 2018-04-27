@@ -1,5 +1,9 @@
 if(NOT APPLE)
-  set(ENV{GUROBI_PATH} "/opt/gurobi800/linux64")
+  if(CTEST_CHANGE_ID EQUAL 8695)
+    set(ENV{GUROBI_PATH} "/opt/gurobi800/linux64")
+  else()
+    set(ENV{GUROBI_PATH} "/opt/gurobi752/linux64")
+  endif()
 endif()
 
 set(GRB_LICENSE_FILE "/tmp/gurobi.lic")
