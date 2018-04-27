@@ -83,8 +83,7 @@ if(APPLE)
     ERROR_VARIABLE BREW_LIST_OUTPUT_VARIABLE
     OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-  find_program(DASHBOARD_PIP_COMMAND NAMES "pip2"
-    HINTS "/usr/local/opt/python@2/bin")
+  find_program(DASHBOARD_PIP_COMMAND NAMES "pip2")
   if(NOT DASHBOARD_PIP_COMMAND)
     fatal("pip2 was not found")
   endif()
