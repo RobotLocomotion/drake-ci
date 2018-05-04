@@ -30,7 +30,7 @@ cmake_minimum_required(VERSION 3.6)
 
 set(CTEST_RUN_CURRENT_SCRIPT OFF)  # HACK
 
-set(DASHBOARD_CDASH_SERVER "drake-cdash.csail.mit.edu")
+set(DASHBOARD_CDASH_SERVER "ec2-54-211-45-134.compute-1.amazonaws.com")
 set(DASHBOARD_NIGHTLY_START_TIME "00:00:00 EST")
 
 set(DASHBOARD_CI_DIR ${CMAKE_CURRENT_LIST_DIR})
