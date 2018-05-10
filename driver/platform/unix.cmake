@@ -19,7 +19,9 @@ else()
 endif()
 
 if(COVERAGE AND NOT APPLE)
-  prepend_path(PATH /opt/kcov/34/bin)
+  prepend_path(PATH
+    /opt/kcov/35/bin
+    /opt/kcov/34/bin)
 endif()
 
 # Set (non-Apple) paths for MATLAB
