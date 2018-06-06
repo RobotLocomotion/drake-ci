@@ -38,9 +38,20 @@ else()
   set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS}=opt")
 endif()
 
-if(COMPILER STREQUAL "gcc")
-  set(DASHBOARD_BAZEL_BUILD_OPTIONS
-    "${DASHBOARD_BAZEL_BUILD_OPTIONS} --compiler=gcc${DASHBOARD_GNU_COMPILER_SUFFIX}")
+if(NOT APPLE)
+  if(EXISTS "${CTEST_SOURCE_DIRECTORY}/tools/cc_toolchain/CROSSTOOL")
+    if(COMPILER STREQUAL "clang")
+      set(DASHBOARD_BAZEL_BUILD_OPTIONS
+        "${DASHBOARD_BAZEL_BUILD_OPTIONS} --compiler=clang${DASHBOARD_CLANG_COMPILER_SUFFIX}")
+    elseif(COMPILER STREQUAL "gcc")
+      set(DASHBOARD_BAZEL_BUILD_OPTIONS
+        "${DASHBOARD_BAZEL_BUILD_OPTIONS} --compiler=gcc${DASHBOARD_GNU_COMPILER_SUFFIX}")
+    else()
+      fatal("unknown compiler '${COMPILER}'")
+    endif()
+  else()
+    message(WARNING "*** CROSSTOOL does NOT exist")
+  endif()
 endif()
 
 if(DASHBOARD_PROCESSOR_COUNT GREATER 1)
@@ -148,6 +159,9 @@ endif()
 
 # Report build configuration
 report_configuration("
+  ==================================== ENV
+  CC
+  CXX
   ==================================== >DASHBOARD_
   UNIX
   UNIX_DISTRIBUTION
