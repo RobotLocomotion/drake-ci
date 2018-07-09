@@ -118,5 +118,9 @@ if(CTEST_CHANGE_ID)
   endif()
   set(DASHBOARD_BUILD_DESCRIPTION
     "*** Build Description: <a title=\"${DASHBOARD_CHANGE_TITLE}\" href=\"$ENV{DASHBOARD_CHANGE_URL}\">PR #${CTEST_CHANGE_ID}</a>: ${DASHBOARD_CHANGE_TITLE_SHORT}")
-  message("${DASHBOARD_BUILD_DESCRIPTION}")
+else()
+  string(SUBSTRING "${DASHBOARD_GIT_COMMIT}" 0 7 DASHBOARD_GIT_COMMIT_SUBSTRING)
+  set(DASHBOARD_BUILD_DESCRIPTION
+    "*** Build Description: <a title=\"${DASHBOARD_GIT_COMMIT}\" href=\"https://github.com/RobotLocomotion/drake/commit/${DASHBOARD_GIT_COMMIT}\">${DASHBOARD_GIT_COMMIT_SUBSTRING}</a>")
 endif()
+message("${DASHBOARD_BUILD_DESCRIPTION}")
