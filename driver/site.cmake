@@ -32,15 +32,18 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 # Set site
-if(DEFINED site)
+set(DASHBOARD_NODE_NAME "$ENV{NODE_NAME}")
+if(DASHBOARD_NODE_NAME)
   if(APPLE)
-    string(REGEX REPLACE "(.*)_(.*)" "\\1" DASHBOARD_SITE "${site}")
+    string(REGEX REPLACE "(.*)_(.*)" "\\1"
+      DASHBOARD_NODE_NAME "${DASHBOARD_NODE_NAME}")
   else()
-    string(REGEX REPLACE "(.*) (.*)" "\\1" DASHBOARD_SITE "${site}")
+    string(REGEX REPLACE "(.*) (.*)" "\\1"
+      DASHBOARD_NODE_NAME "${DASHBOARD_NODE_NAME}")
   endif()
-  set(CTEST_SITE "${DASHBOARD_SITE}")
+  set(CTEST_SITE "${DASHBOARD_NODE_NAME}")
 else()
-  message(WARNING "*** CTEST_SITE was not set")
+  message(WARNING "*** ENV{NODE_NAME} was not set")
 endif()
 
 # Set build track
@@ -49,25 +52,25 @@ if(NOT TRACK)
 endif()
 
 # Set build name
-if(DEFINED buildname)
-  set(DASHBOARD_BUILD_NAME "${buildname}")
+set(DASHBOARD_JOB_NAME "$ENV{JOB_NAME}")
+if(DASHBOARD_JOB_NAME)
   if(TRACK STREQUAL "experimental")
     if(DEBUG)
       string(REGEX MATCH  "-debug$" STRING_REGEX_MATCH_OUTPUT_VARIABLE
-        "${DASHBOARD_BUILD_NAME}")
+        "${DASHBOARD_JOB_NAME}")
       if(NOT STRING_REGEX_MATCH_OUTPUT_VARIABLE)
-        set(DASHBOARD_BUILD_NAME "${DASHBOARD_BUILD_NAME}-debug")
+        set(DASHBOARD_JOB_NAME "${DASHBOARD_JOB_NAME}-debug")
       endif()
     else()
       string(REGEX MATCH  "-release$" STRING_REGEX_MATCH_OUTPUT_VARIABLE
-        "${DASHBOARD_BUILD_NAME}")
+        "${DASHBOARD_JOB_NAME}")
       if(NOT STRING_REGEX_MATCH_OUTPUT_VARIABLE)
-        set(DASHBOARD_BUILD_NAME "${DASHBOARD_BUILD_NAME}-release")
+        set(DASHBOARD_JOB_NAME "${DASHBOARD_JOB_NAME}-release")
       endif()
     endif()
   endif()
 else()
-  message(WARNING "*** DASHBOARD_BUILD_NAME was not set")
+  message(WARNING "*** ENV{JOB_NAME} was not set")
 endif()
 
 # set model and track for submission
@@ -82,7 +85,7 @@ endif()
 
 # Set build id
 if(DEFINED ENV{BUILD_ID})
-  set(DASHBOARD_LABEL "jenkins-${DASHBOARD_BUILD_NAME}-$ENV{BUILD_ID}")
+  set(DASHBOARD_LABEL "jenkins-${DASHBOARD_JOB_NAME}-$ENV{BUILD_ID}")
   set_property(GLOBAL PROPERTY Label "${DASHBOARD_LABEL}")
 else()
   message(WARNING "*** ENV{BUILD_ID} was not set")

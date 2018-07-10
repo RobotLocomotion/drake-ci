@@ -105,7 +105,7 @@ report_configuration("
   ==================================== >DASHBOARD_ <CMAKE_
   INSTALL_PREFIX
   ====================================
-  CTEST_BUILD_NAME(DASHBOARD_BUILD_NAME)
+  CTEST_BUILD_NAME(DASHBOARD_JOB_NAME)
   CTEST_BINARY_DIRECTORY
   CTEST_BUILD_FLAGS
   CTEST_CHANGE_ID

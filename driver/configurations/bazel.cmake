@@ -203,7 +203,7 @@ report_configuration("
   ====================================
   CMAKE_VERSION
   ====================================
-  CTEST_BUILD_NAME(DASHBOARD_BUILD_NAME)
+  CTEST_BUILD_NAME(DASHBOARD_JOB_NAME)
   CTEST_BINARY_DIRECTORY
   CTEST_CHANGE_ID
   CTEST_GIT_COMMAND

@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 # Copyright (c) 2016, Massachusetts Institute of Technology.
 # Copyright (c) 2016, Toyota Research Institute.
@@ -30,6 +30,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+set -x
 export PATH="/usr/local/bin:${PATH}"
-ctest -Dbuildname="${JOB_NAME}" -Dsite="${NODE_NAME}" -S "${WORKSPACE}/ci/ctest_driver_script.cmake" --extra-verbose --no-compress-output --output-on-failure
+ctest --script "${BASH_SOURCE%/*}/ctest_driver_script.cmake" --extra-verbose --no-compress-output --output-on-failure
 [[ (-e "${WORKSPACE}/SUCCESS" || -e "${WORKSPACE}/UNSTABLE") && ! -e "${WORKSPACE}/FAILURE" ]]

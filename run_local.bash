@@ -30,6 +30,8 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+set -euxo pipefail
+
 export compiler=clang
 export coverage=false
 export debug=false
@@ -48,7 +50,4 @@ export NODE_NAME=$(hostname -s)
 export WORKSPACE="${HOME}/workspace/${JOB_NAME}"
 export GIT_COMMIT=""
 
-export PATH="/usr/local/bin:${PATH}"
-
-ctest -Dbuildname="${JOB_NAME}" -Dsite="${NODE_NAME}" -S "${WORKSPACE}/ci/ctest_driver_script.cmake" --extra-verbose --output-on-failure
-[[ (-e "${WORKSPACE}/SUCCESS" || -e "${WORKSPACE}/UNSTABLE") && ! -e "${WORKSPACE}/FAILURE" ]]
+source "${BASH_SOURCE%/*}/ctest_driver_script_wrapper.bash"

@@ -36,8 +36,10 @@
 # Variables:
 #
 #   ENV{BUILD_ID}         optional    value of Jenkins BUILD_ID
-#   ENV{WORKSPACE}        required    value of Jenkins WORKSPACE
 #   ENV{GIT_COMMIT}       optional    value of Jenkins GIT_COMMIT
+#   ENV{JOB_NAME}         optional    value of Jenkins JOB_NAME
+#   ENV{NODE_NAME}        optional    value of Jenkins NODE_NAME
+#   ENV{WORKSPACE}        required    value of Jenkins WORKSPACE
 #   ENV{compiler}         optional    "clang" | "gcc"
 #   ENV{coverage}         optional    boolean
 #   ENV{debug}            optional    boolean
@@ -55,9 +57,6 @@
 #   ENV{remote_cache}     optional    boolean
 #   ENV{snopt}            optional    boolean
 #   ENV{track}            optional    "continuous" | "experimental" | "nightly"
-#
-#   buildname             optional    value for CTEST_BUILD_NAME
-#   site                  optional    value for CTEST_SITE
 
 cmake_minimum_required(VERSION 3.6)
 
