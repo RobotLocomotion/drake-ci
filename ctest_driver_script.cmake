@@ -52,7 +52,7 @@
 #   ENV{memcheck}         optional    "asan" | "lsan" | "tsan" |
 #                                     "ubsan" | "valgrind"
 #   ENV{mosek}            optional    boolean
-#   ENV{package}          optional    boolean | "publish"
+#   ENV{package}          optional    boolean
 #   ENV{provision}        optional    boolean
 #   ENV{remote_cache}     optional    boolean
 #   ENV{snopt}            optional    boolean
