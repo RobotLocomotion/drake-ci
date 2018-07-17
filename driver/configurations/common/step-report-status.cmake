@@ -42,6 +42,11 @@ else()
   endif()
 endif()
 
+# Report Bazel command without CI-specific options
+set(local_build_command
+  "${DASHBOARD_BAZEL_COMMAND} test ${DASHBOARD_BAZEL_BUILD_OPTIONS} ${DASHBOARD_BAZEL_TEST_OPTIONS} ...")
+notice("Bazel Command: ${local_build_command}")
+
 # Report build result and CDash links
 notice(
   "CTest Result: ${DASHBOARD_MESSAGE}"
