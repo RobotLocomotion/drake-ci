@@ -332,7 +332,8 @@ function(begin_stage)
   # Upload the Jenkins job URL to add link on CDash
   set(DASHBOARD_BUILD_URL_FILE
     "${CTEST_BINARY_DIRECTORY}/${_bs_BUILD_NAME}.url")
-  file(WRITE "${DASHBOARD_BUILD_URL_FILE}" "$ENV{BUILD_URL}")
+  string(STRIP "$ENV{BUILD_URL}" DASHBOARD_BUILD_URL)
+  file(WRITE "${DASHBOARD_BUILD_URL_FILE}" "${DASHBOARD_BUILD_URL}")
   ctest_upload(FILES "${DASHBOARD_BUILD_URL_FILE}" QUIET)
 
   # Set CTest variables in parent scope
