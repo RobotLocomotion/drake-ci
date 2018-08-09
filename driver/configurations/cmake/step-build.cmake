@@ -35,7 +35,12 @@ begin_stage(
   PROJECT_NAME "Drake"
   BUILD_NAME "${DASHBOARD_JOB_NAME}")
 
-ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}" QUIET)
+ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}"
+  RETURN_VALUE DASHBOARD_UPDATE_RETURN_VALUE
+  QUIET)
+if(DASHBOARD_UPDATE_RETURN_VALUE EQUAL -1)
+  message(WARNING "*** CTest update step was not successful")
+endif()
 
 file(WRITE "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt" "${CACHE_CONTENT}")
 
@@ -73,4 +78,11 @@ if(MATLAB)
     QUIET)
 endif()
 
-ctest_submit(RETRY_COUNT 4 RETRY_DELAY 15 QUIET)
+ctest_submit(
+  RETRY_COUNT 4
+  RETRY_DELAY 15
+  RETURN_VALUE DASHBOARD_SUBMIT_RETURN_VALUE
+  QUIET)
+if(NOT DASHBOARD_SUBMIT_RETURN_VALUE EQUAL 0)
+  message(WARNING "*** CTest submit step was not successful")
+endif()

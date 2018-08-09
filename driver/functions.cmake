@@ -334,7 +334,12 @@ function(begin_stage)
     "${CTEST_BINARY_DIRECTORY}/${_bs_BUILD_NAME}.url")
   string(STRIP "$ENV{BUILD_URL}" DASHBOARD_BUILD_URL)
   file(WRITE "${DASHBOARD_BUILD_URL_FILE}" "${DASHBOARD_BUILD_URL}")
-  ctest_upload(FILES "${DASHBOARD_BUILD_URL_FILE}" QUIET)
+  ctest_upload(FILES "${DASHBOARD_BUILD_URL_FILE}"
+    CAPTURE_CMAKE_ERROR DASHBOARD_UPLOAD_CAPTURE_CMAKE_ERROR
+    QUIET)
+  if(DASHBOARD_UPLOAD_CAPTURE_CMAKE_ERROR EQUAL -1)
+    message(WARNING "*** CTest upload step was not successful")
+  endif()
 
   # Set CTest variables in parent scope
   set(_vars
