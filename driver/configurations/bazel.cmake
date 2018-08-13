@@ -115,6 +115,7 @@ set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --jobs=${DAS
 include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
 include(${DASHBOARD_DRIVER_DIR}/configurations/gurobi.cmake)
 include(${DASHBOARD_DRIVER_DIR}/configurations/mosek.cmake)
+include(${DASHBOARD_DRIVER_DIR}/configurations/snopt.cmake)
 
 if(EVERYTHING)
   set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=everything")

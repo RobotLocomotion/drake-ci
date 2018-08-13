@@ -49,6 +49,7 @@ file(REMOVE_RECURSE "${DASHBOARD_INSTALL_PREFIX}")
 include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
 include(${DASHBOARD_DRIVER_DIR}/configurations/gurobi.cmake)
 include(${DASHBOARD_DRIVER_DIR}/configurations/mosek.cmake)
+include(${DASHBOARD_DRIVER_DIR}/configurations/snopt.cmake)
 
 if(GUROBI)
   set(DASHBOARD_WITH_GUROBI ON)
