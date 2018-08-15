@@ -307,6 +307,9 @@ function(begin_stage)
   set(CTEST_DROP_LOCATION "/submit.php?project=${_bs_PROJECT_NAME}")
   set(CTEST_DROP_SITE_CDASH ON)
 
+  set(CTEST_USE_LAUNCHERS 1)
+  set(ENV{CTEST_USE_LAUNCHERS_DEFAULT} 1)
+
   # Prepare message to report CDash URL to Jenkins
   if(DEFINED _bs_URL_NAME)
     set(_preamble "CDash ${_bs_URL_NAME} URL")
