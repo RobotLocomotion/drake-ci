@@ -87,14 +87,14 @@ endif()
 # TODO(jamiesnape) make this ${DASHBOARD_WORKSPACE}/build
 set(DASHBOARD_BINARY_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}/build")
 
-# Determine if build machine is "warm"
+# Determine if build volume is "warm"
+set(DASHBOARD_TIMESTAMP_FILE "/tmp/TIMESTAMP")
 if(NOT APPLE)
-  set(DASHBOARD_WARM_FILE "/tmp/WARM")
-  if(EXISTS "${DASHBOARD_WARM_FILE}")
-    set(DASHBOARD_WARM ON)
+  if(EXISTS "${DASHBOARD_TIMESTAMP_FILE}")
     message("*** This EBS volume is warm")
   else()
-    set(DASHBOARD_WARM OFF)
     message("*** This EBS volume is cold")
   endif()
 endif()
+string(TIMESTAMP DASHBOARD_TIMESTAMP "%s")
+file(WRITE "${DASHBOARD_TIMESTAMP_FILE}" "${DASHBOARD_TIMESTAMP}")
