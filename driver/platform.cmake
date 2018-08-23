@@ -115,6 +115,10 @@ if(APPLE)
     OUTPUT_VARIABLE BREW_LIST_OUTPUT_VARIABLE
     ERROR_VARIABLE BREW_LIST_OUTPUT_VARIABLE
     OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "cask" "list" "--versions"
+    OUTPUT_VARIABLE BREW_CASK_LIST_OUTPUT_VARIABLE
+    ERROR_VARIABLE BREW_CASK_LIST_OUTPUT_VARIABLE
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
 
   find_program(DASHBOARD_PIP_COMMAND NAMES "pip2")
   if(NOT DASHBOARD_PIP_COMMAND)
@@ -126,10 +130,12 @@ if(APPLE)
     OUTPUT_STRIP_TRAILING_WHITESPACE)
 
   message("
-  ====================================
-  ${BREW_LIST_OUTPUT_VARIABLE}
-  ====================================
-  ${PIP_LIST_OUTPUT_VARIABLE}
-  ====================================
+=================================================
+${BREW_LIST_OUTPUT_VARIABLE}
+=================================================
+${BREW_CASK_LIST_OUTPUT_VARIABLE}
+=================================================
+${PIP_LIST_OUTPUT_VARIABLE}
+=================================================
   ")
 endif()
