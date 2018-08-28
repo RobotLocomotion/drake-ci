@@ -242,12 +242,8 @@ report_configuration("
 execute_step(bazel build)
 
 # Determine build result
-if(NOT DASHBOARD_FAILURE)
-  format_plural(DASHBOARD_MESSAGE
-    ZERO "SUCCESS"
-    ONE "SUCCESS BUT WITH 1 BUILD WARNING"
-    MANY "SUCCESS BUT WITH # BUILD WARNINGS"
-    ${DASHBOARD_NUMBER_BUILD_WARNINGS})
+if(NOT DASHBOARD_FAILURE AND NOT DASHBOARD_UNSTABLE)
+  set(DASHBOARD_MESSAGE "SUCCESS")
 endif()
 
 # Build and publish documentation, if requested, and if build succeeded.
