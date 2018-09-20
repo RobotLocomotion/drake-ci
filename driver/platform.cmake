@@ -70,17 +70,6 @@ if(PROVISION)
     file(REMOVE_RECURSE "$ENV{HOME}/Library/Caches/Homebrew")
     file(REMOVE_RECURSE "$ENV{HOME}/Library/Caches/pip")
   else()
-    if(DASHBOARD_UNIX_DISTRIBUTION_VERSION VERSION_LESS 16.04)
-      execute_process(COMMAND bash "-c" "echo 'oracle-java8-installer shared/accepted-oracle-license-v1-1 select true' | sudo debconf-set-selections"
-        RESULT_VARIABLE DEBCONF_SET_SELECTIONS_RESULT_VARIABLE
-        OUTPUT_VARIABLE DEBCONF_SET_SELECTIONS_OUTPUT_VARIABLE
-        ERROR_VARIABLE DEBCONF_SET_SELECTIONS_OUTPUT_VARIABLE
-        OUTPUT_STRIP_TRAILING_WHITESPACE)
-      if(NOT DEBCONF_SET_SELECTIONS_RESULT_VARIABLE EQUAL 0)
-        message("${DEBCONF_SET_SELECTIONS_OUTPUT_VARIABLE}")
-        fatal("provisioning script did not complete successfully")
-      endif()
-    endif()
     string(TOLOWER
       "${DASHBOARD_UNIX_DISTRIBUTION}/${DASHBOARD_UNIX_DISTRIBUTION_VERSION}"
       PROVISION_DIR)
