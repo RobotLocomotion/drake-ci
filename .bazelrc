@@ -28,6 +28,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+import %workspace%/tools/bazel.rc
 build --action_env=GIT_SSH
 build --keep_going
 test --test_summary=short
