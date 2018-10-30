@@ -81,14 +81,14 @@ cache_append(WITH_MATLAB BOOL ${DASHBOARD_WITH_MATLAB})
 cache_append(WITH_MOSEK BOOL ${DASHBOARD_WITH_MOSEK})
 cache_append(WITH_ROBOTLOCOMOTION_SNOPT BOOL ${DASHBOARD_WITH_SNOPT})
 
-file(COPY "${DASHBOARD_CI_DIR}/.bazelrc"
+file(COPY "${DASHBOARD_CI_DIR}/user.bazelrc"
   DESTINATION "${DASHBOARD_SOURCE_DIRECTORY}")
 
-file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/.bazelrc"
+file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
   "startup --output_user_root=${DASHBOARD_WORKSPACE}/_bazel_$ENV{USER}\n")
 
 if(APPLE)
-  file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/.bazelrc"
+  file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
     "build --python_path=/usr/local/opt/python/libexec/bin/python\n")
 endif()
 
