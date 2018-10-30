@@ -31,11 +31,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 set -euxo pipefail
-export PATH="/usr/local/bin:$PATH"
+export PATH="/usr/local/bin:${PATH}"
 mkdir -p build/install/share/doc/drake
-unzip bazel-genfiles/doc/sphinx.zip -d build/install/share/doc/drake
+bazel run //doc:gen_sphinx -- --out_dir="${PWD}/build/install/share/doc/drake"
 mkdir -p build/install/share/doc/drake/pydrake
-unzip bazel-genfiles/bindings/pydrake/doc/sphinx.zip -d build/install/share/doc/drake/pydrake
+bazel run //bindings/pydrake/doc:gen_sphinx -- --out_dir="${PWD}/build/install/share/doc/drake/pydrake"
 ./doc/doxygen.py
 cp -r build/drake/doc/doxygen_cxx/html build/install/share/doc/drake/doxygen_cxx
 echo drake.mit.edu > build/install/share/doc/drake/CNAME
