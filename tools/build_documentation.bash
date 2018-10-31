@@ -32,9 +32,7 @@
 
 set -euxo pipefail
 export PATH="/usr/local/bin:${PATH}"
-mkdir -p build/install/share/doc/drake
 bazel run //doc:gen_sphinx -- --out_dir="${PWD}/build/install/share/doc/drake"
-mkdir -p build/install/share/doc/drake/pydrake
 bazel run //bindings/pydrake/doc:gen_sphinx -- --out_dir="${PWD}/build/install/share/doc/drake/pydrake"
 ./doc/doxygen.py
 cp -r build/drake/doc/doxygen_cxx/html build/install/share/doc/drake/doxygen_cxx
