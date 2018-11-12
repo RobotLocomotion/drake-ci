@@ -65,6 +65,12 @@ set(REMOTE_CACHE $ENV{remote_cache})
 set(SNOPT $ENV{snopt})
 set(TRACK $ENV{track})
 
+if(EXISTS "/media/ephemeral0/tmp")
+  set(DASHBOARD_TEMP_DIR "/media/ephemeral0/tmp")
+else()
+  set(DASHBOARD_TEMP_DIR "/tmp")
+endif()
+
 # Verify workspace location and convert to CMake path
 if(NOT DEFINED ENV{WORKSPACE})
   fatal("ENV{WORKSPACE} was not set")
@@ -88,7 +94,7 @@ endif()
 set(DASHBOARD_BINARY_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}/build")
 
 # Determine if build volume is "warm"
-set(DASHBOARD_TIMESTAMP_FILE "/tmp/TIMESTAMP")
+set(DASHBOARD_TIMESTAMP_FILE "${DASHBOARD_TEMP_DIR}/TIMESTAMP")
 if(NOT APPLE)
   if(EXISTS "${DASHBOARD_TIMESTAMP_FILE}")
     message("*** This EBS volume is warm")

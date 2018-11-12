@@ -35,7 +35,7 @@ if(NOT APPLE)
   set(ENV{GUROBI_PATH} "/opt/gurobi800/linux64")
 endif()
 
-set(GRB_LICENSE_FILE "/tmp/gurobi.lic")
+set(GRB_LICENSE_FILE "${DASHBOARD_TEMP_DIR}/gurobi.lic")
 file(REMOVE "${GRB_LICENSE_FILE}")
 
 message(STATUS "Downloading Gurobi license file from AWS S3...")

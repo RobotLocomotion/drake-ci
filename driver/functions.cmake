@@ -261,7 +261,7 @@ endfunction()
 # Create a temporary file
 #------------------------------------------------------------------------------
 function(mktemp OUTVAR NAME MESSAGE)
-  execute_process(COMMAND mktemp -q "/tmp/${NAME}"
+  execute_process(COMMAND mktemp -q "${DASHBOARD_TEMP_DIR}/${NAME}"
     RESULT_VARIABLE _mktemp_result
     OUTPUT_VARIABLE _mktemp_output
     ERROR_VARIABLE _mktemp_error

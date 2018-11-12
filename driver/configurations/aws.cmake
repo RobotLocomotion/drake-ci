@@ -67,7 +67,7 @@ endif()
 chmod("${DASHBOARD_SSH_IDENTITY_FILE}" 0400 "identity file")
 
 # Create git SSH wrapper
-set(DASHBOARD_GIT_SSH_FILE "/tmp/git_ssh")
+set(DASHBOARD_GIT_SSH_FILE "${DASHBOARD_TEMP_DIR}/git_ssh")
 list(APPEND DASHBOARD_TEMPORARY_FILES DASHBOARD_GIT_SSH_FILE)
 file(REMOVE "${DASHBOARD_GIT_SSH_FILE}")
 configure_file(
