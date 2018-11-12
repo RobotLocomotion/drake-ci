@@ -316,8 +316,10 @@ function(begin_stage)
 
   if(NOT DASHBOARD_CDASH_URL_MESSAGES MATCHES "${_preamble}")
     if(DASHBOARD_LABEL)
-      set(_url_message
-      "${_preamble}: https://${DASHBOARD_CDASH_SERVER}/index.php?project=${_bs_PROJECT_NAME}&showfilters=1&filtercount=2&showfilters=1&filtercombine=and&field1=label&compare1=61&value1=${DASHBOARD_LABEL}&field2=buildstarttime&compare2=84&value2=now")
+      set(_url
+        "https://${DASHBOARD_CDASH_SERVER}/index.php?project=${_bs_PROJECT_NAME}&showfilters=1&filtercount=2&showfilters=1&filtercombine=and&field1=label&compare1=61&value1=${DASHBOARD_LABEL}&field2=buildstarttime&compare2=84&value2=now")
+      file(WRITE "${DASHBOARD_WORKSPACE}/CDASH" "${_url}")
+      set(_url_message "${_preamble}: ${_url}")
     else()
       set(_url_message "${_preamble}:")
     endif()
