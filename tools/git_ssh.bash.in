@@ -31,4 +31,4 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 [[ -z "${DISPLAY}" ]] && export DISPLAY=:0.0
-ssh -i "@DASHBOARD_SSH_IDENTITY_FILE@" -o StrictHostKeyChecking=no "$@"
+ssh -i "@SSH_PRIVATE_KEY_FILE@" -o StrictHostKeyChecking=no "$@"
