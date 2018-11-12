@@ -82,6 +82,7 @@ function(fatal MESSAGE)
   endforeach()
   if(DEFINED DASHBOARD_WORKSPACE)
     file(WRITE "${DASHBOARD_WORKSPACE}/FAILURE")
+    file(WRITE "${DASHBOARD_WORKSPACE}/RESULT" "FAILURE")
   endif()
   # Remove any temporary files that we created
   foreach(_file ${DASHBOARD_TEMPORARY_FILES})
@@ -115,6 +116,7 @@ function(report_status STATUS MESSAGE)
   string(REPLACE "%STEPS%" "${_steps}" _message "${MESSAGE}")
   set(DASHBOARD_MESSAGE "${_message}" PARENT_SCOPE)
   file(WRITE "${DASHBOARD_WORKSPACE}/${STATUS}")
+  file(WRITE "${DASHBOARD_WORKSPACE}/RESULT" "${STATUS}")
 endfunction()
 
 #------------------------------------------------------------------------------

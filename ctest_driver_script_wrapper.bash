@@ -32,5 +32,5 @@
 
 set -x
 export PATH="/usr/local/bin:${PATH}"
-ctest --script "${BASH_SOURCE%/*}/ctest_driver_script.cmake" --extra-verbose --no-compress-output --output-on-failure
+ctest --extra-verbose --no-compress-output --script "${BASH_SOURCE%/*}/ctest_driver_script.cmake"
 [[ (-e "${WORKSPACE}/SUCCESS" || -e "${WORKSPACE}/UNSTABLE") && ! -e "${WORKSPACE}/FAILURE" ]]

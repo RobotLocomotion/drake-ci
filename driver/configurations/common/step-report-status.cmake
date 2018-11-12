@@ -39,6 +39,7 @@ else()
     report_status(UNSTABLE "UNSTABLE DUE TO %STEPS% FAILURES")
   else()
     file(WRITE "${DASHBOARD_WORKSPACE}/SUCCESS")
+    file(WRITE "${DASHBOARD_WORKSPACE}/RESULT" "SUCCESS")
   endif()
 endif()
 
