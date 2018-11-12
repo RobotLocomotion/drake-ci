@@ -78,16 +78,8 @@ endif()
 
 file(TO_CMAKE_PATH "$ENV{WORKSPACE}" DASHBOARD_WORKSPACE)
 
-# Determine location of git working tree
-if(EXISTS "${DASHBOARD_WORKSPACE}/.git")
-  set(DASHBOARD_SOURCE_DIRECTORY "${DASHBOARD_WORKSPACE}")
-elseif(EXISTS ${DASHBOARD_WORKSPACE}/src/.git)
-  set(DASHBOARD_SOURCE_DIRECTORY "${DASHBOARD_WORKSPACE}/src")
-elseif(EXISTS "${DASHBOARD_WORKSPACE}/src/drake/.git")
-  set(DASHBOARD_SOURCE_DIRECTORY "${DASHBOARD_WORKSPACE}/src/drake")
-else()
-  fatal("git working tree was not found")
-endif()
+# Set the source tree
+set(DASHBOARD_SOURCE_DIRECTORY "${DASHBOARD_WORKSPACE}/src")
 
 # Set the build tree
 # TODO(jamiesnape) make this ${DASHBOARD_WORKSPACE}/build
