@@ -32,45 +32,30 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 # Set site
-string(STRIP "$ENV{NODE_NAME}" DASHBOARD_NODE_NAME)
-if(DASHBOARD_NODE_NAME)
-  if(APPLE)
-    string(REGEX REPLACE "(.*)_(.*)" "\\1"
-      DASHBOARD_NODE_NAME "${DASHBOARD_NODE_NAME}")
-  else()
-    string(REGEX REPLACE "(.*) (.*)" "\\1"
-      DASHBOARD_NODE_NAME "${DASHBOARD_NODE_NAME}")
-  endif()
-  set(CTEST_SITE "${DASHBOARD_NODE_NAME}")
+if(APPLE)
+  string(REGEX REPLACE "(.*)_(.*)" "\\1"
+    DASHBOARD_NODE_NAME "${DASHBOARD_NODE_NAME}")
 else()
-  message(WARNING "*** ENV{NODE_NAME} was not set")
+  string(REGEX REPLACE "(.*) (.*)" "\\1"
+    DASHBOARD_NODE_NAME "${DASHBOARD_NODE_NAME}")
 endif()
-
-# Set build track
-if(NOT TRACK)
-  set(TRACK "experimental")
-endif()
+set(CTEST_SITE "${DASHBOARD_NODE_NAME}")
 
 # Set build name
-string(STRIP "$ENV{JOB_NAME}" DASHBOARD_JOB_NAME)
-if(DASHBOARD_JOB_NAME)
-  if(TRACK STREQUAL "experimental")
-    if(DEBUG)
-      string(REGEX MATCH  "-debug$" STRING_REGEX_MATCH_OUTPUT_VARIABLE
-        "${DASHBOARD_JOB_NAME}")
-      if(NOT STRING_REGEX_MATCH_OUTPUT_VARIABLE)
-        set(DASHBOARD_JOB_NAME "${DASHBOARD_JOB_NAME}-debug")
-      endif()
-    else()
-      string(REGEX MATCH  "-release$" STRING_REGEX_MATCH_OUTPUT_VARIABLE
-        "${DASHBOARD_JOB_NAME}")
-      if(NOT STRING_REGEX_MATCH_OUTPUT_VARIABLE)
-        set(DASHBOARD_JOB_NAME "${DASHBOARD_JOB_NAME}-release")
-      endif()
+if(TRACK STREQUAL "experimental")
+  if(DEBUG)
+    string(REGEX MATCH  "-debug$" STRING_REGEX_MATCH_OUTPUT_VARIABLE
+      "${DASHBOARD_JOB_NAME}")
+    if(NOT STRING_REGEX_MATCH_OUTPUT_VARIABLE)
+      set(DASHBOARD_JOB_NAME "${DASHBOARD_JOB_NAME}-debug")
+    endif()
+  else()
+    string(REGEX MATCH  "-release$" STRING_REGEX_MATCH_OUTPUT_VARIABLE
+      "${DASHBOARD_JOB_NAME}")
+    if(NOT STRING_REGEX_MATCH_OUTPUT_VARIABLE)
+      set(DASHBOARD_JOB_NAME "${DASHBOARD_JOB_NAME}-release")
     endif()
   endif()
-else()
-  message(WARNING "*** ENV{JOB_NAME} was not set")
 endif()
 
 # set model and track for submission

@@ -63,12 +63,28 @@ set(PACKAGE $ENV{package})
 set(PROVISION $ENV{provision})
 set(REMOTE_CACHE $ENV{remote_cache})
 set(SNOPT $ENV{snopt})
-set(TRACK $ENV{track})
+
+if(NOT DEFINED ENV{track})
+  message(WARNING "*** ENV{track} was not set; defaulting to 'experimental'")
+  set(TRACK "experimental")
+else()
+  string(STRIP "$ENV{track}" TRACK)
+endif()
 
 if(EXISTS "/media/ephemeral0/tmp")
   set(DASHBOARD_TEMP_DIR "/media/ephemeral0/tmp")
 else()
   set(DASHBOARD_TEMP_DIR "/tmp")
+endif()
+
+string(STRIP "$ENV{JOB_NAME}" DASHBOARD_JOB_NAME)
+if(NOT DASHBOARD_JOB_NAME)
+  fatal("ENV{JOB_NAME} was not set")
+endif()
+
+string(STRIP "$ENV{NODE_NAME}" DASHBOARD_NODE_NAME)
+if(NOT DASHBOARD_NODE_NAME)
+  fatal("ENV{NODE_NAME} was not set")
 endif()
 
 # Verify workspace location and convert to CMake path
