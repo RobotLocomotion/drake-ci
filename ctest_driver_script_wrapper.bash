@@ -30,7 +30,6 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-set -x
+set -euxo pipefail
 export PATH="/usr/local/bin:${PATH}"
 ctest --extra-verbose --no-compress-output --script "${BASH_SOURCE%/*}/ctest_driver_script.cmake"
-[[ (-e "${WORKSPACE}/SUCCESS" || -e "${WORKSPACE}/UNSTABLE") && ! -e "${WORKSPACE}/FAILURE" ]]
