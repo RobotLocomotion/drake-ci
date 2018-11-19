@@ -31,30 +31,25 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-# Set default compiler and generator (if not specified) or copy from environment
 if(NOT DEFINED ENV{compiler})
-  if(APPLE)
-    message(WARNING "*** ENV{compiler} was not set; defaulting to 'clang'")
-    set(COMPILER "clang")
-  else()
-    message(WARNING "*** ENV{compiler} was not set; defaulting to 'gcc'")
-    set(COMPILER "gcc")
-  endif()
-else()
-  set(COMPILER $ENV{compiler})
-endif()
-if(NOT DEFINED ENV{generator})
-  message(WARNING "*** ENV{generator} was not set; defaulting to 'make'")
-  set(GENERATOR "make")
-else()
-  set(GENERATOR $ENV{generator})
+  fatal("ENV{compiler} was not set")
 endif()
 
-# Copy remaining configuration from environment
+if(NOT DEFINED ENV{generator})
+  fatal("ENV{generator} was not set")
+endif()
+
+if(NOT DEFINED ENV{track})
+  fatal("ENV{track} was not set")
+endif()
+
+# Copy configuration from environment
+set(COMPILER $ENV{compiler})
 set(COVERAGE $ENV{coverage})
 set(DEBUG $ENV{debug})
 set(DOCUMENTATION $ENV{documentation})
 set(EVERYTHING $ENV{everything})
+set(GENERATOR $ENV{generator})
 set(GUROBI $ENV{gurobi})
 set(MATLAB $ENV{matlab})
 set(MEMCHECK $ENV{memcheck})
@@ -63,13 +58,7 @@ set(PACKAGE $ENV{package})
 set(PROVISION $ENV{provision})
 set(REMOTE_CACHE $ENV{remote_cache})
 set(SNOPT $ENV{snopt})
-
-if(NOT DEFINED ENV{track})
-  message(WARNING "*** ENV{track} was not set; defaulting to 'experimental'")
-  set(TRACK "experimental")
-else()
-  string(STRIP "$ENV{track}" TRACK)
-endif()
+set(TRACK $ENV{track})
 
 if(EXISTS "/media/ephemeral0/tmp")
   set(DASHBOARD_TEMP_DIR "/media/ephemeral0/tmp")
