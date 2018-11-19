@@ -37,34 +37,38 @@ if(NOT DASHBOARD_AWS_COMMAND)
   fatal("aws was not found")
 endif()
 
-# Generate temporary private key file
-mktemp(SSH_PRIVATE_KEY_FILE id_rsa_XXXXXXXX "temporary private key file")
-list(APPEND DASHBOARD_TEMPORARY_FILES SSH_PRIVATE_KEY_FILE)
+if(DEFINED ENV{SSH_PRIVATE_KEY_FILE})
+  set(SSH_PRIVATE_KEY_FILE "$ENV{SSH_PRIVATE_KEY_FILE}")
+else()
+  # Generate temporary private key file
+  mktemp(SSH_PRIVATE_KEY_FILE id_rsa_XXXXXXXX "temporary private key file")
+  list(APPEND DASHBOARD_TEMPORARY_FILES SSH_PRIVATE_KEY_FILE)
 
-# Download the private key file
-message(STATUS "Downloading private key file from AWS S3...")
-execute_process(
-  COMMAND "${DASHBOARD_AWS_COMMAND}" s3 cp
-    s3://drake-provisioning/id_rsa
-    "${SSH_PRIVATE_KEY_FILE}"
-  RESULT_VARIABLE DASHBOARD_AWS_S3_RESULT_VARIABLE
-  OUTPUT_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE
-  ERROR_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE)
-message("${DASHBOARD_AWS_S3_OUTPUT_VARIABLE}")
+  # Download the private key file
+  message(STATUS "Downloading private key file from AWS S3...")
+  execute_process(
+    COMMAND "${DASHBOARD_AWS_COMMAND}" s3 cp
+      s3://drake-provisioning/id_rsa
+      "${SSH_PRIVATE_KEY_FILE}"
+    RESULT_VARIABLE DASHBOARD_AWS_S3_RESULT_VARIABLE
+    OUTPUT_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE
+    ERROR_VARIABLE DASHBOARD_AWS_S3_OUTPUT_VARIABLE)
+  message("${DASHBOARD_AWS_S3_OUTPUT_VARIABLE}")
 
-if(NOT DASHBOARD_AWS_S3_RESULT_VARIABLE EQUAL 0)
-  fatal("download of private key file from AWS S3 was not successful")
+  if(NOT DASHBOARD_AWS_S3_RESULT_VARIABLE EQUAL 0)
+    fatal("download of private key file from AWS S3 was not successful")
+  endif()
+
+  # Verify the expected SHA-1 of the private key file
+  file(SHA1 "${SSH_PRIVATE_KEY_FILE}" SSH_PRIVATE_KEY_FILE_SHA1)
+  if(NOT SSH_PRIVATE_KEY_FILE_SHA1 STREQUAL "8de7f79df9eb18344cf0e030d2ae3b658d81263b")
+    fatal("SHA-1 of private key file was not correct"
+      SSH_PRIVATE_KEY_FILE_SHA1)
+  endif()
+
+  # Set permissions on private key file
+  chmod("${SSH_PRIVATE_KEY_FILE}" 0400 "private key file")
 endif()
-
-# Verify the expected SHA-1 of the private key file
-file(SHA1 "${SSH_PRIVATE_KEY_FILE}" SSH_PRIVATE_KEY_FILE_SHA1)
-if(NOT SSH_PRIVATE_KEY_FILE_SHA1 STREQUAL "8de7f79df9eb18344cf0e030d2ae3b658d81263b")
-  fatal("SHA-1 of private key file was not correct"
-    SSH_PRIVATE_KEY_FILE_SHA1)
-endif()
-
-# Set permissions on private key file
-chmod("${SSH_PRIVATE_KEY_FILE}" 0400 "private key file")
 
 # Create git SSH wrapper
 set(DASHBOARD_GIT_SSH_FILE "${DASHBOARD_TEMP_DIR}/git_ssh")
