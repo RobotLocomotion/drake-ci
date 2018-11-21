@@ -37,6 +37,9 @@ set(DASHBOARD_CLANG_COMPILER_SUFFIX "")
 if(DASHBOARD_UNIX_DISTRIBUTION STREQUAL "Ubuntu")
   if(DASHBOARD_UNIX_DISTRIBUTION_VERSION VERSION_LESS 18.04)
     set(DASHBOARD_CLANG_COMPILER_SUFFIX "-6.0")
+    # CC and CXX variables must be different between 16.04 and 18.04 so that
+    # the environments differ for the purpose of remote caching.
+    set(DASHBOARD_GNU_COMPILER_SUFFIX "-5")
   endif()
 endif()
 
