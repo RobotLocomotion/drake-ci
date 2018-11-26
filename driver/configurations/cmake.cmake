@@ -127,6 +127,9 @@ report_configuration("
   ====================================
   ")
 
+# Report disk usage
+execute_step(common report-disk-usage)
+
 execute_step(cmake build)
 
 if(NOT DASHBOARD_FAILURE)
@@ -140,5 +143,8 @@ if(NOT DASHBOARD_FAILURE)
     append_step_status("CMAKE TEST" UNSTABLE)
   endif()
 endif()
+
+# Report disk usage
+execute_step(common report-disk-usage)
 
 execute_step(common report-status)

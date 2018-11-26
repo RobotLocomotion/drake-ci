@@ -244,6 +244,9 @@ report_configuration("
   ====================================
   ")
 
+# Report disk usage
+execute_step(common report-disk-usage)
+
 # Run the build
 execute_step(bazel build)
 
@@ -259,6 +262,9 @@ if(DOCUMENTATION)
     execute_step(bazel publish-documentation)
   endif()
 endif()
+
+# Report disk usage
+execute_step(common report-disk-usage)
 
 # Report dashboard status
 execute_step(common report-status)
