@@ -31,11 +31,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 workspace="$1"
-installation="$2"
+doc="$2"
 
 export PATH="/usr/local/bin:${PATH}"
 git clone --quiet --single-branch git@github.com:RobotLocomotion/RobotLocomotion.github.io.git "${workspace}/gh-pages"
-rsync --archive --delete --exclude=.git --exclude=.gitignore --exclude=LICENSE --exclude=README.md --quiet "${installation}/share/doc/drake/" "${workspace}/gh-pages/"
+rsync --archive --delete --exclude=.git --exclude=.gitignore --exclude=LICENSE --exclude=README.md --quiet "${doc}/" "${workspace}/gh-pages/"
 cd "${workspace}/gh-pages"
 git add --all
 if git diff-index --quiet HEAD; then
