@@ -42,8 +42,6 @@ report_configuration(".38
   APPLE
   ====================================
   CMAKE_VERSION
-  ==================================== >DASHBOARD_ <CMAKE_
-  INSTALL_PREFIX
   ====================================
   CTEST_BUILD_NAME(DASHBOARD_JOB_NAME)
   CTEST_CHANGE_ID
