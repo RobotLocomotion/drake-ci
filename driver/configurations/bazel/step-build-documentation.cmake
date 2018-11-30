@@ -65,7 +65,7 @@ else()
     append_step_status("BUILDING DOCUMENTATION" UNSTABLE)
   endif()
 
-  file(COPY "${DASHBOARD_BINARY_DIRECTORY}/drake/doc/doxygen_cxx/html" DESTINATION "${DASHBOARD_DOCUMENTATION_DIRECTORY}/doxygen_cxx")
+  execute_process(COMMAND "${CMAKE_COMMAND}" -E copy_directory "${DASHBOARD_BINARY_DIRECTORY}/drake/doc/doxygen_cxx/html" "${DASHBOARD_DOCUMENTATION_DIRECTORY}/doxygen_cxx")
   file(WRITE "${DASHBOARD_DOCUMENTATION_DIRECTORY}/CNAME" "drake.mit.edu")
   file(TOUCH "${DASHBOARD_DOCUMENTATION_DIRECTORY}/.nojekyll")
 endif()
