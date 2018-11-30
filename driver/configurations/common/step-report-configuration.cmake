@@ -43,7 +43,7 @@ report_configuration(".38
   ====================================
   CMAKE_VERSION
   ==================================== >DASHBOARD_ <CMAKE_
-  INSTALL_PREFIX
+  DOCUMENTATION_DIRECTORY
   ====================================
   CTEST_BUILD_NAME(DASHBOARD_JOB_NAME)
   CTEST_CHANGE_ID
