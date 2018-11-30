@@ -66,6 +66,6 @@ else()
   endif()
 
   file(COPY "${DASHBOARD_BINARY_DIRECTORY}/drake/doc/doxygen_cxx/html" DESTINATION "${DASHBOARD_DOCUMENTATION_DIRECTORY}/doxygen_cxx")
-  file(WRITE "drake.mit.edu" "${DASHBOARD_DOCUMENTATION_DIRECTORY}/CNAME")
+  file(WRITE "${DASHBOARD_DOCUMENTATION_DIRECTORY}/CNAME" "drake.mit.edu")
   file(TOUCH "${DASHBOARD_DOCUMENTATION_DIRECTORY}/.nojekyll")
 endif()
