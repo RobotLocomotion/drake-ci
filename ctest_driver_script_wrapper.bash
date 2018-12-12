@@ -31,5 +31,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 set -euxo pipefail
+[[ -z "${TERM}" ]] || export CLICOLOR_FORCE=1
 export PATH="/usr/local/bin:${PATH}"
 ctest --extra-verbose --no-compress-output --script "${BASH_SOURCE%/*}/ctest_driver_script.cmake"
