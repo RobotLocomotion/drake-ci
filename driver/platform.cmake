@@ -82,12 +82,8 @@ if(PROVISION)
   if(EXISTS "${PROVISION_SCRIPT}")
     message(STATUS "Executing provisioning script...")
     execute_process(COMMAND bash "-c" "yes | ${PROVISION_SUDO} ${PROVISION_SCRIPT}"
-      RESULT_VARIABLE INSTALL_PREREQS_RESULT_VARIABLE
-      OUTPUT_VARIABLE INSTALL_PREREQS_OUTPUT_VARIABLE
-      ERROR_VARIABLE INSTALL_PREREQS_OUTPUT_VARIABLE
-      OUTPUT_STRIP_TRAILING_WHITESPACE)
+      RESULT_VARIABLE INSTALL_PREREQS_RESULT_VARIABLE)
     if(NOT INSTALL_PREREQS_RESULT_VARIABLE EQUAL 0)
-      message("${INSTALL_PREREQS_OUTPUT_VARIABLE}")
       fatal("provisioning script did not complete successfully")
     endif()
   else()
@@ -100,31 +96,12 @@ if(APPLE)
   if(NOT DASHBOARD_BREW_COMMAND)
     fatal("brew was not found")
   endif()
-  execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "list" "--versions"
-    OUTPUT_VARIABLE BREW_LIST_OUTPUT_VARIABLE
-    ERROR_VARIABLE BREW_LIST_OUTPUT_VARIABLE
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-  execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "cask" "list" "--versions"
-    OUTPUT_VARIABLE BREW_CASK_LIST_OUTPUT_VARIABLE
-    ERROR_VARIABLE BREW_CASK_LIST_OUTPUT_VARIABLE
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "list" "--versions")
+  execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "cask" "list" "--versions")
 
   find_program(DASHBOARD_PIP_COMMAND NAMES "pip2")
   if(NOT DASHBOARD_PIP_COMMAND)
     fatal("pip2 was not found")
   endif()
-  execute_process(COMMAND "${DASHBOARD_PIP_COMMAND}" "list"
-    OUTPUT_VARIABLE PIP_LIST_OUTPUT_VARIABLE
-    ERROR_VARIABLE PIP_LIST_OUTPUT_VARIABLE
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-  message("
-=================================================
-${BREW_LIST_OUTPUT_VARIABLE}
-=================================================
-${BREW_CASK_LIST_OUTPUT_VARIABLE}
-=================================================
-${PIP_LIST_OUTPUT_VARIABLE}
-=================================================
-  ")
+  execute_process(COMMAND "${DASHBOARD_PIP_COMMAND}" "list")
 endif()

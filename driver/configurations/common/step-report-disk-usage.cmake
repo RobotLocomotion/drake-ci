@@ -34,6 +34,7 @@
 
 execute_process(COMMAND df -h "${DASHBOARD_TEMP_DIR}"
   OUTPUT_VARIABLE dashboard_temp_dir_usage
+  ERROR_QUIET
   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 notice("Disk usage for ${DASHBOARD_TEMP_DIR}:\n ${dashboard_temp_dir_usage}")
@@ -41,6 +42,7 @@ notice("Disk usage for ${DASHBOARD_TEMP_DIR}:\n ${dashboard_temp_dir_usage}")
 if(NOT DASHBOARD_TEMP_DIR STREQUAL "/tmp")
   execute_process(COMMAND df -h "/tmp"
     OUTPUT_VARIABLE tmp_usage
+    ERROR_QUIET
     OUTPUT_STRIP_TRAILING_WHITESPACE)
 
   notice("Disk usage for /tmp:\n ${tmp_usage}")
