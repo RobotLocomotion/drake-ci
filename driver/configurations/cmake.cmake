@@ -96,6 +96,7 @@ report_configuration("
   ==================================== ENV
   CC
   CXX
+  TERM
   ==================================== >DASHBOARD_
   UNIX
   UNIX_DISTRIBUTION
