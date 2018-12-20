@@ -101,11 +101,6 @@ file(COPY "${DASHBOARD_CI_DIR}/user.bazelrc"
 file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
   "startup --output_user_root=${DASHBOARD_WORKSPACE}/_bazel_$ENV{USER}\n")
 
-if(APPLE)
-  file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
-    "build --python_path=/usr/local/opt/python/libexec/bin/python\n")
-endif()
-
 report_configuration("
   ==================================== ENV
   CC

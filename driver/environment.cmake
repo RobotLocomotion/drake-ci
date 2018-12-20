@@ -167,6 +167,13 @@ if(DEFINED ENV{SSH_PRIVATE_KEY_FILE})
     set(MOSEK OFF)
   endif()
 
+  string(REGEX MATCH "python3" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
+  if(REGEX_MATCH_RESULT)
+    set(PYTHON3 ON)
+  else()
+    set(PYTHON3 OFF)
+  endif()
+
   string(REGEX MATCH "snopt" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
   if(REGEX_MATCH_RESULT)
     set(SNOPT ON)
