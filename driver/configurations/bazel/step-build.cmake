@@ -55,12 +55,13 @@ set(BUILD_ARGS
 
 if(PACKAGE)
   message(STATUS "Creating package output directory...")
-  execute_process(COMMAND sudo "${CMAKE_COMMAND}" -E make_directory /opt/drake
+  execute_process(COMMAND sudo "${CMAKE_COMMAND}" -E make_directory "/opt/drake"
     RESULT_VARIABLE MAKE_DIRECTORY_RESULT_VARIABLE)
   if(NOT MAKE_DIRECTORY_RESULT_VARIABLE EQUAL 0)
     fatal("creation of package output directory was not successful")
   endif()
-  execute_process(COMMAND sudo chmod 0777 /opt/drake
+  list(APPEND DASHBOARD_TEMPORARY_FILES "/opt/drake")
+  execute_process(COMMAND sudo chmod 0777 "/opt/drake"
     RESULT_VARIABLE CHMOD_RESULT_VARIABLE)
   if(NOT CHMOD_RESULT_VARIABLE EQUAL 0)
     fatal("setting permissions on package output directory was not successful")
