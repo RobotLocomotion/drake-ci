@@ -82,11 +82,26 @@ if(EXISTS "${CTEST_SOURCE_DIRECTORY}/CTestCustom.cmake.in")
   ctest_read_custom_files("${CTEST_BINARY_DIRECTORY}")
 endif()
 
+if(NOT PROVISION)
+  if(DASHBOARD_UNIX_DISTRIBUTION STREQUAL "Apple")
+    set(USER_ENVIRONMENT_PROVISION_DIR "mac")
+  else()
+    string(TOLOWER "${DASHBOARD_UNIX_DISTRIBUTION}" USER_ENVIRONMENT_PROVISION_DIR)
+  endif()
+  set(USER_ENVIRONMENT_PROVISION_SCRIPT
+    "${DASHBOARD_SOURCE_DIRECTORY}/setup/${USER_ENVIRONMENT_PROVISION_DIR}/source_distribution/install_prereqs_user_environment.sh")
+  message(STATUS "Executing user environment provisioning script...")
+  execute_process(COMMAND bash "-c" "${USER_ENVIRONMENT_PROVISION_SCRIPT}"
+    RESULT_VARIABLE INSTALL_PREREQS_USER_ENVIRONMENT_RESULT_VARIABLE)
+  if(NOT INSTALL_PREREQS_USER_ENVIRONMENT_RESULT_VARIABLE EQUAL 0)
+    fatal("user environment provisioning script did not complete successfully")
+  endif()
+endif()
+
 separate_arguments(BUILD_ARGS_LIST UNIX_COMMAND "${BUILD_ARGS}")
 execute_process(COMMAND ${DASHBOARD_BAZEL_COMMAND} ${BUILD_ARGS_LIST}
   WORKING_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}"
   RESULT_VARIABLE DASHBOARD_BUILD_RETURN_VALUE)
-
 
 # https://bazel.build/blog/2016/01/27/continuous-integration.html
 if(DASHBOARD_BUILD_RETURN_VALUE EQUAL 1)
