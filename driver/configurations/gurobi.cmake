@@ -38,8 +38,9 @@ else()
   set(GRB_LICENSE_FILE "/opt/gurobi800/gurobi.lic")
 endif()
 
-if(NOT EXISTS "${GRB_LICENSE_FILE}")
+if(GUROBI AND NOT EXISTS "${GRB_LICENSE_FILE}")
   fatal("Gurobi license file was NOT found")
 endif()
 
+# Always set environment variable so remote caches may be shared.
 set(ENV{GRB_LICENSE_FILE} "${GRB_LICENSE_FILE}")
