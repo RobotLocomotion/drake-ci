@@ -60,14 +60,24 @@ if(NOT APPLE)
   set(ENV{DISPLAY} ":99")
 endif()
 
+if(APPLE)
+  find_program(DASHBOARD_BREW_COMMAND NAMES "brew")
+  if(NOT DASHBOARD_BREW_COMMAND)
+    fatal("brew was NOT found")
+  endif()
+endif()
+
 # Execute provisioning script, if requested
 if(PROVISION)
   if(DASHBOARD_UNIX_DISTRIBUTION STREQUAL "Apple")
     set(PROVISION_DIR "mac")
     set(PROVISION_SUDO)
 
-    message(STATUS "Removing Homebrew and pip cache directories...")
-    file(REMOVE_RECURSE "$ENV{HOME}/Library/Caches/Homebrew")
+    message(STATUS "Updating Homebrew...")
+    execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "update" "--force")
+    execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "cleanup" "-s")
+
+    message(STATUS "Removing pip cache directory...")
     file(REMOVE_RECURSE "$ENV{HOME}/Library/Caches/pip")
   else()
     string(TOLOWER
@@ -92,10 +102,6 @@ if(PROVISION)
 endif()
 
 if(APPLE)
-  find_program(DASHBOARD_BREW_COMMAND NAMES "brew")
-  if(NOT DASHBOARD_BREW_COMMAND)
-    fatal("brew was not found")
-  endif()
   execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "list" "--versions")
   execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "cask" "list" "--versions")
 
