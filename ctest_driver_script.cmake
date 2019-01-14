@@ -109,6 +109,9 @@ set(DASHBOARD_CDASH_URL_MESSAGES "")
 set(ENV{CMAKE_CONFIG_TYPE} "${DASHBOARD_CONFIGURATION_TYPE}")
 set(CTEST_CONFIGURATION_TYPE "${DASHBOARD_CONFIGURATION_TYPE}")
 
+# Report disk usage before build
+execute_step(common report-disk-usage)
+
 # Invoke the appropriate build driver for the selected configuration
 if(GENERATOR STREQUAL "bazel")
   include(${DASHBOARD_DRIVER_DIR}/configurations/bazel.cmake)
@@ -117,6 +120,9 @@ elseif(GENERATOR STREQUAL "cmake")
 else()
   fatal("generator is invalid")
 endif()
+
+# Report disk usage after build
+execute_step(common report-disk-usage)
 
 # Remove any temporary files that we created
 foreach(_file ${DASHBOARD_TEMPORARY_FILES})
@@ -128,3 +134,6 @@ if(DASHBOARD_FAILURE)
   message(FATAL_ERROR
     "*** Return value set to NON-ZERO due to failure during build")
 endif()
+
+# Finally, report dashboard status
+execute_step(common report-status)
