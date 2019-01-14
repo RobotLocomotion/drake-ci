@@ -73,8 +73,9 @@ if(PROVISION)
     set(PROVISION_DIR "mac")
     set(PROVISION_SUDO)
 
-    message(STATUS "Updating Homebrew...")
+    message(STATUS "Updating and upgrading Homebrew...")
     execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "update" "--force")
+    execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "upgrade" "--force" "--ignore-pinned")
     execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "cleanup" "-s")
 
     message(STATUS "Removing pip cache directory...")
