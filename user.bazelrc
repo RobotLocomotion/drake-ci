@@ -29,5 +29,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 build --action_env=GIT_SSH
+build --announce_rc
 build --keep_going
 test --test_summary=short

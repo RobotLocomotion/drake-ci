@@ -101,6 +101,29 @@ file(COPY "${DASHBOARD_CI_DIR}/user.bazelrc"
 file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
   "startup --output_user_root=${DASHBOARD_WORKSPACE}/_bazel_$ENV{USER}\n")
 
+if(REMOTE_CACHE)
+  set(DASHBOARD_REMOTE_HTTP_CACHE_URL "http://172.31.20.109")
+  mktemp(DASHBOARD_FILE_DOWNLOAD_TEMP file_download_XXXXXXXX "temporary download file")
+  list(APPEND DASHBOARD_TEMPORARY_FILES DASHBOARD_FILE_DOWNLOAD_TEMP)
+  file(DOWNLOAD "${DASHBOARD_REMOTE_HTTP_CACHE_URL}" "${DASHBOARD_FILE_DOWNLOAD_TEMP}"
+    STATUS DASHBOARD_DOWNLOAD_STATUS)
+  list(GET DASHBOARD_DOWNLOAD_STATUS 0 DASHBOARD_DOWNLOAD_STATUS_0)
+  if(DASHBOARD_DOWNLOAD_STATUS_0 EQUAL 0)
+    file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
+      "build --experimental_guard_against_concurrent_changes\n"
+      "build --remote_http_cache=${DASHBOARD_REMOTE_HTTP_CACHE_URL}\n"
+      "build --remote_local_fallback\n"
+      "build --remote_timeout=120\n")
+    if(DASHBOARD_TRACK STREQUAL "Nightly")
+      file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
+        "build --noremote_accept_cached\n")
+    elseif(DASHBOARD_TRACK STREQUAL "Experimental")
+      file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
+        "build --noremote_upload_local_results\n")
+    endif()
+  endif()
+endif()
+
 report_configuration("
   ==================================== ENV
   CC
