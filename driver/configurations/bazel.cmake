@@ -251,9 +251,6 @@ report_configuration("
   ====================================
   ")
 
-# Report disk usage
-execute_step(common report-disk-usage)
-
 # Run the build
 execute_step(bazel build)
 
@@ -270,8 +267,6 @@ if(DOCUMENTATION)
   endif()
 endif()
 
-# Report disk usage
-execute_step(common report-disk-usage)
+# Report Bazel command without CI-specific options
+execute_step(bazel report-bazel-command)
 
-# Report dashboard status
-execute_step(common report-status)

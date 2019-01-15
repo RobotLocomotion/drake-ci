@@ -1,8 +1,8 @@
 # -*- mode: cmake -*-
 # vi: set ft=cmake :
 
-# Copyright (c) 2016, Massachusetts Institute of Technology.
-# Copyright (c) 2016, Toyota Research Institute.
+# Copyright (c) 2019, Massachusetts Institute of Technology.
+# Copyright (c) 2019, Toyota Research Institute.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,19 +31,6 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-# Determine build result and (possibly) set status message
-if(DASHBOARD_FAILURE)
-  report_status(FAILURE "FAILURE DURING %STEPS%")
-else()
-  if(DASHBOARD_UNSTABLE)
-    report_status(UNSTABLE "UNSTABLE DUE TO %STEPS% FAILURES")
-  else()
-    file(WRITE "${DASHBOARD_WORKSPACE}/RESULT" "SUCCESS")
-  endif()
-endif()
-
-# Report build result and CDash links
-notice(
-  "CTest Result: ${DASHBOARD_MESSAGE}"
-  ${DASHBOARD_CDASH_URL_MESSAGES}
-)
+set(local_build_command
+  "${DASHBOARD_BAZEL_COMMAND} test ${DASHBOARD_BAZEL_BUILD_OPTIONS} ${DASHBOARD_BAZEL_TEST_OPTIONS} ...")
+notice("Bazel Command: ${local_build_command}")
