@@ -75,7 +75,9 @@ if(PROVISION)
 
     message(STATUS "Updating and upgrading Homebrew...")
     execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "update" "--force")
+    execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "pin" "cmake")
     execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "upgrade" "--force" "--ignore-pinned")
+    execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "unpin" "cmake")
     execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "cleanup" "-s")
 
     message(STATUS "Removing pip cache directory...")
