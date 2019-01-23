@@ -220,6 +220,11 @@ if(DEFINED ENV{SSH_PRIVATE_KEY_FILE})
   else()
     set(PROVISION OFF)
   endif()
+
+  string(REGEX MATCH "^linux-xenial-gcc-bazel-(continuous|experimental|nightly|weekly)-debug$" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
+  if(REGEX_MATCH_RESULT)
+    set(REMOTE_CACHE ON)
+  endif()
 else()
   # Old Jenkins
   if(NOT DEFINED ENV{compiler})
