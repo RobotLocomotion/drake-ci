@@ -221,6 +221,11 @@ if(DEFINED ENV{SSH_PRIVATE_KEY_FILE})
     set(PROVISION OFF)
   endif()
 
+  string(REGEX MATCH "^linux-bionic-clang-bazel-(continuous|experimental|nightly|weekly)-leak-sanitizer$" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
+  if(REGEX_MATCH_RESULT)
+    set(REMOTE_CACHE ON)
+  endif()
+
   string(REGEX MATCH "^linux-xenial-gcc-bazel-(continuous|experimental|nightly|weekly)-debug$" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
   if(REGEX_MATCH_RESULT)
     set(REMOTE_CACHE ON)
