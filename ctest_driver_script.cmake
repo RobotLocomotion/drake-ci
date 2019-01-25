@@ -35,28 +35,20 @@
 #
 # Variables:
 #
-#   ENV{BUILD_ID}         optional    value of Jenkins BUILD_ID
-#   ENV{GIT_COMMIT}       optional    value of Jenkins GIT_COMMIT
-#   ENV{JOB_NAME}         optional    value of Jenkins JOB_NAME
-#   ENV{NODE_NAME}        optional    value of Jenkins NODE_NAME
-#   ENV{WORKSPACE}        required    value of Jenkins WORKSPACE
-#   ENV{compiler}         optional    "clang" | "gcc"
-#   ENV{coverage}         optional    boolean
-#   ENV{debug}            optional    boolean
-#   ENV{documentation}    optional    boolean | "publish"
-#   ENV{everything}       optional    boolean
-#   ENV{generator}        optional    "bazel" | "make"
-#   ENV{ghprbPullId}      optional    value for CTEST_CHANGE_ID
-#   ENV{gurobi}           optional    boolean
-#   ENV{matlab}           optional    boolean
-#   ENV{memcheck}         optional    "asan" | "lsan" | "tsan" |
-#                                     "ubsan" | "valgrind"
-#   ENV{mosek}            optional    boolean
-#   ENV{package}          optional    boolean
-#   ENV{provision}        optional    boolean
-#   ENV{remote_cache}     optional    boolean
-#   ENV{snopt}            optional    boolean
-#   ENV{track}            optional    "continuous" | "experimental" | "nightly"
+#   ENV{BUILD_ID}              optional
+#   ENV{CHANGE_ID}             optional
+#   ENV{CHANGE_TITLE}          optional
+#   ENV{CHANGE_URL}            optional
+#   ENV{ghprbPullId}           optional
+#   ENV{ghprbPullLink}         optional
+#   ENV{ghprbPullTitle}        optional
+#   ENV{GIT_COMMIT}            optional
+#   ENV{HOME}                  required
+#   ENV{JOB_NAME}              required
+#   ENV{NODE_NAME}             required
+#   ENV{SSH_PRIVATE_KEY_FILE}  optional
+#   ENV{USER}                  required
+#   ENV{WORKSPACE}             required
 
 cmake_minimum_required(VERSION 3.6)
 

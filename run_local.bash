@@ -32,22 +32,9 @@
 
 set -euxo pipefail
 
-export compiler=clang
-export coverage=false
-export debug=false
-export documentation=false
-export everything=false
-export generator=bazel
-export matlab=false
-export package=false
-export provision=false
-export snopt=false
-export track=experimental
-
 export BUILD_ID="$(date -u +'%y%j.%H.%M')"
 export JOB_NAME="unix-${compiler}-experimental"
 export NODE_NAME=$(hostname -s)
 export WORKSPACE="${HOME}/workspace/${JOB_NAME}"
-export GIT_COMMIT=""
 
 source "${BASH_SOURCE%/*}/ctest_driver_script_wrapper.bash"
