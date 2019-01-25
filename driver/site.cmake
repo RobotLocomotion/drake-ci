@@ -41,23 +41,6 @@ else()
 endif()
 set(CTEST_SITE "${DASHBOARD_NODE_NAME}")
 
-# Set build name
-if(TRACK STREQUAL "experimental")
-  if(DEBUG)
-    string(REGEX MATCH  "-debug$" STRING_REGEX_MATCH_OUTPUT_VARIABLE
-      "${DASHBOARD_JOB_NAME}")
-    if(NOT STRING_REGEX_MATCH_OUTPUT_VARIABLE)
-      set(DASHBOARD_JOB_NAME "${DASHBOARD_JOB_NAME}-debug")
-    endif()
-  else()
-    string(REGEX MATCH  "-release$" STRING_REGEX_MATCH_OUTPUT_VARIABLE
-      "${DASHBOARD_JOB_NAME}")
-    if(NOT STRING_REGEX_MATCH_OUTPUT_VARIABLE)
-      set(DASHBOARD_JOB_NAME "${DASHBOARD_JOB_NAME}-release")
-    endif()
-  endif()
-endif()
-
 # set model and track for submission
 set(DASHBOARD_MODEL "Experimental")
 if(TRACK STREQUAL "continuous")
