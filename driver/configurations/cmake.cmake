@@ -87,9 +87,16 @@ else()
   set(DASHBOARD_WITH_ROBOTLOCOMOTION_SNOPT OFF)
 endif()
 
+if(VERBOSE)
+  set(DASHBOARD_VERBOSE_MAKEFILE ON)
+else()
+  set(DASHBOARD_VERBOSE_MAKEFILE OFF)
+endif()
+
 cache_flag(COLOR_MAKEFILE BOOL)
 cache_flag(CXX_FLAGS STRING)
 cache_flag(INSTALL_PREFIX PATH)
+cache_flag(VERBOSE_MAKEFILE BOOL)
 cache_append(WITH_GUROBI BOOL ${DASHBOARD_WITH_GUROBI})
 cache_append(WITH_MATLAB BOOL ${DASHBOARD_WITH_MATLAB})
 cache_append(WITH_MOSEK BOOL ${DASHBOARD_WITH_MOSEK})
@@ -128,6 +135,7 @@ report_configuration("
   ==================================== ENV
   CC
   CXX
+  DISPLAY
   TERM
   ==================================== >DASHBOARD_
   UNIX
@@ -140,6 +148,7 @@ report_configuration("
   COLOR_MAKEFILE
   CXX_FLAGS
   INSTALL_PREFIX
+  VERBOSE_MAKEFILE
   ====================================
   CTEST_BUILD_NAME(DASHBOARD_JOB_NAME)
   CTEST_BINARY_DIRECTORY

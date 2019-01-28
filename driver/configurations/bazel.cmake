@@ -220,11 +220,17 @@ if(MEMCHECK)
   endif()
 endif()
 
+if(VERBOSE)
+    set(DASHBOARD_BAZEL_BUILD_OPTIONS
+      "${DASHBOARD_BAZEL_BUILD_OPTIONS} --subcommands")
+endif()
+
 # Report build configuration
 report_configuration("
   ==================================== ENV
   CC
   CXX
+  DISPLAY
   TERM
   ==================================== >DASHBOARD_
   UNIX
