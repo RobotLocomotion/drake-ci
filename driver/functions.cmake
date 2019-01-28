@@ -294,7 +294,7 @@ endfunction()
 function(begin_stage)
   cmake_parse_arguments("_bs"
     ""
-    "URL_NAME;BUILD_NAME;PROJECT_NAME"
+    "BUILD_NAME;PROJECT_NAME"
     ""
     ${ARGN})
 
@@ -308,23 +308,9 @@ function(begin_stage)
   set(CTEST_DROP_SITE_CDASH ON)
 
   # Prepare message to report CDash URL to Jenkins
-  if(DEFINED _bs_URL_NAME)
-    set(_preamble "CDash ${_bs_URL_NAME} URL")
-  else()
-    set(_preamble "CDash URL")
-  endif()
-
-  if(NOT DASHBOARD_CDASH_URL_MESSAGES MATCHES "${_preamble}")
-    if(DASHBOARD_LABEL)
-      set(_url
-        "https://${DASHBOARD_CDASH_SERVER}/index.php?project=${_bs_PROJECT_NAME}&showfilters=1&filtercount=2&showfilters=1&filtercombine=and&field1=label&compare1=61&value1=${DASHBOARD_LABEL}&field2=buildstarttime&compare2=84&value2=now")
-      file(WRITE "${DASHBOARD_WORKSPACE}/CDASH" "${_url}")
-      set(_url_message "${_preamble}: ${_url}")
-    else()
-      set(_url_message "${_preamble}:")
-    endif()
-    set(DASHBOARD_CDASH_URL_MESSAGES
-      ${DASHBOARD_CDASH_URL_MESSAGES} ${_url_message}
+  if(DASHBOARD_LABEL)
+    set(DASHBOARD_CDASH_URL
+      "https://${DASHBOARD_CDASH_SERVER}/index.php?project=${_bs_PROJECT_NAME}&showfilters=1&filtercount=2&showfilters=1&filtercombine=and&field1=label&compare1=61&value1=${DASHBOARD_LABEL}&field2=buildstarttime&compare2=84&value2=now"
       PARENT_SCOPE)
   endif()
 
