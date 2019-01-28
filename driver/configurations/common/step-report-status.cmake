@@ -43,7 +43,10 @@ else()
 endif()
 
 # Report build result and CDash links
+if (DASHBOARD_CDASH_URL)
+  file(WRITE "${DASHBOARD_WORKSPACE}/CDASH" "${DASHBOARD_CDASH_URL}")
+endif()
 notice(
   "CTest Result: ${DASHBOARD_MESSAGE}"
-  ${DASHBOARD_CDASH_URL_MESSAGES}
+  "CDash URL: ${DASHBOARD_CDASH_URL}"
 )
