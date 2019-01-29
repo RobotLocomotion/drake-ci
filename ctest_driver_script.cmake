@@ -125,11 +125,11 @@ foreach(_file ${DASHBOARD_TEMPORARY_FILES})
   file(REMOVE_RECURSE ${${_file}})
 endforeach()
 
-# Report any failures and set return value
+# Report dashboard status
+execute_step(common report-status)
+
+# Finally, report any failures and set return value
 if(DASHBOARD_FAILURE)
   message(FATAL_ERROR
     "*** Return value set to NON-ZERO due to failure during build")
 endif()
-
-# Finally, report dashboard status
-execute_step(common report-status)
