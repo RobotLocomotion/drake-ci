@@ -120,6 +120,8 @@ if(REMOTE_CACHE)
       "build --experimental_guard_against_concurrent_changes\n"
       "build --remote_http_cache=${DASHBOARD_REMOTE_HTTP_CACHE_URL}\n"
       "build --remote_local_fallback\n"
+      "build --remote_local_fallback_strategy=sandboxed\n"
+      "build --remote_max_connections=128\n"
       "build --remote_timeout=120\n")
     if(DASHBOARD_TRACK STREQUAL "Nightly")
       file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
