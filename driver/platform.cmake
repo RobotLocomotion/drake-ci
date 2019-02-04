@@ -79,6 +79,7 @@ if(PROVISION)
     execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "upgrade" "--force" "--ignore-pinned")
     execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "unpin" "cmake")
     execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "cleanup" "-s")
+    set(ENV{HOMEBREW_NO_INSTALL_CLEANUP} 1)
 
     message(STATUS "Removing pip cache directory...")
     file(REMOVE_RECURSE "$ENV{HOME}/Library/Caches/pip")
