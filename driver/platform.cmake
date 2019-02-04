@@ -77,6 +77,7 @@ if(PROVISION)
     execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "update" "--force")
     execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "pin" "cmake")
     execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "upgrade" "--force" "--ignore-pinned")
+    execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "unpin" "cmake")
     execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "cleanup" "-s")
 
     message(STATUS "Removing pip cache directory...")
@@ -104,7 +105,6 @@ if(PROVISION)
 endif()
 
 if(APPLE)
-  execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "unpin" "cmake")
   execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "list" "--versions")
   execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "cask" "list" "--versions")
 
