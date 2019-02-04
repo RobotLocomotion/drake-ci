@@ -254,8 +254,45 @@ report_configuration("
   ====================================
   ")
 
+if(PACKAGE)
+  message(STATUS "Creating package output directory...")
+  set(DASHBOARD_PACKAGE_OUTPUT_DIRECTORY "/opt/drake")
+  execute_process(COMMAND sudo "${CMAKE_COMMAND}" -E make_directory "${DASHBOARD_PACKAGE_OUTPUT_DIRECTORY}"
+    RESULT_VARIABLE MAKE_DIRECTORY_RESULT_VARIABLE)
+  if(NOT MAKE_DIRECTORY_RESULT_VARIABLE EQUAL 0)
+    fatal("creation of package output directory was not successful")
+  endif()
+  list(APPEND DASHBOARD_TEMPORARY_FILES DASHBOARD_PACKAGE_OUTPUT_DIRECTORY)
+  execute_process(COMMAND sudo chmod 0777 "${DASHBOARD_PACKAGE_OUTPUT_DIRECTORY}"
+    RESULT_VARIABLE CHMOD_RESULT_VARIABLE)
+  if(NOT CHMOD_RESULT_VARIABLE EQUAL 0)
+    fatal("setting permissions on package output directory was not successful")
+  endif()
+endif()
+
 # Run the build
 execute_step(bazel build)
+
+if(PACKAGE AND NOT DISTRIBUTION STREQUAL "xenial")
+  execute_process(COMMAND "${DASHBOARD_BAZEL_COMMAND}" ${DASHBOARD_BAZEL_STARTUP_OPTIONS} clean --expunge)
+  file(REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
+  file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
+
+  string(REPLACE "packaging" "python3-packaging" DASHBOARD_JOB_NAME "${DASHBOARD_JOB_NAME}")
+  set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=python3")
+
+  report_configuration("
+  ==================================== >DASHBOARD_
+  BAZEL_COMMAND
+  BAZEL_VERSION
+  BAZEL_STARTUP_OPTIONS
+  BAZEL_BUILD_OPTIONS
+  BAZEL_TEST_OPTIONS
+  ====================================
+  ")
+
+  execute_step(bazel build)
+endif()
 
 # Determine build result
 if(NOT DASHBOARD_FAILURE AND NOT DASHBOARD_UNSTABLE)
@@ -268,6 +305,11 @@ if(DOCUMENTATION)
   if(DOCUMENTATION STREQUAL "publish")
     execute_step(bazel publish-documentation)
   endif()
+endif()
+
+if(PACKAGE)
+  execute_step(bazel create-package-archive)
+  execute_step(bazel upload-package-archive)
 endif()
 
 # Report Bazel command without CI-specific options

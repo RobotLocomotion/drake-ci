@@ -32,9 +32,11 @@
 
 set -euxo pipefail
 
+export WORKSPACE="$(pwd)"
+
 export BUILD_ID="$(date -u +'%y%j.%H.%M')"
-export JOB_NAME="unix-${compiler}-experimental"
-export NODE_NAME=$(hostname -s)
-export WORKSPACE="${HOME}/workspace/${JOB_NAME}"
+export GIT_COMMIT="$(git --git-dir=${WORKSPACE}/src rev-parse HEAD)"
+export JOB_NAME="linux-bionic-gcc-bazel-experimental-release"
+export NODE_NAME="$(hostname -s)"
 
 source "${BASH_SOURCE%/*}/ctest_driver_script_wrapper.bash"
