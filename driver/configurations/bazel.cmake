@@ -174,6 +174,8 @@ if(REMOTE_CACHE)
 
   if(DASHBOARD_TRACK STREQUAL "Nightly")
     set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --noremote_accept_cached")
+  elseif(DASHBOARD_TRACK STREQUAL "Continuous" AND DEBUG)
+    set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --noremote_accept_cached")
   elseif(DASHBOARD_TRACK STREQUAL "Experimental")
     set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --noremote_upload_local_results")
   endif()
