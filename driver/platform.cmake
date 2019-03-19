@@ -84,9 +84,7 @@ if(PROVISION)
     message(STATUS "Removing pip cache directory...")
     file(REMOVE_RECURSE "$ENV{HOME}/Library/Caches/pip")
   else()
-    string(TOLOWER
-      "${DASHBOARD_UNIX_DISTRIBUTION}/${DASHBOARD_UNIX_DISTRIBUTION_VERSION}"
-      PROVISION_DIR)
+    string(TOLOWER "${DASHBOARD_UNIX_DISTRIBUTION}" PROVISION_DIR)
     set(PROVISION_SUDO "sudo")
   endif()
 
