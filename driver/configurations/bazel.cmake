@@ -44,11 +44,14 @@ if(NOT DASHBOARD_BAZEL_COMMAND)
 endif()
 
 # Set bazel options
-set(DASHBOARD_BAZEL_STARTUP_OPTIONS
+set(DASHBOARD_BAZEL_STARTUP_OPTIONS)
+set(DASHBOARD_BAZEL_STARTUP_OPTIONS_CI
   "--output_user_root=${CTEST_BINARY_DIRECTORY}")
 
 # Extract the version. Usually of the form x.y.z-*.
-execute_process(COMMAND ${DASHBOARD_BAZEL_COMMAND} ${DASHBOARD_BAZEL_STARTUP_OPTIONS} version
+set(VERSION_ARGS "${DASHBOARD_BAZEL_STARTUP_OPTIONS} ${DASHBOARD_BAZEL_STARTUP_OPTIONS_CI} version")
+separate_arguments(VERSION_ARGS_LIST UNIX_COMMAND "${VERSION_ARGS}")
+execute_process(COMMAND ${DASHBOARD_BAZEL_COMMAND} ${VERSION_ARGS_LIST}
   RESULT_VARIABLE DASHBOARD_BAZEL_VERSION_RESULT_VARIABLE
   OUTPUT_VARIABLE DASHBOARD_BAZEL_VERSION_OUTPUT_VARIABLE
   ERROR_QUIET
@@ -65,7 +68,8 @@ else()
   fatal("could not determine bazel version")
 endif()
 
-set(DASHBOARD_BAZEL_BUILD_OPTIONS "--keep_going --action_env=GIT_SSH --announce_rc --compilation_mode")
+set(DASHBOARD_BAZEL_BUILD_OPTIONS "--compilation_mode")
+set(DASHBOARD_BAZEL_BUILD_OPTIONS_CI "--keep_going --action_env=GIT_SSH --announce_rc")
 
 if(DEBUG)
   set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS}=dbg")
@@ -75,34 +79,22 @@ endif()
 
 if(DEFINED ENV{TERM})
   if(COMPILER STREQUAL "clang")
-    set(DASHBOARD_BAZEL_BUILD_OPTIONS "--copt=-fcolor-diagnostics ${DASHBOARD_BAZEL_BUILD_OPTIONS}")
+    set(DASHBOARD_BAZEL_BUILD_OPTIONS_CI "--copt=-fcolor-diagnostics ${DASHBOARD_BAZEL_BUILD_OPTIONS_CI}")
   elseif(COMPILER STREQUAL "gcc")
-    set(DASHBOARD_BAZEL_BUILD_OPTIONS "--copt=-fdiagnostics-color=always ${DASHBOARD_BAZEL_BUILD_OPTIONS}")
+    set(DASHBOARD_BAZEL_BUILD_OPTIONS_CI "--copt=-fdiagnostics-color=always ${DASHBOARD_BAZEL_BUILD_OPTIONS_CI}")
   endif()
-  set(DASHBOARD_BAZEL_BUILD_OPTIONS "--color=yes ${DASHBOARD_BAZEL_BUILD_OPTIONS}")
+  set(DASHBOARD_BAZEL_BUILD_OPTIONS_CI "--color=yes ${DASHBOARD_BAZEL_BUILD_OPTIONS_CI}")
 endif()
 
 if(NOT APPLE)
-  if(EXISTS "${CTEST_SOURCE_DIRECTORY}/tools/cc_toolchain/CROSSTOOL")
-    if(COMPILER STREQUAL "clang")
-      set(DASHBOARD_BAZEL_BUILD_OPTIONS
-        "${DASHBOARD_BAZEL_BUILD_OPTIONS} --compiler=clang${DASHBOARD_CLANG_COMPILER_SUFFIX}")
-    elseif(COMPILER STREQUAL "gcc")
-      set(DASHBOARD_BAZEL_BUILD_OPTIONS
-        "${DASHBOARD_BAZEL_BUILD_OPTIONS} --compiler=gcc${DASHBOARD_GNU_COMPILER_SUFFIX}")
-    else()
-      fatal("unknown compiler '${COMPILER}'")
-    endif()
+  if(COMPILER STREQUAL "clang")
+    set(ENV{CC} "clang${DASHBOARD_CLANG_COMPILER_SUFFIX}")
+    set(ENV{CXX} "clang++${DASHBOARD_CLANG_COMPILER_SUFFIX}")
+  elseif(COMPILER STREQUAL "gcc")
+    set(ENV{CC} "gcc${DASHBOARD_GNU_COMPILER_SUFFIX}")
+    set(ENV{CXX} "g++${DASHBOARD_GNU_COMPILER_SUFFIX}")
   else()
-    if(COMPILER STREQUAL "clang")
-      set(ENV{CC} "clang${DASHBOARD_CLANG_COMPILER_SUFFIX}")
-      set(ENV{CXX} "clang++${DASHBOARD_CLANG_COMPILER_SUFFIX}")
-    elseif(COMPILER STREQUAL "gcc")
-      set(ENV{CC} "gcc${DASHBOARD_GNU_COMPILER_SUFFIX}")
-      set(ENV{CXX} "g++${DASHBOARD_GNU_COMPILER_SUFFIX}")
-    else()
-      fatal("unknown compiler '${COMPILER}'")
-    endif()
+    fatal("unknown compiler '${COMPILER}'")
   endif()
 endif()
 
@@ -112,7 +104,7 @@ else()
   set(DASHBOARD_JOBS 1)
 endif()
 
-set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --jobs=${DASHBOARD_JOBS}")
+set(DASHBOARD_BAZEL_BUILD_OPTIONS_CI "${DASHBOARD_BAZEL_BUILD_OPTIONS_CI} --jobs=${DASHBOARD_JOBS}")
 
 include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
 include(${DASHBOARD_DRIVER_DIR}/configurations/gurobi.cmake)
@@ -145,27 +137,27 @@ if(REMOTE_CACHE)
     STATUS DASHBOARD_DOWNLOAD_STATUS)
   list(GET DASHBOARD_DOWNLOAD_STATUS 0 DASHBOARD_DOWNLOAD_STATUS_0)
   if(DASHBOARD_DOWNLOAD_STATUS_0 EQUAL 0)
-    set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --experimental_guard_against_concurrent_changes --remote_http_cache=${DASHBOARD_REMOTE_HTTP_CACHE_URL} --remote_local_fallback --remote_local_fallback_strategy=sandboxed")
+    set(DASHBOARD_BAZEL_BUILD_OPTIONS_CI "${DASHBOARD_BAZEL_BUILD_OPTIONS_CI} --experimental_guard_against_concurrent_changes --remote_http_cache=${DASHBOARD_REMOTE_HTTP_CACHE_URL} --remote_local_fallback --remote_local_fallback_strategy=sandboxed")
     if(DEBUG)
-      set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --experimental_remote_retry_max_attempts=1 --remote_max_connections=64")
+      set(DASHBOARD_BAZEL_BUILD_OPTIONS_CI "${DASHBOARD_BAZEL_BUILD_OPTIONS_CI} --experimental_remote_retry_max_attempts=1 --remote_max_connections=64")
       if(DASHBOARD_BAZEL_VERSION VERSION_LESS 0.23)
-        set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --remote_timeout=1")
+        set(DASHBOARD_BAZEL_BUILD_OPTIONS_CI "${DASHBOARD_BAZEL_BUILD_OPTIONS_CI} --remote_timeout=1")
       else()
         if(APPLE)
-          set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --remote_timeout=360")
+          set(DASHBOARD_BAZEL_BUILD_OPTIONS_CI "${DASHBOARD_BAZEL_BUILD_OPTIONS_CI} --remote_timeout=360")
         else()
-          set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --remote_timeout=240")
+          set(DASHBOARD_BAZEL_BUILD_OPTIONS_CI "${DASHBOARD_BAZEL_BUILD_OPTIONS_CI} --remote_timeout=240")
         endif()
       endif()
     else()
-      set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --remote_max_connections=128")
+      set(DASHBOARD_BAZEL_BUILD_OPTIONS_CI "${DASHBOARD_BAZEL_BUILD_OPTIONS_CI} --remote_max_connections=128")
       if(DASHBOARD_BAZEL_VERSION VERSION_LESS 0.23)
-        set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --remote_timeout=1")
+        set(DASHBOARD_BAZEL_BUILD_OPTIONS_CI "${DASHBOARD_BAZEL_BUILD_OPTIONS_CI} --remote_timeout=1")
       else()
         if(APPLE)
-          set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --remote_timeout=180")
+          set(DASHBOARD_BAZEL_BUILD_OPTIONS_CI "${DASHBOARD_BAZEL_BUILD_OPTIONS_CI} --remote_timeout=180")
         else()
-          set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --remote_timeout=120")
+          set(DASHBOARD_BAZEL_BUILD_OPTIONS_CI "${DASHBOARD_BAZEL_BUILD_OPTIONS_CI} --remote_timeout=120")
         endif()
       endif()
     endif()
@@ -174,15 +166,16 @@ if(REMOTE_CACHE)
   endif()
 
   if(DASHBOARD_TRACK STREQUAL "Nightly")
-    set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --noremote_accept_cached")
+    set(DASHBOARD_BAZEL_BUILD_OPTIONS_CI "${DASHBOARD_BAZEL_BUILD_OPTIONS_CI} --noremote_accept_cached")
   elseif(DASHBOARD_TRACK STREQUAL "Continuous" AND DEBUG)
-    set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --noremote_accept_cached")
+    set(DASHBOARD_BAZEL_BUILD_OPTIONS_CI "${DASHBOARD_BAZEL_BUILD_OPTIONS_CI} --noremote_accept_cached")
   elseif(DASHBOARD_TRACK STREQUAL "Experimental")
-    set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --noremote_upload_local_results")
+    set(DASHBOARD_BAZEL_BUILD_OPTIONS_CI "${DASHBOARD_BAZEL_BUILD_OPTIONS_CI} --noremote_upload_local_results")
   endif()
 endif()
 
-set(DASHBOARD_BAZEL_TEST_OPTIONS "--test_summary=short")
+set(DASHBOARD_BAZEL_TEST_OPTIONS)
+set(DASHBOARD_BAZEL_TEST_OPTIONS_CI "--test_summary=short")
 
 if(APPLE)
   set(DASHBOARD_BAZEL_TEST_OPTIONS "${DASHBOARD_BAZEL_TEST_OPTIONS} --test_timeout=300,1500,4500,-1")
@@ -229,8 +222,8 @@ if(MEMCHECK)
 endif()
 
 if(VERBOSE)
-    set(DASHBOARD_BAZEL_BUILD_OPTIONS
-      "${DASHBOARD_BAZEL_BUILD_OPTIONS} --subcommands")
+    set(DASHBOARD_BAZEL_BUILD_OPTIONS_CI
+      "${DASHBOARD_BAZEL_BUILD_OPTIONS_CI} --subcommands")
 endif()
 
 # Report build configuration
@@ -285,7 +278,7 @@ endif()
 execute_step(bazel build)
 
 if(PACKAGE AND NOT DISTRIBUTION STREQUAL "xenial")
-  execute_process(COMMAND "${DASHBOARD_BAZEL_COMMAND}" ${DASHBOARD_BAZEL_STARTUP_OPTIONS} clean --expunge)
+  execute_process(COMMAND "${DASHBOARD_BAZEL_COMMAND}" ${DASHBOARD_BAZEL_STARTUP_OPTIONS_CI} clean --expunge)
   file(REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
   file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
 
@@ -297,8 +290,11 @@ if(PACKAGE AND NOT DISTRIBUTION STREQUAL "xenial")
   BAZEL_COMMAND
   BAZEL_VERSION
   BAZEL_STARTUP_OPTIONS
+  BAZEL_STARTUP_OPTIONS_CI
   BAZEL_BUILD_OPTIONS
+  BAZEL_BUILD_OPTIONS_CI
   BAZEL_TEST_OPTIONS
+  BAZEL_TEST_OPTIONS_CI
   ====================================
   ")
 
