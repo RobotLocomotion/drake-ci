@@ -254,6 +254,8 @@ report_configuration("
   CC
   CXX
   DISPLAY
+  GUROBI_PATH
+  SNOPT_PATH
   TERM
   ==================================== >DASHBOARD_
   UNIX
