@@ -31,11 +31,20 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-if(APPLE)
-  set(GRB_LICENSE_FILE "/Library/gurobi811/gurobi.lic")
+if(CTEST_CHANGE_ID EQUAL 11142)
+  if(APPLE)
+    set(GRB_LICENSE_FILE "/Library/gurobi811/gurobi.lic")
+  else()
+    set(ENV{GUROBI_PATH} "/opt/gurobi811/linux64")
+    set(GRB_LICENSE_FILE "/opt/gurobi811/gurobi.lic")
+  endif()
 else()
-  set(ENV{GUROBI_PATH} "/opt/gurobi811/linux64")
-  set(GRB_LICENSE_FILE "/opt/gurobi811/gurobi.lic")
+  if(APPLE)
+    set(GRB_LICENSE_FILE "/Library/gurobi800/gurobi.lic")
+  else()
+    set(ENV{GUROBI_PATH} "/opt/gurobi800/linux64")
+    set(GRB_LICENSE_FILE "/opt/gurobi800/gurobi.lic")
+  endif()
 endif()
 
 if(GUROBI AND NOT EXISTS "${GRB_LICENSE_FILE}")
