@@ -239,6 +239,10 @@ if(MEMCHECK)
   endif()
 endif()
 
+if(COVERAGE OR MEMCHECK)
+  set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --build_tests_only")
+endif()
+
 if(VERBOSE)
     set(DASHBOARD_BAZEL_BUILD_OPTIONS_CI
       "${DASHBOARD_BAZEL_BUILD_OPTIONS_CI} --subcommands")
