@@ -172,6 +172,8 @@ report_configuration("
   WITH_MATLAB
   WITH_MOSEK
   WITH_ROBOTLOCOMOTION_SNOPT
+  ==================================== >DASHBOARD_
+  GIT_COMMIT
   ====================================
   ")
 

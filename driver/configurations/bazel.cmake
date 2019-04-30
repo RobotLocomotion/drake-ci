@@ -278,6 +278,8 @@ report_configuration("
   BAZEL_BUILD_OPTIONS_CI
   BAZEL_TEST_OPTIONS
   BAZEL_TEST_OPTIONS_CI
+  ==================================== >DASHBOARD_
+  GIT_COMMIT
   ====================================
   ")
 
