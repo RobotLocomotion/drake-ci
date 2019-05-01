@@ -174,6 +174,7 @@ report_configuration("
   WITH_ROBOTLOCOMOTION_SNOPT
   ==================================== >DASHBOARD_
   GIT_COMMIT
+  ACTUAL_GIT_COMMIT
   ====================================
   ")
 

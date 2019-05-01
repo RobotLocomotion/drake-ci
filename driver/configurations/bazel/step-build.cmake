@@ -47,6 +47,26 @@ if(DASHBOARD_UPDATE_RETURN_VALUE EQUAL -1 OR DASHBOARD_UPDATE_CAPTURE_CMAKE_ERRO
   message(WARNING "*** CTest update step was not successful")
 endif()
 
+if(DASHBOARD_ACTUAL_GIT_COMMIT)
+  find_program(DASHBOARD_SED_COMMAND NAMES "sed")
+  if(DASHBOARD_SED_COMMAND)
+    file(STRINGS "${CTEST_BINARY_DIRECTORY}/Testing/TAG" DASHBOARD_TAG)
+    list(GET DASHBOARD_TAG 0 DASHBOARD_BUILD_STAMP)
+    if(APPLE)
+      set(DASHBOARD_SED_INPLACE "-i .bak")
+    else()
+      set(DASHBOARD_SED_INPLACE "-i.bak")
+    endif()
+    execute_process(COMMAND "${DASHBOARD_SED_COMMAND}" "${DASHBOARD_SED_INPLACE}" "s/${DASHBOARD_GIT_COMMIT}/${DASHBOARD_ACTUAL_GIT_COMMIT}/g" "${CTEST_BINARY_DIRECTORY}/Testing/${DASHBOARD_BUILD_STAMP}/Update.xml"
+      RESULT_VARIABLE SED_RESULT_VARIABLE)
+    if(NOT SED_RESULT_VARIABLE EQUAL 0)
+      message(WARNING "*** sed substitution was NOT successful")
+    endif()
+  else()
+    message(WARNING "*** sed was NOT found")
+  endif()
+endif()
+
 set(DASHBOARD_BUILD_EVENT_JSON_FILE "${CTEST_BINARY_DIRECTORY}/BUILD.JSON")
 set(DASHBOARD_BUILD_EVENT_OPTION "--build_event_json_file=${DASHBOARD_BUILD_EVENT_JSON_FILE}")
 

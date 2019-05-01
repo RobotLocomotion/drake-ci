@@ -58,7 +58,7 @@ if(DEFINED ENV{BUILD_ID})
   set_property(GLOBAL PROPERTY Label "${DASHBOARD_LABEL}")
 else()
   message(WARNING "*** ENV{BUILD_ID} was not set")
-  set(DASHBOARD_LABEL "")
+  set(DASHBOARD_LABEL)
 endif()
 
 # Set git commit
@@ -66,8 +66,10 @@ if(DEFINED ENV{GIT_COMMIT})
   string(STRIP "$ENV{GIT_COMMIT}" DASHBOARD_GIT_COMMIT)
 else()
   message(WARNING "*** ENV{GIT_COMMIT} was not set")
-  set(DASHBOARD_GIT_COMMIT "")
+  set(DASHBOARD_GIT_COMMIT)
 endif()
+
+set(DASHBOARD_ACTUAL_GIT_COMMIT)
 
 # Set pull request id
 if(DEFINED ENV{CHANGE_ID})
@@ -78,6 +80,7 @@ elseif(DEFINED ENV{ghprbPullId})
   string(STRIP "$ENV{ghprbPullId}" CTEST_CHANGE_ID)
   string(STRIP "$ENV{ghprbPullTitle}" DASHBOARD_CHANGE_TITLE)
   string(STRIP "$ENV{ghprbPullLink}" DASHBOARD_CHANGE_URL)
+  string(STRIP "$ENV{ghprbActualCommit}" DASHBOARD_ACTUAL_GIT_COMMIT)
 endif()
 if(CTEST_CHANGE_ID)
   set(DASHBOARD_JOB_NAME "${DASHBOARD_JOB_NAME}-${CTEST_CHANGE_ID}")

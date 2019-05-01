@@ -280,6 +280,7 @@ report_configuration("
   BAZEL_TEST_OPTIONS_CI
   ==================================== >DASHBOARD_
   GIT_COMMIT
+  ACTUAL_GIT_COMMIT
   ====================================
   ")
 
