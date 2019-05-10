@@ -32,11 +32,20 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-if(APPLE)
-  set(GRB_LICENSE_FILE "/Library/gurobi801/gurobi.lic")
+if(CTEST_CHANGE_ID EQUAL 11269)
+  if(APPLE)
+    set(GRB_LICENSE_FILE "/Library/gurobi801/gurobi.lic")
+  else()
+    set(ENV{GUROBI_PATH} "/opt/gurobi801/linux64")
+    set(GRB_LICENSE_FILE "/opt/gurobi801/gurobi.lic")
+  endif()
 else()
-  set(ENV{GUROBI_PATH} "/opt/gurobi801/linux64")
-  set(GRB_LICENSE_FILE "/opt/gurobi801/gurobi.lic")
+  if(APPLE)
+    set(GRB_LICENSE_FILE "/Library/gurobi800/gurobi.lic")
+  else()
+    set(ENV{GUROBI_PATH} "/opt/gurobi800/linux64")
+    set(GRB_LICENSE_FILE "/opt/gurobi800/gurobi.lic")
+  endif()
 endif()
 
 if(GUROBI AND NOT EXISTS "${GRB_LICENSE_FILE}")
