@@ -36,7 +36,7 @@ if(APPLE)
   string(REGEX REPLACE "(.*)_(.*)" "\\1"
     DASHBOARD_NODE_NAME "${DASHBOARD_NODE_NAME}")
 else()
-  string(REGEX REPLACE "(.*) (.*)" "\\1"
+  string(REGEX REPLACE "(.*) - (.*) (.*)" "\\2"
     DASHBOARD_NODE_NAME "${DASHBOARD_NODE_NAME}")
 endif()
 set(CTEST_SITE "${DASHBOARD_NODE_NAME}")
