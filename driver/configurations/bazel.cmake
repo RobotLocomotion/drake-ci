@@ -119,6 +119,8 @@ if(PYTHON EQUAL 3)
   set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=python3")
 endif()
 
+set(DASHBOARD_TEST_TAG_FILTERS)
+
 if(EVERYTHING)
   set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=everything")
 elseif(GUROBI OR MOSEK OR PACKAGE OR SNOPT)
@@ -145,10 +147,69 @@ elseif(GUROBI OR MOSEK OR PACKAGE OR SNOPT)
     endif()
     list(REMOVE_ITEM DASHBOARD_TEST_TAG_FILTERS "-snopt")
   endif()
-  if(DASHBOARD_TEST_TAG_FILTERS)
-    list(JOIN DASHBOARD_TEST_TAG_FILTERS "," DASHBOARD_TEST_TAG_FILTERS_STRING)
-    set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --test_tag_filters=${DASHBOARD_TEST_TAG_FILTERS_STRING}")
+endif()
+
+if(COVERAGE)
+  if(EVERYTHING)
+    string(REPLACE
+      "--config=everything"
+      "--config=kcov_everything"
+      DASHBOARD_BAZEL_BUILD_OPTIONS
+      "${DASHBOARD_BAZEL_BUILD_OPTIONS}")
+  else()
+    set(DASHBOARD_BAZEL_BUILD_OPTIONS
+      "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=kcov")
+    if(DASHBOARD_TEST_TAG_FILTERS)
+      list(APPEND DASHBOARD_TEST_TAG_FILTERS "-no_kcov")
+    endif()
   endif()
+endif()
+
+if(MEMCHECK)
+  set(MEMCHECK_BAZEL_CONFIG "")
+  if(MEMCHECK MATCHES "(asan|address-sanitizer)")
+    set(MEMCHECK_BAZEL_CONFIG "asan")
+    if(DASHBOARD_TEST_TAG_FILTERS)
+      list(APPEND DASHBOARD_TEST_TAG_FILTERS "-no_asan" "-no_lsan")
+    endif()
+  elseif(MEMCHECK MATCHES "(lsan|leak-sanitizer)")
+    set(MEMCHECK_BAZEL_CONFIG "lsan")
+    if(DASHBOARD_TEST_TAG_FILTERS)
+      list(APPEND DASHBOARD_TEST_TAG_FILTERS "-no_lsan")
+    endif()
+  elseif(MEMCHECK MATCHES "(tsan|thread-sanitizer)")
+    set(MEMCHECK_BAZEL_CONFIG "tsan")
+    if(DASHBOARD_TEST_TAG_FILTERS)
+      list(APPEND DASHBOARD_TEST_TAG_FILTERS "-no_tsan")
+    endif()
+  elseif(MEMCHECK MATCHES "(ubsan|undefined-behavior-sanitizer)")
+    set(MEMCHECK_BAZEL_CONFIG "ubsan")
+    if(DASHBOARD_TEST_TAG_FILTERS)
+      list(APPEND DASHBOARD_TEST_TAG_FILTERS "-no_ubsan")
+    endif()
+  elseif(MEMCHECK MATCHES "(valgrind|valgrind-memcheck)")
+    set(MEMCHECK_BAZEL_CONFIG "memcheck")
+    if(DASHBOARD_TEST_TAG_FILTERS)
+      list(APPEND DASHBOARD_TEST_TAG_FILTERS "-no_memcheck")
+    endif()
+  else()
+    fatal("memcheck is invalid")
+  endif()
+  if(EVERYTHING)
+    string(REPLACE
+      "--config=everything"
+      "--config=${MEMCHECK_BAZEL_CONFIG}_everything"
+      DASHBOARD_BAZEL_BUILD_OPTIONS
+      "${DASHBOARD_BAZEL_BUILD_OPTIONS}")
+  else()
+    set(DASHBOARD_BAZEL_BUILD_OPTIONS
+      "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=${MEMCHECK_BAZEL_CONFIG}")
+  endif()
+endif()
+
+if(DASHBOARD_TEST_TAG_FILTERS)
+  list(JOIN DASHBOARD_TEST_TAG_FILTERS "," DASHBOARD_TEST_TAG_FILTERS_STRING)
+  set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --test_tag_filters=${DASHBOARD_TEST_TAG_FILTERS_STRING}")
 endif()
 
 if(REMOTE_CACHE)
@@ -201,46 +262,6 @@ set(DASHBOARD_BAZEL_TEST_OPTIONS_CI "--test_summary=short")
 
 if(APPLE)
   set(DASHBOARD_BAZEL_TEST_OPTIONS "${DASHBOARD_BAZEL_TEST_OPTIONS} --test_timeout=300,1500,4500,-1")
-endif()
-
-if(COVERAGE)
-  if(EVERYTHING)
-    string(REPLACE
-      "--config=everything"
-      "--config=kcov_everything"
-      DASHBOARD_BAZEL_BUILD_OPTIONS
-      "${DASHBOARD_BAZEL_BUILD_OPTIONS}")
-  else()
-    set(DASHBOARD_BAZEL_BUILD_OPTIONS
-      "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=kcov")
-  endif()
-endif()
-
-if(MEMCHECK)
-  set(MEMCHECK_BAZEL_CONFIG "")
-  if(MEMCHECK MATCHES "(asan|address-sanitizer)")
-    set(MEMCHECK_BAZEL_CONFIG "asan")
-  elseif(MEMCHECK MATCHES "(lsan|leak-sanitizer)")
-    set(MEMCHECK_BAZEL_CONFIG "lsan")
-  elseif(MEMCHECK MATCHES "(tsan|thread-sanitizer)")
-    set(MEMCHECK_BAZEL_CONFIG "tsan")
-  elseif(MEMCHECK MATCHES "(ubsan|undefined-behavior-sanitizer)")
-    set(MEMCHECK_BAZEL_CONFIG "ubsan")
-  elseif(MEMCHECK MATCHES "(valgrind|valgrind-memcheck)")
-    set(MEMCHECK_BAZEL_CONFIG "memcheck")
-  else()
-    fatal("memcheck is invalid")
-  endif()
-  if(EVERYTHING)
-    string(REPLACE
-      "--config=everything"
-      "--config=${MEMCHECK_BAZEL_CONFIG}_everything"
-      DASHBOARD_BAZEL_BUILD_OPTIONS
-      "${DASHBOARD_BAZEL_BUILD_OPTIONS}")
-  else()
-    set(DASHBOARD_BAZEL_BUILD_OPTIONS
-      "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=${MEMCHECK_BAZEL_CONFIG}")
-  endif()
 endif()
 
 if(VERBOSE)
