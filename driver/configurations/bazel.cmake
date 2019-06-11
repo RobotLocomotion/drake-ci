@@ -344,6 +344,10 @@ if(DOCUMENTATION)
   endif()
 endif()
 
+if(MIRROR_TO_S3 STREQUAL "publish")
+  execute_step(bazel mirror-to-s3)
+endif()
+
 if(PACKAGE)
   execute_step(bazel create-package-archive)
   execute_step(bazel upload-package-archive)
