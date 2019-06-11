@@ -111,7 +111,7 @@ include(${DASHBOARD_DRIVER_DIR}/configurations/gurobi.cmake)
 include(${DASHBOARD_DRIVER_DIR}/configurations/mosek.cmake)
 include(${DASHBOARD_DRIVER_DIR}/configurations/snopt.cmake)
 
-if(PYTHON3)
+if(PYTHON EQUAL 3)
   set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=python3")
 endif()
 
