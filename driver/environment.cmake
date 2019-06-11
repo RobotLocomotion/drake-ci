@@ -71,7 +71,7 @@ else()
 endif()
 
 if(APPLE)
-  set(DISTRIBUTION_REGEX "(high-sierra|mojave)")
+  set(DISTRIBUTION_REGEX "(high-sierra|mojave|catalina)")
 else()
   set(DISTRIBUTION_REGEX "(bionic|xenial)")
 endif()
