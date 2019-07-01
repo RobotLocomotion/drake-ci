@@ -1,0 +1,33 @@
+startup --output_user_root=@DASHBOARD_OUTPUT_USER_ROOT@
+
+build --action_env=GIT_SSH
+build --announce_rc=yes
+build --build_event_json_file=@DASHBOARD_BUILD_EVENT_JSON_FILE@
+build --color=yes
+build --copt=@DASHBOARD_COPT@
+build --experimental_scale_timeouts=@DASHBOARD_EXPERIMENTAL_SCALE_TIMEOUTS@
+@DASHBOARD_BUILD_HTTP_TIMEOUT_SCALING@
+build --host_copt=@DASHBOARD_COPT@
+build --jobs=@DASHBOARD_JOBS@
+build --keep_going=yes
+build --subcommands=@DASHBOARD_SUBCOMMANDS@
+build --test_env=GRB_LICENSE_FILE
+build --test_env=MOSEKLM_LICENSE_FILE
+
+fetch --announce_rc=yes
+fetch --build_event_json_file=@DASHBOARD_BUILD_EVENT_JSON_FILE@
+fetch --experimental_scale_timeouts=@DASHBOARD_EXPERIMENTAL_SCALE_TIMEOUTS@
+fetch --keep_going=yes
+fetch --color=yes
+@DASHBOARD_FETCH_HTTP_TIMEOUT_SCALING@
+
+query --announce_rc=yes
+query --build_event_json_file=@DASHBOARD_BUILD_EVENT_JSON_FILE@
+query --experimental_scale_timeouts=@DASHBOARD_EXPERIMENTAL_SCALE_TIMEOUTS@
+query --keep_going=yes
+query --color=yes
+@DASHBOARD_QUERY_HTTP_TIMEOUT_SCALING@
+
+test --test_summary=short
+
+try-import %workspace%/remote.bazelrc

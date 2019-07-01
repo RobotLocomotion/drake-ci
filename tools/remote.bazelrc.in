@@ -1,0 +1,9 @@
+build --experimental_guard_against_concurrent_changes=true
+build --remote_accept_cached=@DASHBOARD_REMOTE_ACCEPT_CACHED@
+build --remote_cache=@DASHBOARD_REMOTE_CACHE@
+build --remote_local_fallback=yes
+build --remote_max_connections=@DASHBOARD_REMOTE_MAX_CONNECTIONS@
+build --@DASHBOARD_REMOTE_RETRIES_COMMAND@=@DASHBOARD_REMOTE_RETRIES@
+build --remote_timeout=@DASHBOARD_REMOTE_TIMEOUT@
+build --remote_upload_local_results=@DASHBOARD_REMOTE_UPLOAD_LOCAL_RESULTS@
+build --@DASHBOARD_SPAWN_STRATEGY_COMMAND@=@DASHBOARD_SPAWN_STRATEGY@
