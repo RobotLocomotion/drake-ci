@@ -37,6 +37,4 @@ else()
   set(DASHBOARD_BAZEL_ENV "CC=$ENV{CC} CXX=$ENV{CXX}")
 endif()
 
-set(local_build_command
-  "${DASHBOARD_BAZEL_ENV} bazel ${DASHBOARD_BAZEL_STARTUP_OPTIONS} test ${DASHBOARD_BAZEL_BUILD_OPTIONS} ${DASHBOARD_BAZEL_TEST_OPTIONS} ...")
-notice("Bazel Command: ${local_build_command}")
+notice("Bazel Command: ${DASHBOARD_BAZEL_ENV} bazel ${BUILD_ARGS}")
