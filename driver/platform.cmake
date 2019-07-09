@@ -74,6 +74,7 @@ if(PROVISION)
     set(PROVISION_SUDO)
 
     message(STATUS "Updating and upgrading Homebrew...")
+    set(ENV{HOMEBREW_CURL_RETRIES} 4)
     execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "update" "--force")
     execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "pin" "cmake")
     execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "upgrade" "--force" "--ignore-pinned")
