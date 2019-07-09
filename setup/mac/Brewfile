@@ -1,0 +1,11 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+tap 'homebrew/cask-versions'
+tap 'robotlocomotion/director'
+
+brew 'awscli'
+brew 'cmake'
+
+cask 'adoptopenjdk8'
+cask 'gurobi80'

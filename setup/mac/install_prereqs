@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -euxo pipefail
+
+if [[ "${EUID}" -eq 0 ]]; then
+  echo 'ERROR: This script must NOT be run as root' >&2
+  exit 1
+fi
+
+if ! command -v brew &>/dev/null; then
+  /usr/bin/ruby -e "$(curl --fail --location --retry 4 --show-error --silent https://raw.githubusercontent.com/Homebrew/install/master/install)"
+fi
+
+export HOMEBREW_CURL_RETRIES=4
+
+brew update
+brew bundle --file="${BASH_SOURCE%/*}/Brewfile"
+brew cleanup

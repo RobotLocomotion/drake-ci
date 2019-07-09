@@ -1,0 +1,47 @@
+#!/bin/bash
+
+set -euxo pipefail
+
+if [[ "${EUID}" -ne 0 ]]; then
+  echo 'ERROR: This script must be run as root' >&2
+  exit 1
+fi
+
+echo 'APT::Acquire::Retries "4";' | tee /etc/apt/apt.conf.d/80-acquire-retries
+
+export DEBIAN_FRONTEND=noninteractive
+
+apt-get update --quiet
+trap 'rm --force --recursive /var/lib/apt/lists/*' EXIT
+
+apt-get install --assume-yes --no-install-recommends \
+  apt-transport-https \
+  awscli \
+  ca-certificates \
+  git \
+  gnupg \
+  lsb-release \
+  ntp \
+  openjdk-8-jdk-headless \
+  wget \
+  xvfb
+
+export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1
+
+wget --output-document - https://apt.kitware.com/keys/kitware-archive-latest.asc | apt-key add -
+echo "deb https://apt.kitware.com/ubuntu/ $(lsb_release --codename --short) main" | tee /etc/apt/sources.list.d/kitware.list
+
+apt-get update --quiet
+apt-get install --assume-yes --no-install-recommends \
+  cmake \
+  kitware-archive-keyring
+
+apt-key --keyring /etc/apt/trusted.gpg del C1F34CDD40CD72DA
+
+apt-get autoremove --assume-yes
+apt-get clean
+
+wget --output-file /tmp/gurobi8.0.1_linux64.tar.gz https://packages.gurobi.com/8.0/gurobi8.0.1_linux64.tar.gz
+trap 'rm --force --recursive /var/lib/apt/lists/* /tmp/gurobi8.0.1_linux64.tar.gz' EXIT
+tar --extract --file /tmp/gurobi8.0.1_linux64.tar.gz --directory /opt
+chown --recursive root:root /opt/gurobi801
