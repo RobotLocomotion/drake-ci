@@ -127,18 +127,24 @@ if(REMOTE_CACHE)
   list(GET DASHBOARD_DOWNLOAD_STATUS 0 DASHBOARD_DOWNLOAD_STATUS_0)
   if(DASHBOARD_DOWNLOAD_STATUS_0 EQUAL 0)
     file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
-      "build --experimental_guard_against_concurrent_changes\n"
-      "build --remote_http_cache=${DASHBOARD_REMOTE_HTTP_CACHE_URL}\n"
-      "build --remote_local_fallback\n"
-      "build --remote_local_fallback_strategy=sandboxed\n"
+      "build --experimental_guard_against_concurrent_changes=yes\n"
+      "build --remote_cache=${DASHBOARD_REMOTE_HTTP_CACHE_URL}\n"
+      "build --remote_local_fallback=yes\n"
       "build --remote_max_connections=128\n"
+      "build --remote_retries=4\n"
       "build --remote_timeout=120\n")
     if(DASHBOARD_TRACK STREQUAL "Nightly")
       file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
-        "build --noremote_accept_cached\n")
+        "build --remote_accept_cached=no\n"
+        "build --remote_upload_local_results=yes\n")
     elseif(DASHBOARD_TRACK STREQUAL "Experimental")
       file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
-        "build --noremote_upload_local_results\n")
+        "build --remote_accept_cached=yes\n"
+        "build --remote_upload_local_results=no\n")
+    else()
+       file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
+        "build --remote_accept_cached=yes\n"
+        "build --remote_upload_local_results=yes\n")
     endif()
   endif()
 endif()
