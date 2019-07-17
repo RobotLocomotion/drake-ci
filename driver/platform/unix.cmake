@@ -31,39 +31,6 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-# Get distribution information
-if(APPLE)
-  set(DASHBOARD_UNIX_DISTRIBUTION "Apple")
-  execute_process(COMMAND "sw_vers" "-productVersion"
-    RESULT_VARIABLE SW_VERS_RESULT_VARIABLE
-    OUTPUT_VARIABLE SW_VERS_OUTPUT_VARIABLE
-    ERROR_VARIABLE SW_VERS_ERROR_VARIABLE
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-  if(NOT SW_VERS_RESULT_VARIABLE EQUAL 0)
-    message("${SW_VERS_ERROR_VARIABLE}")
-    fatal("unable to determine platform distribution information")
-  endif()
-  if(SW_VERS_OUTPUT_VARIABLE MATCHES "([0-9]+[.][0-9]+)[.][0-9]+")
-    set(DASHBOARD_UNIX_DISTRIBUTION_VERSION "${CMAKE_MATCH_1}")
-  else()
-    fatal("unable to determine platform distribution information")
-  endif()
-elseif(EXISTS "/etc/os-release")
-  file(READ "/etc/os-release" DISTRIBUTION_INFO)
-  if(DISTRIBUTION_INFO MATCHES "(^|\n)NAME=\"?([^\n\"]+)\"?(\n|\$)")
-    set(DASHBOARD_UNIX_DISTRIBUTION "${CMAKE_MATCH_2}")
-  endif()
-  if(DISTRIBUTION_INFO MATCHES "(^|\n)VERSION=\"?([0-9]+([.][0-9]+)?)")
-    set(DASHBOARD_UNIX_DISTRIBUTION_VERSION "${CMAKE_MATCH_2}")
-  endif()
-  if(NOT DEFINED DASHBOARD_UNIX_DISTRIBUTION OR
-     NOT DEFINED DASHBOARD_UNIX_DISTRIBUTION_VERSION)
-    fatal("unable to determine platform distribution information")
-  endif()
-else()
-  fatal("unable to determine platform distribution information")
-endif()
-
 if(COVERAGE AND NOT APPLE)
   prepend_path(PATH
     /opt/kcov/35/bin

@@ -38,6 +38,7 @@ report_configuration(".38
   ==================================== >DASHBOARD_
   UNIX
   UNIX_DISTRIBUTION
+  UNIX_DISTRIBUTION_CODE_NAME
   UNIX_DISTRIBUTION_VERSION
   APPLE
   ====================================
