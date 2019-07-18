@@ -325,9 +325,8 @@ if(PACKAGE AND NOT DISTRIBUTION STREQUAL "xenial")
   execute_process(COMMAND "${DASHBOARD_BAZEL_COMMAND}" "clean" "--expunge")
   file(REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
   file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
-
-  string(REPLACE "packaging" "python3-packaging" DASHBOARD_JOB_NAME "${DASHBOARD_JOB_NAME}")
-  set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=python3")
+  string(REPLACE "packaging" "python2-packaging" DASHBOARD_JOB_NAME "${DASHBOARD_JOB_NAME}")
+  string(REPLACE "--config=python3" "--config=python2" DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS}")
 
   report_configuration("
   ==================================== >DASHBOARD_
