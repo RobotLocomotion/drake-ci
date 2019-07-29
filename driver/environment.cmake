@@ -116,7 +116,7 @@ else()
   set(DEBUG OFF)
 endif()
 
-string(REGEX MATCH "((address|leak|thread|undefined-behavior)-sanitizer|valgrind-memcheck)"
+string(REGEX MATCH "((address|leak|thread|undefined-behavior)-sanitizer|valgrind-(drd|helgrind|memcheck))"
   REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
 if(REGEX_MATCH_RESULT)
   set(DEBUG ON)
