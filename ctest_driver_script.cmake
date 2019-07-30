@@ -50,7 +50,7 @@
 #   ENV{USER}                  required
 #   ENV{WORKSPACE}             required
 
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.15)
 
 set(CTEST_RUN_CURRENT_SCRIPT OFF)  # HACK
 

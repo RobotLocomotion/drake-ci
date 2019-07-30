@@ -43,26 +43,6 @@ if(DASHBOARD_UPDATE_RETURN_VALUE EQUAL -1 OR DASHBOARD_UPDATE_CAPTURE_CMAKE_ERRO
   message(WARNING "*** CTest update step was not successful")
 endif()
 
-if(DASHBOARD_ACTUAL_GIT_COMMIT)
-  find_program(DASHBOARD_SED_COMMAND NAMES "sed")
-  if(DASHBOARD_SED_COMMAND)
-    file(STRINGS "${CTEST_BINARY_DIRECTORY}/Testing/TAG" DASHBOARD_TAG)
-    list(GET DASHBOARD_TAG 0 DASHBOARD_BUILD_STAMP)
-    if(APPLE)
-      set(DASHBOARD_SED_INPLACE "-i .bak")
-    else()
-      set(DASHBOARD_SED_INPLACE "-i.bak")
-    endif()
-    execute_process(COMMAND "${DASHBOARD_SED_COMMAND}" "${DASHBOARD_SED_INPLACE}" "s/${DASHBOARD_GIT_COMMIT}/${DASHBOARD_ACTUAL_GIT_COMMIT}/g" "${CTEST_BINARY_DIRECTORY}/Testing/${DASHBOARD_BUILD_STAMP}/Update.xml"
-      RESULT_VARIABLE SED_RESULT_VARIABLE)
-    if(NOT SED_RESULT_VARIABLE EQUAL 0)
-      message(WARNING "*** sed substitution was NOT successful")
-    endif()
-  else()
-    message(WARNING "*** sed was NOT found")
-  endif()
-endif()
-
 file(WRITE "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt" "${CACHE_CONTENT}")
 
 ctest_configure(BUILD "${CTEST_BINARY_DIRECTORY}"
@@ -100,6 +80,7 @@ if(MATLAB)
 endif()
 
 ctest_submit(
+  BUILD_ID DASHBOARD_CDASH_BUILD_ID
   RETRY_COUNT 4
   RETRY_DELAY 15
   RETURN_VALUE DASHBOARD_SUBMIT_RETURN_VALUE
@@ -107,4 +88,8 @@ ctest_submit(
   QUIET)
 if(NOT DASHBOARD_SUBMIT_RETURN_VALUE EQUAL 0 OR DASHBOARD_SUBMIT_CAPTURE_CMAKE_ERROR EQUAL -1)
   message(WARNING "*** CTest submit step was not successful")
+endif()
+
+if(DASHBOARD_CDASH_BUILD_ID)
+  message(STATUS "*** Submitted to CDash with build id ${DASHBOARD_CDASH_BUILD_ID}")
 endif()
