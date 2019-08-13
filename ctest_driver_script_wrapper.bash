@@ -31,6 +31,12 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 set -euxo pipefail
+
 [[ -z "${TERM}" ]] || export CLICOLOR_FORCE=1
+
 export PATH="/usr/local/bin:${PATH}"
+
+[[ ! "${JOB_NAME}" =~ unprovisioned || "$(uname -s)" != Darwin ]] || "${BASH_SOURCE%/*}/setup/mac/install_prereqs"
+[[ ! "${JOB_NAME}" =~ unprovisioned || "$(uname -s)" != Linux ]] || sudo "${BASH_SOURCE%/*}/setup/ubuntu/install_prereqs"
+
 ctest --extra-verbose --no-compress-output --script "${BASH_SOURCE%/*}/ctest_driver_script.cmake"
