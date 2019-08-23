@@ -32,16 +32,21 @@
 
 set -euxo pipefail
 
+if [[ -z "${WORKSPACE-}" ]]; then
+  echo 'ERROR: This script must be run on a Jenkins node' >&2
+  exit 1
+fi
+
 if [[ "${EUID}" -eq 0 ]]; then
   echo 'ERROR: This script must NOT be run as root' >&2
-  exit 1
+  exit 2
 fi
 
 if ! command -v brew &>/dev/null; then
   /usr/bin/ruby -e "$(curl --fail --location --retry 4 --show-error --silent https://raw.githubusercontent.com/Homebrew/install/master/install)"
 fi
 
-[[ -z "${TERM}" ]] || export HOMEBREW_COLOR=1
+[[ -z "${TERM-}" ]] || export HOMEBREW_COLOR=1
 
 export HOMEBREW_CURL_RETRIES=4
 
