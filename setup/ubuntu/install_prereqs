@@ -32,8 +32,6 @@
 
 set -euxo pipefail
 
-env
-
 if [[ -z "${WORKSPACE-}" ]]; then
   echo 'ERROR: This script must be run on a Jenkins node' >&2
   exit 1
@@ -54,7 +52,7 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get update --quiet --quiet
 trap 'rm --force --recursive /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin /var/lib/apt/lists/*' EXIT
 
-apt-get purge --assume-yes --option Dpkg::Use-Pty=0 --quiet unattended-upgrades
+apt-get purge --assume-yes --autoremove --option Dpkg::Use-Pty=0 --quiet cron unattended-upgrades
 
 apt-get install --assume-yes --no-install-recommends --option Dpkg::Use-Pty=0 --quiet \
   apt-transport-https \
