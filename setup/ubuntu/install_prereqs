@@ -50,10 +50,12 @@ echo 'APT::Acquire::Retries "4";' | tee /etc/apt/apt.conf.d/80-acquire-retries
 export DEBIAN_FRONTEND=noninteractive
 
 apt-get update --quiet --quiet
-trap 'rm --force --recursive /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin /var/lib/apt/lists/*' EXIT
+trap 'rm --force --recursive /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin /var/lib/apt/lists/* /var/log/apt/*' EXIT
 
 apt-get purge --assume-yes --autoremove --option Dpkg::Use-Pty=0 --quiet cron unattended-upgrades
+rm --force --recursive /var/log/unattended-upgrades
 
+apt-get upgrade --assume-yes --option Dpkg::Options::=--force-confdef --option Dpkg::Options::=--force-confnew --option Dpkg::Use-Pty=0 --quiet
 apt-get install --assume-yes --no-install-recommends --option Dpkg::Use-Pty=0 --quiet \
   apt-transport-https \
   awscli \
@@ -62,9 +64,11 @@ apt-get install --assume-yes --no-install-recommends --option Dpkg::Use-Pty=0 --
   gnupg \
   lsb-release \
   ntp \
-  openjdk-8-jdk-headless \
+  openjdk-8-jre-headless \
   wget \
   xvfb
+
+update-java-alternatives --jre-headless --set java-1.8.0-openjdk-amd64
 
 cat << 'EOF' > /lib/systemd/system/xvfb.service
 [Unit]
@@ -91,8 +95,8 @@ apt-key --keyring /etc/apt/trusted.gpg del C1F34CDD40CD72DA
 
 wget --no-verbose --output-document /tmp/gurobi8.0.1_linux64.tar.gz https://packages.gurobi.com/8.0/gurobi8.0.1_linux64.tar.gz
 echo '28c028b8708869c27a93edc2769b645db4906dc7c80a4d283ed6db672b587478  /tmp/gurobi8.0.1_linux64.tar.gz' | shasum --algorithm 256 --check -
-trap 'rm --force --recursive /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin /var/lib/apt/lists/* /tmp/gurobi8.0.1_linux64.tar.gz' EXIT
+trap 'rm --force --recursive /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin /var/lib/apt/lists/* /var/log/apt/* /tmp/gurobi8.0.1_linux64.tar.gz' EXIT
 tar --extract --file /tmp/gurobi8.0.1_linux64.tar.gz --directory /opt
-aws s3 cp --quiet s3://drake-provisioning/gurobi/gurobi.lic /opt/gurobi801/gurobi.lic
+aws s3 cp --only-show-errors s3://drake-provisioning/gurobi/gurobi.lic /opt/gurobi801/gurobi.lic
 echo '85a76935617e809af43275fa4d7f7fc38182973c5756edde9b8db59ef65420cb  /opt/gurobi801/gurobi.lic' | shasum --algorithm 256 --check -
 chown --recursive root:root /opt/gurobi801
