@@ -97,6 +97,7 @@ wget --no-verbose --output-document /tmp/gurobi8.0.1_linux64.tar.gz https://pack
 echo '28c028b8708869c27a93edc2769b645db4906dc7c80a4d283ed6db672b587478  /tmp/gurobi8.0.1_linux64.tar.gz' | shasum --algorithm 256 --check -
 trap 'rm --force --recursive /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin /var/lib/apt/lists/* /var/log/apt/* /tmp/gurobi8.0.1_linux64.tar.gz' EXIT
 tar --extract --file /tmp/gurobi8.0.1_linux64.tar.gz --directory /opt
+echo '9f71cb8d0a69d20d10030daddd6ffb295b27916435dfebc56ec64e061cc2fb3e  /opt/gurobi801/linux64/include/gurobi_c.h' | shasum --algorithm 256 --check -
 aws s3 cp --only-show-errors s3://drake-provisioning/gurobi/gurobi.lic /opt/gurobi801/gurobi.lic
 echo '85a76935617e809af43275fa4d7f7fc38182973c5756edde9b8db59ef65420cb  /opt/gurobi801/gurobi.lic' | shasum --algorithm 256 --check -
 chown --recursive root:root /opt/gurobi801
