@@ -331,7 +331,7 @@ endif()
 # Run the build
 execute_step(bazel build)
 
-if(PACKAGE AND NOT DISTRIBUTION STREQUAL "xenial")
+if(PACKAGE AND DISTRIBUTION STREQUAL "bionic")
   execute_process(COMMAND "${DASHBOARD_BAZEL_COMMAND}" "clean" "--expunge")
   file(REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
   file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
