@@ -165,13 +165,6 @@ else()
   set(BUILD_TYPE "release")
 endif()
 
-string(REGEX MATCH "matlab" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
-if(REGEX_MATCH_RESULT)
-  set(MATLAB ON)
-else()
-  set(MATLAB OFF)
-endif()
-
 string(REGEX MATCH "gurobi" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
 if(REGEX_MATCH_RESULT)
   set(GUROBI ON)

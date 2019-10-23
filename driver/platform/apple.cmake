@@ -39,8 +39,3 @@ prepend_path(PATH
   /usr/sbin
   /sbin)
 
-if(MATLAB)
-  prepend_path(PATH
-    /Applications/MATLAB_R2017a.app/bin
-    /Applications/MATLAB_R2017a.app/runtime/maci64)
-endif()
