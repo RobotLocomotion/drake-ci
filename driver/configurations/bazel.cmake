@@ -329,26 +329,6 @@ endif()
 # Run the build
 execute_step(bazel build)
 
-if(PACKAGE AND DISTRIBUTION STREQUAL "bionic")
-  execute_process(COMMAND "${DASHBOARD_BAZEL_COMMAND}" "clean" "--expunge")
-  file(REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
-  file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
-  string(REPLACE "packaging" "python2-packaging" DASHBOARD_JOB_NAME "${DASHBOARD_JOB_NAME}")
-  string(REPLACE "--config=python3" "--config=python2" DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS}")
-
-  report_configuration("
-  ==================================== >DASHBOARD_
-  BAZEL_COMMAND
-  BAZEL_VERSION
-  BAZEL_STARTUP_OPTIONS
-  BAZEL_BUILD_OPTIONS
-  BAZEL_TEST_OPTIONS
-  ====================================
-  ")
-
-  execute_step(bazel build)
-endif()
-
 # Determine build result
 if(NOT DASHBOARD_FAILURE AND NOT DASHBOARD_UNSTABLE)
   set(DASHBOARD_MESSAGE "SUCCESS")
