@@ -31,24 +31,15 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-# Select appropriate compiler version
-set(DASHBOARD_GNU_COMPILER_SUFFIX "")
-set(DASHBOARD_CLANG_COMPILER_SUFFIX "")
-if(DASHBOARD_UNIX_DISTRIBUTION STREQUAL "Ubuntu")
-  if(DASHBOARD_UNIX_DISTRIBUTION_VERSION VERSION_LESS 18.04)
-    set(DASHBOARD_CLANG_COMPILER_SUFFIX "-6.0")
-    # CC and CXX variables must be different between 16.04 and 18.04 so that
-    # the environments differ for the purpose of remote caching.
-    set(DASHBOARD_GNU_COMPILER_SUFFIX "-5")
-  endif()
-endif()
+# Select appropriate compiler
+
 
 if(COMPILER STREQUAL "clang")
-  set(ENV{CC} "clang${DASHBOARD_CLANG_COMPILER_SUFFIX}")
-  set(ENV{CXX} "clang++${DASHBOARD_CLANG_COMPILER_SUFFIX}")
+  set(ENV{CC} "clang")
+  set(ENV{CXX} "clang++")
 elseif(COMPILER STREQUAL "gcc")
-  set(ENV{CC} "gcc${DASHBOARD_GNU_COMPILER_SUFFIX}")
-  set(ENV{CXX} "g++${DASHBOARD_GNU_COMPILER_SUFFIX}")
+  set(ENV{CC} "gcc")
+  set(ENV{CXX} "g++")
 else()
   fatal("unknown compiler '${COMPILER}'")
 endif()
