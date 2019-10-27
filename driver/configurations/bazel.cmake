@@ -152,14 +152,6 @@ include(${DASHBOARD_DRIVER_DIR}/configurations/gurobi.cmake)
 include(${DASHBOARD_DRIVER_DIR}/configurations/mosek.cmake)
 include(${DASHBOARD_DRIVER_DIR}/configurations/snopt.cmake)
 
-if(CXX EQUAL 17)
-  set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --cxxopt=-std=c++17 --host_cxxopt=-std=c++17")
-endif()
-
-if(DISTRIBUTION STREQUAL "bionic" AND PYTHON EQUAL 2)
-  set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=python2")
-endif()
-
 set(DASHBOARD_TEST_TAG_FILTERS)
 
 if(EVERYTHING)

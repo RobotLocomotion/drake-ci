@@ -87,23 +87,6 @@ else()
   set(DASHBOARD_VERBOSE_MAKEFILE OFF)
 endif()
 
-if(DISTRIBUTION STREQUAL "bionic" AND PYTHON EQUAL 2)
-  set(DASHBOARD_WITH_PYTHON_VERSION ${PYTHON})
-  cache_append(WITH_PYTHON_VERSION STRING ${DASHBOARD_WITH_PYTHON_VERSION})
-else()
-  set(DASHBOARD_WITH_PYTHON_VERSION)
-endif()
-
-if(CXX EQUAL 17)
-  set(DASHBOARD_CXX_STANDARD ${CXX})
-  set(DASHBOARD_CXX_STANDARD_REQUIRED ON)
-  cache_flag(CXX_STANDARD STRING)
-  cache_flag(CXX_STANDARD_REQUIRED BOOL)
-else()
-  set(DASHBOARD_CXX_STANDARD)
-  set(DASHBOARD_CXX_STANDARD_REQUIRED)
-endif()
-
 cache_flag(COLOR_MAKEFILE BOOL)
 cache_flag(CXX_FLAGS STRING)
 cache_flag(INSTALL_PREFIX PATH)
@@ -168,8 +151,6 @@ report_configuration("
   ==================================== >DASHBOARD_ <CMAKE_
   COLOR_MAKEFILE
   CXX_FLAGS
-  CXX_STANDARD
-  CXX_STANDARD_REQUIRED
   INSTALL_PREFIX
   VERBOSE_MAKEFILE
   ====================================
@@ -187,8 +168,6 @@ report_configuration("
   CTEST_UPDATE_VERSION_ONLY
   CTEST_UPDATE_VERSION_OVERRIDE
   CTEST_USE_LAUNCHERS
-  ==================================== >DASHBOARD_
-  WITH_PYTHON_VERSION
   ==================================== >DASHBOARD_
   WITH_GUROBI
   WITH_MOSEK
