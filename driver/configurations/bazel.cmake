@@ -341,6 +341,9 @@ endif()
 if(PACKAGE)
   execute_step(bazel create-package-archive)
   execute_step(bazel upload-package-archive)
+  if(DOCKER)
+    execute_step(bazel build-docker-image)
+  endif()
 endif()
 
 # Report Bazel command without CI-specific options
