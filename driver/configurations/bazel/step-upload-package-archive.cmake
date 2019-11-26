@@ -16,7 +16,7 @@ else()
     set(DASHBOARD_PACKAGE_ARCHIVE_TOTAL_UPLOADS 2)
   endif()
   string(TOLOWER "${DASHBOARD_TRACK}" DASHBOARD_PACKAGE_ARCHIVE_FOLDER)
-  message(STATUS "Uploading nightly package archive 1 of ${DASHBOARD_PACKAGE_ARCHIVE_TOTAL_UPLOADS} to AWS S3...")
+  message(STATUS "Uploading package archive 1 of ${DASHBOARD_PACKAGE_ARCHIVE_TOTAL_UPLOADS} to AWS S3...")
   execute_process(
     COMMAND ${DASHBOARD_AWS_COMMAND} s3 cp
       --acl public-read
@@ -28,12 +28,12 @@ else()
   if(DASHBOARD_AWS_S3_RESULT_VARIABLE EQUAL 0)
     message(STATUS "Package URL 1 of ${DASHBOARD_PACKAGE_ARCHIVE_TOTAL_UPLOADS}: https://drake-packages.csail.mit.edu/drake/${DASHBOARD_PACKAGE_ARCHIVE_FOLDER}/${DASHBOARD_PACKAGE_ARCHIVE_NAME}")
   else()
-    append_step_status("BAZEL NIGHTLY PACKAGE ARCHIVE UPLOAD 1 OF ${DASHBOARD_PACKAGE_ARCHIVE_TOTAL_UPLOADS}" UNSTABLE)
+    append_step_status("BAZEL PACKAGE ARCHIVE UPLOAD 1 OF ${DASHBOARD_PACKAGE_ARCHIVE_TOTAL_UPLOADS}" UNSTABLE)
   endif()
   if(NOT DASHBOARD_UNSTABLE)
     file(SHA512 "${DASHBOARD_WORKSPACE}/${DASHBOARD_PACKAGE_ARCHIVE_NAME}" DASHBOARD_PACKAGE_SHA512)
     file(WRITE "${DASHBOARD_WORKSPACE}/${DASHBOARD_PACKAGE_ARCHIVE_NAME}.sha512" "${DASHBOARD_PACKAGE_SHA512}  ${DASHBOARD_PACKAGE_ARCHIVE_NAME}")
-    message(STATUS "Uploading nightly package archive checksum 1 of ${DASHBOARD_PACKAGE_ARCHIVE_TOTAL_UPLOADS} to AWS S3...")
+    message(STATUS "Uploading package archive checksum 1 of ${DASHBOARD_PACKAGE_ARCHIVE_TOTAL_UPLOADS} to AWS S3...")
     execute_process(
       COMMAND ${DASHBOARD_AWS_COMMAND} s3 cp
         --acl public-read
@@ -43,13 +43,13 @@ else()
         "s3://drake-packages/drake/${DASHBOARD_PACKAGE_ARCHIVE_FOLDER}/${DASHBOARD_PACKAGE_ARCHIVE_NAME}.sha512"
       RESULT_VARIABLE DASHBOARD_AWS_S3_RESULT_VARIABLE)
     if(NOT DASHBOARD_AWS_S3_RESULT_VARIABLE EQUAL 0)
-      append_step_status("BAZEL NIGHTLY PACKAGE ARCHIVE CHECKSUM UPLOAD 1 OF ${DASHBOARD_PACKAGE_ARCHIVE_TOTAL_UPLOADS}" UNSTABLE)
+      append_step_status("BAZEL PACKAGE ARCHIVE CHECKSUM UPLOAD 1 OF ${DASHBOARD_PACKAGE_ARCHIVE_TOTAL_UPLOADS}" UNSTABLE)
     endif()
   endif()
   if(DASHBOARD_PACKAGE_ARCHIVE_TOTAL_UPLOADS EQUAL 2)
     set(DASHBOARD_PACKAGE_ARCHIVE_LATEST_NAME "drake-latest-${DASHBOARD_PACKAGE_ARCHIVE_DISTRIBUTION}.tar.gz")
     if(NOT DASHBOARD_UNSTABLE)
-      message(STATUS "Uploading nightly package archive 2 of 2 to AWS S3...")
+      message(STATUS "Uploading package archive 2 of 2 to AWS S3...")
       execute_process(
         COMMAND ${DASHBOARD_AWS_COMMAND} s3 cp
           --acl public-read
@@ -61,12 +61,12 @@ else()
       if(DASHBOARD_AWS_S3_RESULT_VARIABLE EQUAL 0)
         message(STATUS "Package URL 2 of 2: https://drake-packages.csail.mit.edu/drake/${DASHBOARD_PACKAGE_ARCHIVE_FOLDER}/${DASHBOARD_PACKAGE_ARCHIVE_LATEST_NAME}")
       else()
-        append_step_status("BAZEL NIGHTLY PACKAGE ARCHIVE UPLOAD 2 OF 2" UNSTABLE)
+        append_step_status("BAZEL PACKAGE ARCHIVE UPLOAD 2 OF 2" UNSTABLE)
       endif()
     endif()
     if(NOT DASHBOARD_UNSTABLE)
       file(WRITE "${DASHBOARD_WORKSPACE}/${DASHBOARD_PACKAGE_ARCHIVE_LATEST_NAME}.sha512" "${DASHBOARD_PACKAGE_SHA512}  ${DASHBOARD_PACKAGE_ARCHIVE_LATEST_NAME}")
-      message(STATUS "Uploading nightly package archive checksum 2 of 2 to AWS S3...")
+      message(STATUS "Uploading package archive checksum 2 of 2 to AWS S3...")
       execute_process(
         COMMAND ${DASHBOARD_AWS_COMMAND} s3 cp
           --acl public-read
@@ -76,7 +76,7 @@ else()
           "s3://drake-packages/drake/${DASHBOARD_PACKAGE_ARCHIVE_FOLDER}/${DASHBOARD_PACKAGE_ARCHIVE_LATEST_NAME}.sha512"
         RESULT_VARIABLE DASHBOARD_AWS_S3_RESULT_VARIABLE)
       if(NOT DASHBOARD_AWS_S3_RESULT_VARIABLE EQUAL 0)
-        append_step_status("BAZEL NIGHTLY PACKAGE ARCHIVE CHECKSUM UPLOAD 2 OF 2" UNSTABLE)
+        append_step_status("BAZEL PACKAGE ARCHIVE CHECKSUM UPLOAD 2 OF 2" UNSTABLE)
       endif()
     endif()
   endif()
