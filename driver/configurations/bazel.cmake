@@ -347,6 +347,9 @@ if(PACKAGE)
       execute_step(bazel push-docker-image)
     endif()
   endif()
+  if(DISTRIBUTION STREQUAL "bionic" AND DASHBOARD_TRACK STREQUAL "Nightly")
+    execute_step(bazel push-nightly-release-branch)
+  endif()
 endif()
 
 # Report Bazel command without CI-specific options
