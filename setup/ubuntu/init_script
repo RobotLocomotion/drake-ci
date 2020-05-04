@@ -38,9 +38,11 @@ if [[ "${EUID}" -ne 0 ]]; then
 fi
 
 if [[ ! -d /media/ephemeral0/ubuntu ]]; then
-  mkfs -t ext4 /dev/nvme0n1
+  readonly DEV_EPHEMERAL0="/dev/$(lsblk | grep -Eo 'nvme[01np]+' | grep -v $(lsblk | grep -Eo  'nvme[01n]+p1' | grep -Eo 'nvme[01n]'))"
+
+  mkfs -t ext4 "${DEV_EPHEMERAL0}"
   mkdir -p /media/ephemeral0
-  mount /dev/nvme0n1 /media/ephemeral0
+  mount "${DEV_EPHEMERAL0}" /media/ephemeral0
 
   dd if=/dev/zero of=/media/ephemeral0/swap bs=1M \
     count="$(grep MemTotal /proc/meminfo | awk '{print int(sqrt($2)/1024+0.5)*1024}')"
@@ -66,7 +68,7 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get update -qq
 trap 'rm -rf /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin /var/lib/apt/lists/* /var/log/apt/*' EXIT
 
-apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy
+apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
   git \
   openjdk-8-jre-headless \
   openssh-client
