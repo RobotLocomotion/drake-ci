@@ -101,15 +101,6 @@ apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
 
 apt-key --keyring /etc/apt/trusted.gpg del C1F34CDD40CD72DA
 
-wget -nv -O /tmp/gurobi8.0.1_linux64.tar.gz \
-  https://packages.gurobi.com/8.0/gurobi8.0.1_linux64.tar.gz
-echo '28c028b8708869c27a93edc2769b645db4906dc7c80a4d283ed6db672b587478  /tmp/gurobi8.0.1_linux64.tar.gz' \
-  | sha256sum -c -
-trap 'rm -rf /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin /var/lib/apt/lists/* /var/log/apt/* /tmp/gurobi8.0.1_linux64.tar.gz' EXIT
-tar -C /opt -xf /tmp/gurobi8.0.1_linux64.tar.gz
-echo '9f71cb8d0a69d20d10030daddd6ffb295b27916435dfebc56ec64e061cc2fb3e  /opt/gurobi801/linux64/include/gurobi_c.h' \
-  | sha256sum -c -
-
 wget -nv -O /tmp/gurobi9.0.2_linux64.tar.gz \
   https://packages.gurobi.com/9.0/gurobi9.0.2_linux64.tar.gz
 echo '6527581aef11c3e425c52993d108861ef53ec13971d9931861bf9c88d9d111f3  /tmp/gurobi9.0.2_linux64.tar.gz' \
@@ -119,9 +110,9 @@ tar -C /opt -xf /tmp/gurobi9.0.2_linux64.tar.gz
 echo '9d41a38c50ea58137a2100fda733ec0f47431059f9c4ebee4899ea1cdfe118f3  /opt/gurobi902/linux64/include/gurobi_c.h' \
   | sha256sum -c -
 
-aws s3 cp --only-show-errors s3://drake-provisioning/gurobi/gurobi.lic /opt/gurobi801/gurobi.lic
-echo '85a76935617e809af43275fa4d7f7fc38182973c5756edde9b8db59ef65420cb  /opt/gurobi801/gurobi.lic' \
+aws s3 cp --only-show-errors s3://drake-provisioning/gurobi/gurobi.lic \
+  /opt/gurobi902/gurobi.lic
+echo '85a76935617e809af43275fa4d7f7fc38182973c5756edde9b8db59ef65420cb  /opt/gurobi902/gurobi.lic' \
   | sha256sum -c -
-cp /opt/gurobi801/gurobi.lic /opt/gurobi902/gurobi.lic
 
-chown -R root:root /opt/gurobi801 /opt/gurobi902
+chown -R root:root /opt/gurobi902

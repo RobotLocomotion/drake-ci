@@ -33,10 +33,9 @@
 
 
 if(APPLE)
-  set(GRB_LICENSE_FILE "/Library/gurobi801/gurobi.lic")
+  set(GRB_LICENSE_FILE "/Library/gurobi902/gurobi.lic")
 else()
-  set(ENV{GUROBI_PATH} "/opt/gurobi801/linux64")
-  set(GRB_LICENSE_FILE "/opt/gurobi801/gurobi.lic")
+  set(GRB_LICENSE_FILE "/opt/gurobi902/gurobi.lic")
 endif()
 
 if(GUROBI AND NOT EXISTS "${GRB_LICENSE_FILE}")

@@ -38,4 +38,4 @@ brew 'awscli'
 brew 'cmake'
 
 cask 'adoptopenjdk8'
-cask 'gurobi80'
+cask 'gurobi'
