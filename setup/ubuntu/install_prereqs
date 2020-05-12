@@ -105,7 +105,7 @@ wget -nv -O /tmp/gurobi9.0.2_linux64.tar.gz \
   https://packages.gurobi.com/9.0/gurobi9.0.2_linux64.tar.gz
 echo '6527581aef11c3e425c52993d108861ef53ec13971d9931861bf9c88d9d111f3  /tmp/gurobi9.0.2_linux64.tar.gz' \
   | sha256sum -c -
-trap 'rm -rf /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin /var/lib/apt/lists/* /var/log/apt/* /tmp/gurobi8.0.1_linux64.tar.gz /tmp/gurobi9.0.2_linux64.tar.gz' EXIT
+trap 'rm -rf /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin /var/lib/apt/lists/* /var/log/apt/* /tmp/gurobi9.0.2_linux64.tar.gz' EXIT
 tar -C /opt -xf /tmp/gurobi9.0.2_linux64.tar.gz
 echo '9d41a38c50ea58137a2100fda733ec0f47431059f9c4ebee4899ea1cdfe118f3  /opt/gurobi902/linux64/include/gurobi_c.h' \
   | sha256sum -c -
