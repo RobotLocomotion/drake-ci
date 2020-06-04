@@ -33,10 +33,14 @@
 
 # Select appropriate compiler
 
-
 if(COMPILER STREQUAL "clang")
-  set(ENV{CC} "clang")
-  set(ENV{CXX} "clang++")
+  if(DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME STREQUAL "focal")
+    set(ENV{CC} "clang-9")
+    set(ENV{CXX} "clang++-9")
+  else()
+    set(ENV{CC} "clang")
+    set(ENV{CXX} "clang++")
+  endif()
 elseif(COMPILER STREQUAL "gcc")
   set(ENV{CC} "gcc")
   set(ENV{CXX} "g++")
