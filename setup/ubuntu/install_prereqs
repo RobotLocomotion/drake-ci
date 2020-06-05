@@ -42,6 +42,9 @@ if [[ "${EUID}" -ne 0 ]]; then
   exit 2
 fi
 
+systemctl disable apt-daily.service
+systemctl disable apt-daily.timer
+
 echo 'APT::Acquire::Retries "4";' | tee /etc/apt/apt.conf.d/80-acquire-retries
 
 export DEBIAN_FRONTEND=noninteractive
@@ -57,23 +60,23 @@ apt-get upgrade -o Dpkg::Options::=--force-confdef \
   -o Dpkg::Options::=--force-confnew -o Dpkg::Use-Pty=0 -qy
 
 apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
-  apt-transport-https \
   awscli \
   ca-certificates \
   git \
   gnupg \
   lsb-release \
-  ntp \
   openjdk-8-jre-headless \
   wget \
   xvfb
 
 update-java-alternatives --jre-headless -s java-1.8.0-openjdk-amd64
 
-systemctl disable apt-daily.service
-systemctl disable apt-daily.timer
+echo 'verbose = off' | tee /root/.wgetrc
 
-cat << 'EOF' > /lib/systemd/system/xvfb.service
+cp /root/.wgetrc /home/ubuntu/.wgetrc
+chown ubuntu:ubuntu /home/ubuntu/.wgetrc
+
+cat << EOF > /lib/systemd/system/xvfb.service
 [Unit]
 After=network.target
 
@@ -85,6 +88,16 @@ WantedBy=multi-user.target
 EOF
 
 systemctl --now enable /lib/systemd/system/xvfb.service
+
+if [[ "$(lsb_release -cs)" == 'bionic' ]]; then
+  apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
+    ntp
+else
+  apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
+    systemd-timesyncd
+
+  timedatectl set-ntp on
+fi
 
 export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1
 
