@@ -42,19 +42,18 @@ if [[ "${EUID}" -ne 0 ]]; then
   exit 2
 fi
 
-systemctl disable apt-daily.service
-systemctl disable apt-daily.timer
+systemctl --quiet disable apt-daily-upgrade.timer apt-daily.timer
 
-echo 'APT::Acquire::Retries "4";' | tee /etc/apt/apt.conf.d/80-acquire-retries
+echo 'APT::Acquire::Retries "4";' > /etc/apt/apt.conf.d/80-acquire-retries
 
 export DEBIAN_FRONTEND=noninteractive
 export PYTHONWARNINGS=ignore::SyntaxWarning
 
-apt-get update -qq
-trap 'rm -rf /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin /var/lib/apt/lists/* /var/log/apt/*' EXIT
+apt-get update -qq || (sleep 15; apt-get update -qq)
+trap 'set +x; rm -rf /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin /var/lib/apt/lists/* /var/log/apt/*; set -x' EXIT
 
 apt-get purge --autoremove -o Dpkg::Use-Pty=0 -qy cron unattended-upgrades
-rm -rf /var/log/unattended-upgrades
+rm -rf /etc/cron.daily/apt-compat /var/log/unattended-upgrades
 
 apt-get upgrade -o Dpkg::Options::=--force-confdef \
   -o Dpkg::Options::=--force-confnew -o Dpkg::Use-Pty=0 -qy
@@ -71,7 +70,7 @@ apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
 
 update-java-alternatives --jre-headless -s java-1.8.0-openjdk-amd64
 
-echo 'verbose = off' | tee /root/.wgetrc
+echo 'verbose = off' > /root/.wgetrc
 
 cp /root/.wgetrc /home/ubuntu/.wgetrc
 chown ubuntu:ubuntu /home/ubuntu/.wgetrc
@@ -87,7 +86,7 @@ ExecStart=/usr/bin/Xvfb :99 -screen 0 1280x1024x24 -ac +extension GLX +extension
 WantedBy=multi-user.target
 EOF
 
-systemctl --now enable /lib/systemd/system/xvfb.service
+systemctl --now --quiet enable /lib/systemd/system/xvfb.service
 
 if [[ "$(lsb_release -cs)" == 'bionic' ]]; then
   apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
@@ -105,20 +104,20 @@ apt-key adv --fetch-keys \
   https://apt.kitware.com/keys/kitware-archive-latest.asc
 
 echo "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main" \
-  | tee /etc/apt/sources.list.d/kitware.list
+  > /etc/apt/sources.list.d/kitware.list
 
-apt-get update -qq
+apt-get update -qq || (sleep 15; apt-get update -qq)
 apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
   cmake \
   kitware-archive-keyring
 
-apt-key --keyring /etc/apt/trusted.gpg del C1F34CDD40CD72DA
+apt-key --keyring /etc/apt/trusted.gpg del A8E5EF3A02600268
 
 wget -nv -O /tmp/gurobi9.0.2_linux64.tar.gz \
   https://packages.gurobi.com/9.0/gurobi9.0.2_linux64.tar.gz
 echo '6527581aef11c3e425c52993d108861ef53ec13971d9931861bf9c88d9d111f3  /tmp/gurobi9.0.2_linux64.tar.gz' \
   | sha256sum -c -
-trap 'rm -rf /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin /var/lib/apt/lists/* /var/log/apt/* /tmp/gurobi9.0.2_linux64.tar.gz' EXIT
+trap 'set +x; rm -rf /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin /var/lib/apt/lists/* /var/log/apt/* /tmp/gurobi9.0.2_linux64.tar.gz; set -x' EXIT
 tar -C /opt -xf /tmp/gurobi9.0.2_linux64.tar.gz
 echo '9d41a38c50ea58137a2100fda733ec0f47431059f9c4ebee4899ea1cdfe118f3  /opt/gurobi902/linux64/include/gurobi_c.h' \
   | sha256sum -c -

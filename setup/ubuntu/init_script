@@ -37,6 +37,8 @@ if [[ "${EUID}" -ne 0 ]]; then
   exit 1
 fi
 
+systemctl --quiet disable apt-daily-upgrade.timer apt-daily.timer
+
 if [[ ! -d /media/ephemeral0/ubuntu ]]; then
   readonly DEV_EPHEMERAL0="/dev/$(lsblk | grep -Eo 'nvme[01np]+' | grep -v $(lsblk | grep -Eo  'nvme[01n]+p1' | grep -Eo 'nvme[01n]'))"
 
@@ -52,23 +54,21 @@ if [[ ! -d /media/ephemeral0/ubuntu ]]; then
   mkswap /media/ephemeral0/swap
   swapon /media/ephemeral0/swap
 
-  mkdir -p /media/ephemeral0/tmp
+  mkdir -p /media/ephemeral0/tmp /media/ephemeral0/ubuntu
+
   chown root:root /media/ephemeral0/tmp
   chmod a=rwx /media/ephemeral0/tmp
 
-  mkdir -p /media/ephemeral0/ubuntu
   chown ubuntu:ubuntu /media/ephemeral0/ubuntu
   chmod u=rwx,go=rx /media/ephemeral0/ubuntu
 fi
 
-echo 'APT::Acquire::Retries "4";' | tee /etc/apt/apt.conf.d/80-acquire-retries
-
 export DEBIAN_FRONTEND=noninteractive
 
-apt-get update -qq
-trap 'rm -rf /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin /var/lib/apt/lists/* /var/log/apt/*' EXIT
+apt-get update -o APT::Acquire::Retries=4 -qq || (sleep 15; apt-get update -o APT::Acquire::Retries=4 -qq)
+trap 'set +x; rm -rf /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin /var/lib/apt/lists/* /var/log/apt/*; set -x' EXIT
 
-apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
+apt-get install --no-install-recommends -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 -qy \
   git \
   openjdk-8-jre-headless \
   openssh-client
