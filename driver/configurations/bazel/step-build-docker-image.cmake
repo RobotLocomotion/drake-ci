@@ -32,6 +32,23 @@ else()
   endif()
 
   if(NOT DASHBOARD_UNSTABLE)
+    set(DOCKER_PULL_ARGS "pull ubuntu:${DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME}")
+    separate_arguments(DOCKER_PULL_ARGS_LIST UNIX_COMMAND "${DOCKER_PULL_ARGS}")
+    foreach(RETRIES RANGE 3)
+      execute_process(COMMAND "sudo" "${DASHBOARD_DOCKER_COMMAND}" ${DOCKER_PULL_ARGS_LIST}
+        RESULT_VARIABLE DOCKER_PULL_RESULT_VARIABLE
+        COMMAND_ECHO STDERR)
+      if(DOCKER_PULL_RESULT_VARIABLE EQUAL 0)
+        break()
+      endif()
+      sleep(15)
+    endforeach()
+    if(NOT DOCKER_PULL_RESULT_VARIABLE EQUAL 0)
+      append_step_status("BAZEL PULLING DOCKER IMAGE (DOCKER PULL)" UNSTABLE)
+    endif()
+  endif()
+
+  if(NOT DASHBOARD_UNSTABLE)
     set(DOCKER_BUILD_ARGS "build -t robotlocomotion/drake:${DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME} -t robotlocomotion/drake:${DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME}-${DATE} .")
     separate_arguments(DOCKER_BUILD_ARGS_LIST UNIX_COMMAND "${DOCKER_BUILD_ARGS}")
     execute_process(COMMAND "sudo" "${DASHBOARD_DOCKER_COMMAND}" ${DOCKER_BUILD_ARGS_LIST}
