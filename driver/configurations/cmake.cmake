@@ -101,34 +101,28 @@ file(COPY "${DASHBOARD_CI_DIR}/user.bazelrc"
 file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
   "startup --output_user_root=${DASHBOARD_WORKSPACE}/_bazel_$ENV{USER}\n")
 
+include(${DASHBOARD_DRIVER_DIR}/configurations/cache.cmake)
+
 if(REMOTE_CACHE)
-  set(DASHBOARD_REMOTE_HTTP_CACHE_URL "http://172.31.20.109")
-  mktemp(DASHBOARD_FILE_DOWNLOAD_TEMP file_download_XXXXXXXX "temporary download file")
-  list(APPEND DASHBOARD_TEMPORARY_FILES DASHBOARD_FILE_DOWNLOAD_TEMP)
-  file(DOWNLOAD "${DASHBOARD_REMOTE_HTTP_CACHE_URL}" "${DASHBOARD_FILE_DOWNLOAD_TEMP}"
-    STATUS DASHBOARD_DOWNLOAD_STATUS)
-  list(GET DASHBOARD_DOWNLOAD_STATUS 0 DASHBOARD_DOWNLOAD_STATUS_0)
-  if(DASHBOARD_DOWNLOAD_STATUS_0 EQUAL 0)
+  file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
+    "build --experimental_guard_against_concurrent_changes=yes\n"
+    "build --remote_cache=${DASHBOARD_REMOTE_CACHE}\n"
+    "build --remote_local_fallback=yes\n"
+    "build --remote_max_connections=128\n"
+    "build --remote_retries=4\n"
+    "build --remote_timeout=120\n")
+  if(DASHBOARD_TRACK STREQUAL "Nightly")
     file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
-      "build --experimental_guard_against_concurrent_changes=yes\n"
-      "build --remote_cache=${DASHBOARD_REMOTE_HTTP_CACHE_URL}\n"
-      "build --remote_local_fallback=yes\n"
-      "build --remote_max_connections=128\n"
-      "build --remote_retries=4\n"
-      "build --remote_timeout=120\n")
-    if(DASHBOARD_TRACK STREQUAL "Nightly")
-      file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
-        "build --remote_accept_cached=no\n"
-        "build --remote_upload_local_results=yes\n")
-    elseif(DASHBOARD_TRACK STREQUAL "Experimental")
-      file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
-        "build --remote_accept_cached=yes\n"
-        "build --remote_upload_local_results=no\n")
-    else()
-       file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
-        "build --remote_accept_cached=yes\n"
-        "build --remote_upload_local_results=yes\n")
-    endif()
+      "build --remote_accept_cached=no\n"
+      "build --remote_upload_local_results=yes\n")
+  elseif(DASHBOARD_TRACK STREQUAL "Experimental")
+    file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
+      "build --remote_accept_cached=yes\n"
+      "build --remote_upload_local_results=no\n")
+  else()
+     file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
+      "build --remote_accept_cached=yes\n"
+      "build --remote_upload_local_results=yes\n")
   endif()
 endif()
 
@@ -175,6 +169,13 @@ report_configuration("
   ==================================== >DASHBOARD_
   GIT_COMMIT
   ACTUAL_GIT_COMMIT
+  ==================================== >DASHBOARD_
+  ${COMPILER_UPPER}_PACKAGE_VERSION(CC_PACKAGE_VERSION)
+  GFORTRAN_PACKAGE_VERSION
+  JAVA_PACKAGE_VERSION
+  PYTHON_PACKAGE_VERSION
+  ==================================== >DASHBOARD_
+  REMOTE_CACHE_KEY
   ====================================
   ")
 

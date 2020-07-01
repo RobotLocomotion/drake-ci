@@ -95,36 +95,30 @@ else()
   set(DASHBOARD_SUBCOMMANDS "no")
 endif()
 
+include(${DASHBOARD_DRIVER_DIR}/configurations/cache.cmake)
+
 if(REMOTE_CACHE)
-  mktemp(DASHBOARD_FILE_DOWNLOAD_TEMP file_download_XXXXXXXX "temporary download file")
-  list(APPEND DASHBOARD_TEMPORARY_FILES DASHBOARD_FILE_DOWNLOAD_TEMP)
-  set(DASHBOARD_REMOTE_CACHE "http://172.31.20.109")
-  file(DOWNLOAD "${DASHBOARD_REMOTE_CACHE}" "${DASHBOARD_FILE_DOWNLOAD_TEMP}"
-    STATUS DASHBOARD_DOWNLOAD_STATUS)
-  list(GET DASHBOARD_DOWNLOAD_STATUS 0 DASHBOARD_DOWNLOAD_STATUS_0)
-  if(DASHBOARD_DOWNLOAD_STATUS_0 EQUAL 0)
-    set(DASHBOARD_REMOTE_ACCEPT_CACHED "yes")
-    set(DASHBOARD_REMOTE_UPLOAD_LOCAL_RESULTS "yes")
-    if(DASHBOARD_TRACK STREQUAL "Nightly")
-      set(DASHBOARD_REMOTE_ACCEPT_CACHED "no")
-    elseif(DASHBOARD_TRACK STREQUAL "Continuous" AND DEBUG)
-      set(DASHBOARD_REMOTE_ACCEPT_CACHED "no")
-    elseif(DASHBOARD_TRACK STREQUAL "Experimental")
-      set(DASHBOARD_REMOTE_UPLOAD_LOCAL_RESULTS "no")
-    endif()
-    if(DEBUG)
-      set(DASHBOARD_REMOTE_MAX_CONNECTIONS 32)
-      set(DASHBOARD_REMOTE_RETRIES 1)
-      set(DASHBOARD_REMOTE_TIMEOUT 240)
-    else()
-      set(DASHBOARD_REMOTE_MAX_CONNECTIONS 128)
-      set(DASHBOARD_REMOTE_RETRIES 4)
-      set(DASHBOARD_REMOTE_TIMEOUT 120)
-    endif()
-    configure_file("${DASHBOARD_TOOLS_DIR}/remote.bazelrc.in" "${CTEST_SOURCE_DIRECTORY}/remote.bazelrc" @ONLY)
-  else()
-    message(WARNING "*** Could NOT contact remote cache")
+  set(DASHBOARD_REMOTE_ACCEPT_CACHED "yes")
+  set(DASHBOARD_REMOTE_UPLOAD_LOCAL_RESULTS "yes")
+  if(DASHBOARD_TRACK STREQUAL "Nightly")
+    set(DASHBOARD_REMOTE_ACCEPT_CACHED "no")
+  elseif(DASHBOARD_TRACK STREQUAL "Continuous" AND DEBUG)
+    set(DASHBOARD_REMOTE_ACCEPT_CACHED "no")
+  elseif(DASHBOARD_TRACK STREQUAL "Experimental")
+    set(DASHBOARD_REMOTE_UPLOAD_LOCAL_RESULTS "no")
   endif()
+  if(DEBUG)
+    set(DASHBOARD_REMOTE_MAX_CONNECTIONS 32)
+    set(DASHBOARD_REMOTE_RETRIES 1)
+    set(DASHBOARD_REMOTE_TIMEOUT 240)
+  else()
+    set(DASHBOARD_REMOTE_MAX_CONNECTIONS 128)
+    set(DASHBOARD_REMOTE_RETRIES 4)
+    set(DASHBOARD_REMOTE_TIMEOUT 120)
+  endif()
+  configure_file("${DASHBOARD_TOOLS_DIR}/remote.bazelrc.in"
+    "${CTEST_SOURCE_DIRECTORY}/remote.bazelrc" @ONLY
+  )
 endif()
 
 set(DASHBOARD_BAZEL_BUILD_OPTIONS "--compilation_mode")
@@ -133,28 +127,6 @@ if(DEBUG)
   set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS}=dbg")
 else()
   set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS}=opt")
-endif()
-
-if(NOT APPLE)
-  if(COMPILER STREQUAL "clang")
-    if(DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME STREQUAL "focal")
-      set(ENV{CC} "clang-9")
-      set(ENV{CXX} "clang++-9")
-    else()
-      set(ENV{CC} "clang")
-      set(ENV{CXX} "clang++")
-    endif()
-  elseif(COMPILER STREQUAL "gcc")
-    if(DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME STREQUAL "focal")
-      set(ENV{CC} "gcc-9")
-      set(ENV{CXX} "g++-9")
-    else()
-      set(ENV{CC} "gcc")
-      set(ENV{CXX} "g++")
-    endif()
-  else()
-    fatal("unknown compiler '${COMPILER}'")
-  endif()
 endif()
 
 include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
@@ -309,6 +281,13 @@ report_configuration("
   ==================================== >DASHBOARD_
   GIT_COMMIT
   ACTUAL_GIT_COMMIT
+  ==================================== >DASHBOARD_
+  ${COMPILER_UPPER}_PACKAGE_VERSION(CC_PACKAGE_VERSION)
+  GFORTRAN_PACKAGE_VERSION
+  JAVA_PACKAGE_VERSION
+  PYTHON_PACKAGE_VERSION
+  ==================================== >DASHBOARD_
+  REMOTE_CACHE_KEY
   ====================================
   ")
 
