@@ -108,4 +108,27 @@ else()
       endif()
     endif()
   endif()
+  if(DASHBOARD_PACKAGE_ARCHIVE_DISTRIBUTION STREQUAL "bionic")
+    message(STATUS "Uploading Colab setup script to AWS S3...")
+    foreach(RETRIES RANGE 3)
+      execute_process(
+        COMMAND ${DASHBOARD_AWS_COMMAND} s3 cp
+          --acl public-read
+          --cache-control max-age=${DASHBOARD_PACKAGE_ARCHIVE_CACHE_CONTROL_MAX_AGE}
+          --storage-class ${DASHBOARD_PACKAGE_ARCHIVE_STORAGE_CLASS}
+          "${DASHBOARD_SOURCE_DIRECTORY}/tools/install/colab/setup_drake_colab.py"
+          "s3://drake-packages/drake/${DASHBOARD_PACKAGE_ARCHIVE_FOLDER}/${DASHBOARD_PACKAGE_NAME}/setup_drake_colab.py"
+        RESULT_VARIABLE DASHBOARD_AWS_S3_RESULT_VARIABLE
+        COMMAND_ECHO STDERR)
+      if(DASHBOARD_AWS_S3_RESULT_VARIABLE EQUAL 0)
+        break()
+      endif()
+      sleep(15)
+    endforeach()
+    if(DASHBOARD_AWS_S3_RESULT_VARIABLE EQUAL 0)
+      message(STATUS "Colab setup script URL: https://drake-packages.csail.mit.edu/drake/${DASHBOARD_PACKAGE_ARCHIVE_FOLDER}/${DASHBOARD_PACKAGE_NAME}/setup_drake_colab.py")
+    else()
+      append_step_status("COLAB SETUP SCRIPT UPLOAD" UNSTABLE)
+    endif()
+  endif()
 endif()
