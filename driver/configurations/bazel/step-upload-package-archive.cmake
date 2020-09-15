@@ -61,7 +61,8 @@ else()
     endif()
   endif()
   if(DASHBOARD_PACKAGE_ARCHIVE_TOTAL_UPLOADS EQUAL 2)
-    set(DASHBOARD_PACKAGE_ARCHIVE_LATEST_NAME "drake-latest-${DASHBOARD_PACKAGE_ARCHIVE_DISTRIBUTION}.tar.gz")
+    set(DASHBOARD_PACKAGE_LATEST_NAME "drake-latest")
+    set(DASHBOARD_PACKAGE_ARCHIVE_LATEST_NAME "${DASHBOARD_PACKAGE_LATEST_NAME}-${DASHBOARD_PACKAGE_ARCHIVE_DISTRIBUTION}.tar.gz")
     if(NOT DASHBOARD_UNSTABLE)
       message(STATUS "Uploading package archive 2 of 2 to AWS S3...")
       foreach(RETRIES RANGE 3)
@@ -142,7 +143,7 @@ else()
               --cache-control max-age=${DASHBOARD_PACKAGE_ARCHIVE_LATEST_CACHE_CONTROL_MAX_AGE}
               --storage-class ${DASHBOARD_PACKAGE_ARCHIVE_STORAGE_CLASS}
               "${DASHBOARD_SOURCE_DIRECTORY}/tools/install/colab/setup_drake_colab.py"
-              "s3://drake-packages/drake/${DASHBOARD_PACKAGE_ARCHIVE_FOLDER}/${DASHBOARD_PACKAGE_ARCHIVE_LATEST_NAME}/setup_drake_colab.py"
+              "s3://drake-packages/drake/${DASHBOARD_PACKAGE_ARCHIVE_FOLDER}/${DASHBOARD_PACKAGE_LATEST_NAME}/setup_drake_colab.py"
             RESULT_VARIABLE DASHBOARD_AWS_S3_RESULT_VARIABLE
             COMMAND_ECHO STDERR)
           if(DASHBOARD_AWS_S3_RESULT_VARIABLE EQUAL 0)
@@ -151,7 +152,7 @@ else()
           sleep(15)
         endforeach()
         if(DASHBOARD_AWS_S3_RESULT_VARIABLE EQUAL 0)
-          message(STATUS "Colab setup script URL 2 of 2: https://drake-packages.csail.mit.edu/drake/${DASHBOARD_PACKAGE_ARCHIVE_FOLDER}/${DASHBOARD_PACKAGE_ARCHIVE_LATEST_NAME}/setup_drake_colab.py")
+          message(STATUS "Colab setup script URL 2 of 2: https://drake-packages.csail.mit.edu/drake/${DASHBOARD_PACKAGE_ARCHIVE_FOLDER}/${DASHBOARD_PACKAGE_LATEST_NAME}/setup_drake_colab.py")
         else()
           append_step_status("COLAB SETUP SCRIPT UPLOAD 2 OF 2" UNSTABLE)
         endif()
