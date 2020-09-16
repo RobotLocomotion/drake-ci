@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -euxo pipefail
+
+mkdir -p /home/pbuilder
+
+chown pbuilder:pbuilder /home/pbuilder
+chmod 0755 /home/pbuilder
+
+mkdir -p /home/pbuilder/.ssh
+
+chown pbuilder:pbuilder /home/pbuilder/.ssh
+chmod 0700 /home/pbuilder/.ssh
+
+cp /var/cache/pbuilder/bindmount/id_rsa /home/pbuilder/.ssh
+
+chown pbuilder:pbuilder /home/pbuilder/.ssh/id_rsa
+chmod 0600 /home/pbuilder/.ssh/id_rsa
+
+cp /var/cache/pbuilder/bindmount/.bazelrc \
+  /var/cache/pbuilder/bindmount/git_ssh \
+  /home/pbuilder
+
+chown pbuilder:pbuilder /home/pbuilder/.bazelrc /home/pbuilder/git_ssh
+chmod 0755 /home/pbuilder/git_ssh
