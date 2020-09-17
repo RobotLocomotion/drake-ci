@@ -89,12 +89,18 @@ if(PROVISION)
     set(PROVISION_SUDO "sudo")
   endif()
 
+  if(GENERATOR STREQUAL "cmake" OR PACKAGE)
+    set(PROVISION_ARGS "--without-doc-only --without-test-only")
+  else()
+    set(PROVISION_ARGS)
+  endif()
+
   set(PROVISION_SCRIPT
     "${DASHBOARD_SOURCE_DIRECTORY}/setup/${PROVISION_DIR}/install_prereqs.sh")
 
   if(EXISTS "${PROVISION_SCRIPT}")
     message(STATUS "Executing provisioning script...")
-    execute_process(COMMAND bash "-c" "yes | ${PROVISION_SUDO} ${PROVISION_SCRIPT}"
+    execute_process(COMMAND bash "-c" "yes | ${PROVISION_SUDO} ${PROVISION_SCRIPT} ${PROVISION_ARGS}"
       RESULT_VARIABLE INSTALL_PREREQS_RESULT_VARIABLE)
     if(NOT INSTALL_PREREQS_RESULT_VARIABLE EQUAL 0)
       fatal("provisioning script did not complete successfully")
