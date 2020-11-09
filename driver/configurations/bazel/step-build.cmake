@@ -53,6 +53,9 @@ if(MIRROR_TO_S3)
 elseif(PACKAGE)
   set(BUILD_ARGS
     "${DASHBOARD_BAZEL_STARTUP_OPTIONS} run ${DASHBOARD_BAZEL_BUILD_OPTIONS} //:install -- /opt/drake")
+elseif(PROVISION AND DOCUMENTATION)
+  set(BUILD_ARGS
+    "${DASHBOARD_BAZEL_STARTUP_OPTIONS} test ${DASHBOARD_BAZEL_BUILD_OPTIONS} ${DASHBOARD_BAZEL_TEST_OPTIONS} //bindings/pydrake/doc:gen_sphinx_test //bindings/pydrake/doc:serve_sphinx //doc:doxygen //doc:gen_sphinx_test //doc:py/system_doxygen_test //doc:serve_sphinx")
 else()
   set(BUILD_ARGS
     "${DASHBOARD_BAZEL_STARTUP_OPTIONS} test ${DASHBOARD_BAZEL_BUILD_OPTIONS} ${DASHBOARD_BAZEL_TEST_OPTIONS} ...")
