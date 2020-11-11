@@ -100,8 +100,8 @@ fi
 
 export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1
 
-apt-key adv --fetch-keys \
-  https://apt.kitware.com/keys/kitware-archive-latest.asc
+wget -q -t 4 -O- --retry-connrefused \
+  https://apt.kitware.com/keys/kitware-archive-latest.asc | apt-key add -
 
 echo "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main" \
   > /etc/apt/sources.list.d/kitware.list
@@ -113,7 +113,7 @@ apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
 
 apt-key --keyring /etc/apt/trusted.gpg del A8E5EF3A02600268
 
-wget -nv -O /tmp/gurobi9.0.2_linux64.tar.gz \
+wget -nv -t 4 -O /tmp/gurobi9.0.2_linux64.tar.gz --retry-connrefused \
   https://packages.gurobi.com/9.0/gurobi9.0.2_linux64.tar.gz
 echo '6527581aef11c3e425c52993d108861ef53ec13971d9931861bf9c88d9d111f3  /tmp/gurobi9.0.2_linux64.tar.gz' \
   | sha256sum -c -
