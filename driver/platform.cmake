@@ -90,7 +90,7 @@ if(PROVISION)
   endif()
 
   if(GENERATOR STREQUAL "cmake" OR PACKAGE)
-    set(PROVISION_ARGS "--without-doc-only --without-test-only")
+    set(PROVISION_ARGS "--without-test-only")
   elseif(DOCUMENTATION)
     set(PROVISION_ARGS "--with-doc-only")
   else()
