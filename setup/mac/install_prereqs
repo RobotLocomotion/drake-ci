@@ -43,15 +43,19 @@ if [[ "${EUID}" -eq 0 ]]; then
 fi
 
 if ! command -v brew &>/dev/null; then
-  /usr/bin/ruby -e \
-    "$(curl -fsSL --retry 4 https://raw.githubusercontent.com/Homebrew/install/master/install)"
+  /bin/bash -c \
+    "$(/usr/bin/curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
 [[ -z "${TERM-}" ]] || export HOMEBREW_COLOR=1
 
+export HOMEBREW_CASK_OPTS=--require-sha
 export HOMEBREW_CURL_RETRIES=4
+export HOMEBREW_NO_AUTO_UPDATE=1
+export HOMEBREW_NO_INSECURE_REDIRECT=1
+export HOMEBREW_NO_INSTALL_CLEANUP=1
 
 brew analytics off
-brew update
+brew update || (sleep 15; brew update)
 trap 'brew cleanup && rm -rf "$(brew --cache)" "${HOME}/Library/Logs/Homebrew/*"' EXIT
 brew bundle --file="$(dirname ${(%):-%x})/Brewfile" --no-lock
