@@ -71,7 +71,7 @@ else()
 endif()
 
 if(APPLE)
-  set(DISTRIBUTION_REGEX "(mojave|catalina)")
+  set(DISTRIBUTION_REGEX "(big-sur|catalina)")
 else()
   set(DISTRIBUTION_REGEX "(bionic|focal)")
 endif()
