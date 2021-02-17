@@ -38,5 +38,6 @@ apt-get update -o APT::Acquire::Retries=4 \
 apt-get install -o APT::Acquire::Retries=4 -y --no-install-recommends \
   autopkgtest
 
-autopkgtest "${BUILDDIR}"/drake_*_amd64.changes -- null
+export PYTHONWARNINGS=ignore::SyntaxWarning
 
+autopkgtest "${BUILDDIR}"/drake_*_amd64.changes -- null

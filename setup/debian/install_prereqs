@@ -83,6 +83,6 @@ cp "${SSH_PRIVATE_KEY_FILE:-}" /var/cache/pbuilder/bindmount/id_rsa
 
 export ARCH=amd64
 export DIST=$(lsb_release -cs)
-export GIT_PBUILDER_OPTIONS="--bindmounts /var/cache/pbuilder/bindmount --components 'main restricted universe multiverse' --hookdir /var/cache/pbuilder/hook.d --use-network yes" \
+export GIT_PBUILDER_OPTIONS="--bindmounts /var/cache/pbuilder/bindmount --components 'main restricted universe multiverse' --hookdir /var/cache/pbuilder/hook.d --use-network yes"
 
 git-pbuilder create
