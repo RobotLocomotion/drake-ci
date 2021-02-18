@@ -203,7 +203,7 @@ endif()
 
 string(REGEX MATCH "documentation" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
 if(REGEX_MATCH_RESULT)
-  if(TRACK STREQUAL "nightly")
+  if(DISTRIBUTION STREQUAL "bionic" AND TRACK STREQUAL "nightly")
     set(DOCUMENTATION "publish")
   else()
     set(DOCUMENTATION ON)
