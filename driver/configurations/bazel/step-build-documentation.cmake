@@ -47,6 +47,6 @@ else()
   endif()
 
   file(WRITE "${DASHBOARD_DOCUMENTATION_DIRECTORY}/CNAME" "drake.mit.edu")
-  file(WRITE "${DASHBOARD_DOCUMENTATION_DIRECTORY}/googleea1e34c03c307d95.html" "google-site-verification: googleea1e34c03c307d95.html")
+  file(WRITE "${DASHBOARD_DOCUMENTATION_DIRECTORY}/googleb54a1809ac854371.html" "google-site-verification: googleb54a1809ac854371.html")
   file(TOUCH "${DASHBOARD_DOCUMENTATION_DIRECTORY}/.nojekyll")
 endif()
