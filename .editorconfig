@@ -1,3 +1,6 @@
+# -*- mode: editorconfig; -*-
+# vi: set ft=editorconfig:
+
 # Copyright (c) 2018, Massachusetts Institute of Technology.
 # Copyright (c) 2018, Toyota Research Institute.
 # All rights reserved.
@@ -44,3 +47,4 @@ trim_trailing_whitespace = false
 
 [*.py]
 indent_size = 4
+max_line_length = 79

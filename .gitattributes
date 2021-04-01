@@ -1,0 +1,24 @@
+# -*- mode: gitattributes; -*-
+# vi: set ft=gitattributes:
+
+*                text=auto
+
+*.bash           diff=bash eol=lf
+*.bash.in        diff=bash eol=lf
+*.md             diff=markdown
+*.py             diff=python
+
+.gbp.conf        linguist-language=ini
+.gitattributes   export-ignore
+.github          export-ignore
+.gitignore       export-ignore
+.pbuilderrc      diff=bash eol=lf
+A10-git-ssh      diff=bash eol=lf
+A20-locale       diff=bash eol=lf
+B10-autopkgtest  diff=bash eol=lf
+Brewfile         diff=ruby
+C10-bash         diff=bash eol=lf
+D10-apt          diff=bash eol=lf
+git_ssh          diff=bash eol=lf
+init_script      diff=bash eol=lf
+install_prereqs  diff=bash eol=lf
