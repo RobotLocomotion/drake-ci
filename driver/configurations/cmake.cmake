@@ -31,8 +31,8 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-# Jenkins passes down an incorrect value of JAVA_HOME from master to agent for
-# some inexplicable reason.
+# Jenkins passes down an incorrect value of JAVA_HOME from controller to agent
+# for some inexplicable reason.
 unset(ENV{JAVA_HOME})
 
 set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}")

@@ -65,8 +65,3 @@ sudo mk-build-deps --host-arch amd64 -irt 'apt-get --no-install-recommends -qy' 
 gbp buildpackage ---git-export=WC --git-no-pristine-tar -us -uc -nc
 
 popd
-
-
-pbuilderrc
-
-
