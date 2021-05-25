@@ -109,7 +109,7 @@ if(REMOTE_CACHE)
     "build --experimental_guard_against_concurrent_changes=yes\n"
     "build --remote_cache=${DASHBOARD_REMOTE_CACHE}\n"
     "build --remote_local_fallback=yes\n"
-    "build --remote_max_connections=128\n"
+    "build --remote_max_connections=64\n"
     "build --remote_retries=4\n"
     "build --remote_timeout=120\n")
   if(DASHBOARD_TRACK STREQUAL "Nightly")
