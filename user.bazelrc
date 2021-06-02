@@ -31,12 +31,15 @@
 
 build --action_env=GIT_SSH
 build --announce_rc=yes
+build --experimental_ui_max_stdouterr_bytes=5242880
 build --keep_going=yes
 
 fetch --announce_rc=yes
+fetch --experimental_ui_max_stdouterr_bytes=5242880
 fetch --keep_going=yes
 
 query --announce_rc=yes
+query --experimental_ui_max_stdouterr_bytes=5242880
 query --keep_going=yes
 
 test --test_summary=short

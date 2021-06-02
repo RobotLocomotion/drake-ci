@@ -37,6 +37,7 @@ build --build_event_json_file=@DASHBOARD_BUILD_EVENT_JSON_FILE@
 build --color=yes
 build --copt=@DASHBOARD_COPT@
 build --experimental_scale_timeouts=@DASHBOARD_EXPERIMENTAL_SCALE_TIMEOUTS@
+build --experimental_ui_max_stdouterr_bytes=5242880
 build --host_copt=@DASHBOARD_COPT@
 build --http_timeout_scaling=@DASHBOARD_EXPERIMENTAL_SCALE_TIMEOUTS@
 build --jobs=@DASHBOARD_JOBS@
@@ -49,6 +50,7 @@ fetch --announce_rc=yes
 fetch --build_event_json_file=@DASHBOARD_BUILD_EVENT_JSON_FILE@
 fetch --color=yes
 fetch --experimental_scale_timeouts=@DASHBOARD_EXPERIMENTAL_SCALE_TIMEOUTS@
+fetch --experimental_ui_max_stdouterr_bytes=5242880
 fetch --http_timeout_scaling=@DASHBOARD_EXPERIMENTAL_SCALE_TIMEOUTS@
 fetch --keep_going=yes
 
@@ -56,6 +58,7 @@ query --announce_rc=yes
 query --build_event_json_file=@DASHBOARD_BUILD_EVENT_JSON_FILE@
 query --color=yes
 query --experimental_scale_timeouts=@DASHBOARD_EXPERIMENTAL_SCALE_TIMEOUTS@
+query --experimental_ui_max_stdouterr_bytes=5242880
 query --http_timeout_scaling=@DASHBOARD_EXPERIMENTAL_SCALE_TIMEOUTS@
 query --keep_going=yes
 
