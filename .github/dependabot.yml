@@ -39,5 +39,3 @@ updates:
     directory: /
     schedule:
       interval: weekly
-    assignees:
-      - jamiesnape
