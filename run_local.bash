@@ -31,12 +31,17 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+canonicalize()
+{
+    perl -e 'use Cwd;print Cwd::abs_path(shift) . "\n";' -- "$@"
+}
+
 set -euxo pipefail
 
-export WORKSPACE="$(pwd)"
+export WORKSPACE="$(canonicalize "$(dirname "${BASH_SOURCE}")")"
 
 export BUILD_ID="$(date -u +'%y%j.%H.%M')"
-export GIT_COMMIT="$(git --git-dir=${WORKSPACE}/src rev-parse HEAD)"
+export GIT_COMMIT="$(git --git-dir=${WORKSPACE}/src/.git rev-parse HEAD)"
 export JOB_NAME="linux-bionic-gcc-bazel-experimental-release"
 export NODE_NAME="$(hostname -s)"
 
