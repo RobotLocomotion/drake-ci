@@ -44,5 +44,6 @@ export BUILD_ID="$(date -u +'%y%j.%H.%M')"
 export GIT_COMMIT="$(git --git-dir=${WORKSPACE}/src/.git rev-parse HEAD)"
 export JOB_NAME="linux-bionic-gcc-bazel-experimental-release"
 export NODE_NAME="$(hostname -s)"
+export SSH_PRIVATE_KEY_FILE="-"
 
 source "${BASH_SOURCE%/*}/ctest_driver_script_wrapper.bash"
