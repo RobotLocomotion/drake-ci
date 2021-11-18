@@ -68,16 +68,14 @@ else()
   chmod("${SSH_PRIVATE_KEY_FILE}" 0400 "private key file")
 endif()
 
-# Create git SSH wrapper
-set(DASHBOARD_GIT_SSH_FILE "${DASHBOARD_TEMP_DIR}/git_ssh")
-list(APPEND DASHBOARD_TEMPORARY_FILES DASHBOARD_GIT_SSH_FILE)
-file(REMOVE "${DASHBOARD_GIT_SSH_FILE}")
-configure_file(
-  "${DASHBOARD_TOOLS_DIR}/git_ssh.bash.in"
-  "${DASHBOARD_GIT_SSH_FILE}"
-  @ONLY)
-chmod("${DASHBOARD_GIT_SSH_FILE}" 0755 "git_ssh file")
+# Add private key to agent
+if(NOT SSH_PRIVATE_KEY_FILE STREQUAL "-")
+  message(STATUS "Adding private key to ssh-agent")
+  execute_process(
+    COMMAND ssh-add "${SSH_PRIVATE_KEY_FILE}"
+    RESULT_VARIABLE DASHBOARD_SSH_AGENT_RESULT_VARIABLE)
 
-# Point git at our wrapper
-set(ENV{GIT_SSH} "${DASHBOARD_GIT_SSH_FILE}")
-message(STATUS "Using ENV{GIT_SSH} to set credentials")
+  if(NOT DASHBOARD_SSH_AGENT_RESULT_VARIABLE EQUAL 0)
+    fatal("adding private key to ssh-agent was not successful")
+  endif()
+endif()
