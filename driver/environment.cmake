@@ -95,7 +95,7 @@ else()
   fatal("could not extract compiler from job name")
 endif()
 
-string(REGEX MATCH "(bazel|cmake)" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
+string(REGEX MATCH "(bazel|cmake|wheel)" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
 if(REGEX_MATCH_RESULT)
   set(GENERATOR "${REGEX_MATCH_RESULT}")
 else()

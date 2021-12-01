@@ -39,6 +39,7 @@ canonicalize()
 set -euxo pipefail
 
 export WORKSPACE="$(canonicalize "$(dirname "${BASH_SOURCE}")")"
+export WHEEL_OUTPUT_DIRECTORY="$(pwd)"
 
 export BUILD_ID="$(date -u +'%y%j.%H.%M')"
 export GIT_COMMIT="$(git --git-dir=${WORKSPACE}/src/.git rev-parse HEAD)"
