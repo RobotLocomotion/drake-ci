@@ -127,6 +127,9 @@ set(BUILD_ARGS
   "${DASHBOARD_SOURCE_DIRECTORY}/tools/wheel/dev/build-wheels"
   -t -o "${DASHBOARD_WHEEL_OUTPUT_DIRECTORY}" "${DASHBOARD_DRAKE_VERSION}")
 
+# Prepare build host
+execute_step(wheel provision)
+
 # Run the build, including tests
 execute_step(wheel build-and-test)
 
