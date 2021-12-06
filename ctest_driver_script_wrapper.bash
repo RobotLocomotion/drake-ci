@@ -40,4 +40,7 @@ export PATH="/usr/local/bin:${PATH}"
 [[ ! "${JOB_NAME}" =~ unprovisioned || "$(uname -s)" != Darwin ]] || "${BASH_SOURCE%/*}/setup/mac/install_prereqs"
 [[ ! "${JOB_NAME}" =~ unprovisioned || "$(uname -s)" != Linux ]] || sudo --preserve-env "${BASH_SOURCE%/*}/setup/ubuntu/install_prereqs"
 
-ssh-agent ctest --extra-verbose --no-compress-output --script "${BASH_SOURCE%/*}/ctest_driver_script.cmake"
+AGENT=ssh-agent
+[[ "$SSH_PRIVATE_KEY_FILE" == '-' ]] && AGENT=
+
+$AGENT ctest --extra-verbose --no-compress-output --script "${BASH_SOURCE%/*}/ctest_driver_script.cmake"

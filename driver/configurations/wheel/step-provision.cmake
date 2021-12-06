@@ -1,4 +1,5 @@
-#!/bin/bash
+# -*- mode: cmake; -*-
+# vi: set ft=cmake:
 
 # BSD 3-Clause License
 #
@@ -31,36 +32,17 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set -euxo pipefail
+notice("CTest Status: INSTALL DOCKER PREREQUISITES")
 
-if [[ "${EUID}" -ne 0 ]]; then
-  echo 'ERROR: This script must be run as root' >&2
-  exit 1
-fi
+execute_process(COMMAND "docker" "run" "hello-world"
+  RESULT_VARIABLE DOCKER_RESULT_VARIABLE)
+if(DOCKER_RESULT_VARIABLE EQUAL 0)
+  return()
+endif()
 
-if [ -d /media/ephemeral0 ]; then
-  mkdir /media/ephemeral0/docker
-  ln -s /media/ephemeral0/docker /var/lib/docker
-fi
-
-export DEBIAN_FRONTEND=noninteractive
-
-apt-get update -o APT::Acquire::Retries=4 -qq \
-  || (sleep 15; apt-get update -o APT::Acquire::Retries=4 -qq)
-trap 'set +x; rm -rf /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin /var/lib/apt/lists/* /var/log/apt/*; set -x' EXIT
-
-apt-get install --no-install-recommends -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 -qy \
-  ca-certificates \
-  gnupg \
-  lsb-release
-
-export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1
-
-apt-key adv --fetch-keys https://download.docker.com/linux/ubuntu/gpg
-echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
-  > /etc/apt/sources.list.d/docker.list
-
-apt-get update -o APT::Acquire::Retries=4 -qq \
-  || (sleep 15; apt-get update -o APT::Acquire::Retries=4 -qq)
-apt-get install --no-install-recommends -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 -qy \
-  docker-ce
+execute_process(COMMAND "sudo" "${DASHBOARD_SETUP_DIR}/docker/install_prereqs"
+  RESULT_VARIABLE DOCKER_INSTALL_PREREQS_RESULT_VARIABLE
+  COMMAND_ECHO STDERR)
+if(NOT DOCKER_INSTALL_PREREQS_RESULT_VARIABLE EQUAL 0)
+  append_step_status("WHEEL PROVISION (INSTALL DOCKER PREREQUISITES)" UNSTABLE)
+endif()
