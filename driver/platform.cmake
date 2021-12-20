@@ -110,7 +110,7 @@ if(PROVISION)
       set(PROVISION_ARGS "${PROVISION_ARGS} -y")
     endif()
     execute_process(
-      COMMAND ${PROVISION_SUDO} ${PROVISION_SCRIPT} ${PROVISION_ARGS}
+      COMMAND bash "-c" "${PROVISION_SUDO} ${PROVISION_SCRIPT} ${PROVISION_ARGS}"
       RESULT_VARIABLE INSTALL_PREREQS_RESULT_VARIABLE)
     if(NOT INSTALL_PREREQS_RESULT_VARIABLE EQUAL 0)
       fatal("provisioning script did not complete successfully")
