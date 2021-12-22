@@ -105,12 +105,7 @@ if(PROVISION)
 
   if(EXISTS "${PROVISION_SCRIPT}")
     message(STATUS "Executing provisioning script...")
-    # NOTE: to bypass apt-get install/satisfy requiring input.
-    if (NOT APPLE)
-      set(PROVISION_ARGS "${PROVISION_ARGS} -y")
-    endif()
-    execute_process(
-      COMMAND bash "-c" "${PROVISION_SUDO} ${PROVISION_SCRIPT} ${PROVISION_ARGS}"
+    execute_process(COMMAND bash "-c" "yes | ${PROVISION_SUDO} ${PROVISION_SCRIPT} ${PROVISION_ARGS}"
       RESULT_VARIABLE INSTALL_PREREQS_RESULT_VARIABLE)
     if(NOT INSTALL_PREREQS_RESULT_VARIABLE EQUAL 0)
       fatal("provisioning script did not complete successfully")
