@@ -125,7 +125,14 @@ endif()
 set(DASHBOARD_BAZEL_BUILD_OPTIONS "--compilation_mode")
 
 if(DEBUG)
-  set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS}=dbg")
+  if(APPLE)
+    # NOTE: use --config=apple_debug on macOS, not --compilation_mode=dbg.
+    # This may result in e.g., --config=apple_debug --config=everything which
+    # will combine (use --announce_rc to to view all configs locally).
+    set(DASHBOARD_BAZEL_BUILD_OPTIONS "--config=apple_debug")
+  else()
+    set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS}=dbg")
+  endif()
 else()
   set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS}=opt")
 endif()
