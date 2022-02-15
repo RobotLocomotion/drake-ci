@@ -48,7 +48,7 @@ if [[ ! -d /media/ephemeral0/ubuntu ]]; then
   mount "${DEV_EPHEMERAL0}" /media/ephemeral0
 
   dd if=/dev/zero of=/media/ephemeral0/swap bs=1M \
-    count="$(grep MemTotal /proc/meminfo | awk '{print int(sqrt($2)/1024+0.5)*1024}')"
+    count="$(grep MemTotal /proc/meminfo | awk '{print int($2/2)}')"
 
   chown root:root /media/ephemeral0/swap
   chmod u=rw,og= /media/ephemeral0/swap
