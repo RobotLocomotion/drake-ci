@@ -34,9 +34,9 @@
 
 
 if(APPLE)
-  set(GRB_LICENSE_FILE "/Library/gurobi902/gurobi.lic")
+  set(GRB_LICENSE_FILE "/Library/gurobi951/gurobi.lic")
 else()
-  set(GRB_LICENSE_FILE "/opt/gurobi902/gurobi.lic")
+  set(GRB_LICENSE_FILE "/opt/gurobi951/gurobi.lic")
 endif()
 
 if(GUROBI AND NOT EXISTS "${GRB_LICENSE_FILE}")
