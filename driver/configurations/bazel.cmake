@@ -135,6 +135,10 @@ include(${DASHBOARD_DRIVER_DIR}/configurations/gurobi.cmake)
 include(${DASHBOARD_DRIVER_DIR}/configurations/mosek.cmake)
 include(${DASHBOARD_DRIVER_DIR}/configurations/snopt.cmake)
 
+# Many errors due to failing to fetch remotejdk from google repos on linux.
+# https://github.com/RobotLocomotion/drake/issues/15740
+set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --experimental_repository_downloader_retries=5")
+
 set(DASHBOARD_TEST_TAG_FILTERS)
 
 if(EVERYTHING)
