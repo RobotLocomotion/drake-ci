@@ -44,6 +44,7 @@ build --keep_going=yes
 build --subcommands=@DASHBOARD_SUBCOMMANDS@
 build --test_env=GRB_LICENSE_FILE
 build --test_env=MOSEKLM_LICENSE_FILE
+build --experimental_repository_downloader_retries=5
 
 fetch --announce_rc=yes
 fetch --build_event_json_file=@DASHBOARD_BUILD_EVENT_JSON_FILE@
