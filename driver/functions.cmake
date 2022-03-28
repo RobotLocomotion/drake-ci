@@ -286,8 +286,8 @@ endfunction()
 #------------------------------------------------------------------------------
 # Set POSIX permissions on file
 #------------------------------------------------------------------------------
-function(chmod PATH PERMISSIONS)
-  execute_process(COMMAND chmod ${PERMISSIONS} "${PATH}"
+function(chmod PATH PERMISSIONS MESSAGE)
+  execute_process(COMMAND sudo chmod ${PERMISSIONS} "${PATH}"
     RESULT_VARIABLE _chmod_result
     OUTPUT_VARIABLE _chmod_output
     ERROR_VARIABLE _chmod_output)
@@ -295,6 +295,20 @@ function(chmod PATH PERMISSIONS)
     fatal("setting permissions on ${MESSAGE} was not successful"
       _chmod_output)
   endif()
+endfunction()
+
+#------------------------------------------------------------------------------
+# Create a directory with specified permissions
+#------------------------------------------------------------------------------
+function(mkdir PATH PERMISSIONS MESSAGE)
+  message(STATUS "Creating ${MESSAGE}...")
+  execute_process(
+    COMMAND sudo "${CMAKE_COMMAND}" -E make_directory "${PATH}"
+    RESULT_VARIABLE _mkdir_result)
+  if(NOT _mkdir_result EQUAL 0)
+    fatal("creation of ${MESSAGE} was not successful")
+  endif()
+  chmod("${PATH}" "${PERMISSIONS}" "${MESSAGE}")
 endfunction()
 
 #------------------------------------------------------------------------------

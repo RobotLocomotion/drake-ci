@@ -103,35 +103,39 @@ report_configuration("
 if(DEFINED ENV{WHEEL_OUTPUT_DIRECTORY})
   set(DASHBOARD_WHEEL_OUTPUT_DIRECTORY "$ENV{WHEEL_OUTPUT_DIRECTORY}")
 else()
-  message(STATUS "Creating wheel output directory...")
-
   set(DASHBOARD_WHEEL_OUTPUT_DIRECTORY "/opt/drake/wheelhouse")
-  execute_process(
-    COMMAND sudo "${CMAKE_COMMAND}" -E make_directory
-      "${DASHBOARD_WHEEL_OUTPUT_DIRECTORY}"
-    RESULT_VARIABLE MAKE_DIRECTORY_RESULT_VARIABLE)
-  if(NOT MAKE_DIRECTORY_RESULT_VARIABLE EQUAL 0)
-    fatal("creation of wheel output directory was not successful")
-  endif()
-
+  mkdir("${DASHBOARD_WHEEL_OUTPUT_DIRECTORY}" 1777 "wheel output directory")
   list(APPEND DASHBOARD_TEMPORARY_FILES DASHBOARD_WHEEL_OUTPUT_DIRECTORY)
+endif()
 
-  execute_process(COMMAND sudo chmod 0777 "${DASHBOARD_WHEEL_OUTPUT_DIRECTORY}"
-    RESULT_VARIABLE CHMOD_RESULT_VARIABLE)
-  if(NOT CHMOD_RESULT_VARIABLE EQUAL 0)
-    fatal("setting permissions on wheel output directory was not successful")
+if(APPLE)
+  if(DEFINED ENV{WHEEL_BUILD_DIRECTORY})
+    set(DASHBOARD_WHEEL_BUILD_DIRECTORY "$ENV{WHEEL_BUILD_DIRECTORY}")
+  else()
+    set(DASHBOARD_WHEEL_BUILD_DIRECTORY "/opt/drake-wheel")
+    mkdir("${DASHBOARD_WHEEL_BUILD_DIRECTORY}" 1777 "wheel build directory")
   endif()
+
+  mkdir(/opt/drake 1777 "drake install directory")
+  chmod(/opt 1777 /opt)
 endif()
 
 set(BUILD_ARGS
   "${DASHBOARD_SOURCE_DIRECTORY}/tools/wheel/build-wheels"
   -t -o "${DASHBOARD_WHEEL_OUTPUT_DIRECTORY}" "${DASHBOARD_DRAKE_VERSION}")
 
-# Prepare build host
-execute_step(wheel provision)
+if(APPLE)
+    list(APPEND BUILD_ARGS -r "${DASHBOARD_WHEEL_BUILD_DIRECTORY}")
 
-# Run the build, including tests
-execute_step(wheel build-and-test)
+    # Run the build, including tests (includes provisioning)
+    execute_step(wheel build-and-test)
+else()
+    # Prepare build host
+    execute_step(wheel provision)
+
+    # Run the build, including tests
+    execute_step(wheel build-and-test)
+endif()
 
 # Determine build result
 if(NOT DASHBOARD_FAILURE AND NOT DASHBOARD_UNSTABLE)

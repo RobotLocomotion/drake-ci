@@ -289,19 +289,10 @@ report_configuration("
   ")
 
 if(PACKAGE)
-  message(STATUS "Creating package output directory...")
   set(DASHBOARD_PACKAGE_OUTPUT_DIRECTORY "/opt/drake")
-  execute_process(COMMAND sudo "${CMAKE_COMMAND}" -E make_directory "${DASHBOARD_PACKAGE_OUTPUT_DIRECTORY}"
-    RESULT_VARIABLE MAKE_DIRECTORY_RESULT_VARIABLE)
-  if(NOT MAKE_DIRECTORY_RESULT_VARIABLE EQUAL 0)
-    fatal("creation of package output directory was not successful")
-  endif()
+  mkdir("${DASHBOARD_PACKAGE_OUTPUT_DIRECTORY}" 1777
+    "package output directory")
   list(APPEND DASHBOARD_TEMPORARY_FILES DASHBOARD_PACKAGE_OUTPUT_DIRECTORY)
-  execute_process(COMMAND sudo chmod 0777 "${DASHBOARD_PACKAGE_OUTPUT_DIRECTORY}"
-    RESULT_VARIABLE CHMOD_RESULT_VARIABLE)
-  if(NOT CHMOD_RESULT_VARIABLE EQUAL 0)
-    fatal("setting permissions on package output directory was not successful")
-  endif()
 endif()
 
 # Run the build
