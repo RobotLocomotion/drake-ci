@@ -53,6 +53,7 @@ fetch --experimental_scale_timeouts=@DASHBOARD_EXPERIMENTAL_SCALE_TIMEOUTS@
 fetch --experimental_ui_max_stdouterr_bytes=5242880
 fetch --http_timeout_scaling=@DASHBOARD_EXPERIMENTAL_SCALE_TIMEOUTS@
 fetch --keep_going=yes
+fetch --experimental_repository_downloader_retries=5
 
 query --announce_rc=yes
 query --build_event_json_file=@DASHBOARD_BUILD_EVENT_JSON_FILE@
@@ -61,6 +62,7 @@ query --experimental_scale_timeouts=@DASHBOARD_EXPERIMENTAL_SCALE_TIMEOUTS@
 query --experimental_ui_max_stdouterr_bytes=5242880
 query --http_timeout_scaling=@DASHBOARD_EXPERIMENTAL_SCALE_TIMEOUTS@
 query --keep_going=yes
+query --experimental_repository_downloader_retries=5
 
 test --test_summary=short
 
