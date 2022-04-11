@@ -94,7 +94,7 @@ else()
     endif()
   endif()
 
-  if(DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME STREQUAL "bionic")
+  if(DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME STREQUAL "focal")
     if(NOT DASHBOARD_UNSTABLE)
       set(DOCKER_TAG_DATE_ARGS "tag robotlocomotion/drake:${DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME} robotlocomotion/drake:${DATE}")
       separate_arguments(DOCKER_TAG_DATE_ARGS_LIST UNIX_COMMAND "${DOCKER_TAG_DATE_ARGS}")
