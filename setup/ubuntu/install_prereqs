@@ -89,15 +89,10 @@ EOF
 
 systemctl --now --quiet enable /lib/systemd/system/xvfb.service
 
-if [[ "$(lsb_release -cs)" == 'bionic' ]]; then
-  apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
-    ntp
-else
-  apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
-    systemd-timesyncd
+apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
+  systemd-timesyncd
 
-  timedatectl set-ntp on
-fi
+timedatectl set-ntp on
 
 export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1
 

@@ -74,7 +74,7 @@ endif()
 if(APPLE)
   set(DISTRIBUTION_REGEX "(big-sur|monterey)")
 else()
-  set(DISTRIBUTION_REGEX "(bionic|focal)")
+  set(DISTRIBUTION_REGEX "(focal)")
 endif()
 string(REGEX MATCH "${DISTRIBUTION_REGEX}"
   REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
