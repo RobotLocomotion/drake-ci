@@ -36,8 +36,8 @@
 
 if(NOT APPLE)
   if(COMPILER STREQUAL "clang")
-    set(ENV{CC} "clang-9")
-    set(ENV{CXX} "clang++-9")
+    set(ENV{CC} "clang-12")
+    set(ENV{CXX} "clang++-12")
   elseif(COMPILER STREQUAL "gcc")
     set(ENV{CC} "gcc")
     set(ENV{CXX} "g++")
