@@ -35,7 +35,7 @@ set -euxo pipefail
 
 [[ -z "${TERM}" ]] || export CLICOLOR_FORCE=1
 
-export PATH="/usr/local/bin:${PATH}"
+export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
 
 [[ ! "${JOB_NAME}" =~ unprovisioned || "$(uname -s)" != Darwin ]] || "${BASH_SOURCE%/*}/setup/mac/install_prereqs"
 [[ ! "${JOB_NAME}" =~ unprovisioned || "$(uname -s)" != Linux ]] || sudo --preserve-env "${BASH_SOURCE%/*}/setup/ubuntu/install_prereqs"
