@@ -35,7 +35,15 @@ set -euxo pipefail
 
 [[ -z "${TERM}" ]] || export CLICOLOR_FORCE=1
 
-export PATH="/usr/local/bin:${PATH}"
+# On m1 mac, detect if we can re-run the script under arm64, since Jenkins'
+# login initially runs in an emulated x86_64 (Rosetta 2) environment.
+if [[ "$(uname -s)" == Darwin && "$(uname -p)" != "arm" ]]; then
+    if arch -arch arm64 true &>/dev/null; then
+        exec arch -arch arm64 "$0" "$@"
+    fi
+fi
+
+export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
 
 [[ ! "${JOB_NAME}" =~ unprovisioned || "$(uname -s)" != Darwin ]] || "${BASH_SOURCE%/*}/setup/mac/install_prereqs"
 [[ ! "${JOB_NAME}" =~ unprovisioned || "$(uname -s)" != Linux ]] || sudo --preserve-env "${BASH_SOURCE%/*}/setup/ubuntu/install_prereqs"
