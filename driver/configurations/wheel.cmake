@@ -39,9 +39,9 @@ unset(ENV{JAVA_HOME})
 set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}")
 set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/_wheel_$ENV{USER}")
 
-find_program(DASHBOARD_PYTHON_COMMAND NAMES "python3" "python")
-if(NOT DASHBOARD_PYTHON_COMMAND)
-  fatal("python was not found")
+find_program(DASHBOARD_BAZEL_COMMAND NAMES "bazel")
+if(NOT DASHBOARD_BAZEL_COMMAND)
+  fatal("bazel was not found")
 endif()
 
 set(DASHBOARD_BUILD_EVENT_JSON_FILE "${CTEST_BINARY_DIRECTORY}/BUILD.JSON")
@@ -121,7 +121,7 @@ if(APPLE)
 endif()
 
 set(BUILD_ARGS
-  "${DASHBOARD_SOURCE_DIRECTORY}/tools/wheel/build-wheels"
+  run //tools/wheel:builder --
   -t -o "${DASHBOARD_WHEEL_OUTPUT_DIRECTORY}" "${DASHBOARD_DRAKE_VERSION}")
 
 if(APPLE)
