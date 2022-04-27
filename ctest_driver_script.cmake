@@ -99,9 +99,8 @@ set(DASHBOARD_TEST ON)
 # Set up the site and build information
 include(${DASHBOARD_DRIVER_DIR}/site.cmake)
 
-# Set up the compiler and build platform
+# Set up the build platform
 include(${DASHBOARD_DRIVER_DIR}/platform.cmake)
-include(${DASHBOARD_DRIVER_DIR}/compiler.cmake)
 
 # Set up status variables
 clear_status(FAILURE)
