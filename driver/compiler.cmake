@@ -32,18 +32,40 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# Select appropriate compiler
+# Query what compiler is specified by `--config=${COMPILER}`.
+set(COMPILER_CONFIG_ARGS
+  run --config=${COMPILER}
+  //tools/cc_toolchain:print_compiler_config)
 
-if(NOT APPLE)
-  if(COMPILER STREQUAL "clang")
-    set(ENV{CC} "clang-9")
-    set(ENV{CXX} "clang++-9")
-  elseif(COMPILER STREQUAL "gcc")
-    set(ENV{CC} "gcc")
-    set(ENV{CXX} "g++")
-  else()
-    fatal("unknown compiler '${COMPILER}'")
+execute_process(COMMAND ${DASHBOARD_BAZEL_COMMAND} ${COMPILER_CONFIG_ARGS}
+  WORKING_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}"
+  OUTPUT_VARIABLE COMPILER_CONFIG_OUTPUT
+  RESULT_VARIABLE COMPILER_CONFIG_RETURN_VALUE)
+
+if(NOT COMPILER_CONFIG_RETURN_VALUE EQUAL 0)
+  fatal("compiler configuration could not be obtained")
+endif()
+
+# Clean up the Bazel environment; otherwise, if we try to run Bazel again with
+# different arguments (`--output_user_root` in particular?), things go horribly
+# sideways.
+execute_process(COMMAND ${DASHBOARD_BAZEL_COMMAND} clean
+  WORKING_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}")
+
+# Extract the compiler (CC, CXX) names.
+STRING(REPLACE "\n" ";" COMPILER_CONFIG_OUTPUT "${COMPILER_CONFIG_OUTPUT}")
+foreach(COMPILER_CONFIG_ENTRY IN LISTS COMPILER_CONFIG_OUTPUT)
+  if("${COMPILER_CONFIG_ENTRY}" MATCHES "^([A-Z]+)=(.*)$")
+    set(DASHBOARD_${CMAKE_MATCH_1}_COMMAND "${CMAKE_MATCH_2}")
   endif()
+endforeach()
+
+if("${DASHBOARD_CC_COMMAND}" STREQUAL "")
+  fatal("compiler configuration (CC) could not be obtained")
+endif()
+
+if("${DASHBOARD_CXX_COMMAND}" STREQUAL "")
+  fatal("compiler configuration (CXX) could not be obtained")
 endif()
 
 string(TOUPPER "${COMPILER}" COMPILER_UPPER)

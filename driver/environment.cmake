@@ -279,3 +279,25 @@ if(NOT APPLE)
 endif()
 string(TIMESTAMP DASHBOARD_TIMESTAMP "%s")
 file(WRITE "${DASHBOARD_TIMESTAMP_FILE}" "${DASHBOARD_TIMESTAMP}")
+
+if(NOT PROVISION)
+  # Find Bazel and prepare its execution environment
+  find_program(DASHBOARD_BAZEL_COMMAND NAMES "bazel")
+  if(NOT DASHBOARD_BAZEL_COMMAND)
+    fatal("bazel was not found")
+  endif()
+
+  if(DASHBOARD_UNIX_DISTRIBUTION STREQUAL "Apple")
+    set(USER_ENVIRONMENT_PROVISION_DIR "mac")
+  else()
+    string(TOLOWER "${DASHBOARD_UNIX_DISTRIBUTION}" USER_ENVIRONMENT_PROVISION_DIR)
+  endif()
+  set(USER_ENVIRONMENT_PROVISION_SCRIPT
+    "${DASHBOARD_SOURCE_DIRECTORY}/setup/${USER_ENVIRONMENT_PROVISION_DIR}/source_distribution/install_prereqs_user_environment.sh")
+  message(STATUS "Executing user environment provisioning script...")
+  execute_process(COMMAND bash "-c" "${USER_ENVIRONMENT_PROVISION_SCRIPT}"
+    RESULT_VARIABLE INSTALL_PREREQS_USER_ENVIRONMENT_RESULT_VARIABLE)
+  if(NOT INSTALL_PREREQS_USER_ENVIRONMENT_RESULT_VARIABLE EQUAL 0)
+    fatal("user environment provisioning script did not complete successfully")
+  endif()
+endif()

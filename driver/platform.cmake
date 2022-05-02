@@ -113,6 +113,11 @@ if(PROVISION)
   else()
     fatal("provisioning script not available for this platform")
   endif()
+
+  find_program(DASHBOARD_BAZEL_COMMAND NAMES "bazel")
+  if(NOT DASHBOARD_BAZEL_COMMAND)
+    fatal("bazel was not found")
+  endif()
 endif()
 
 if(APPLE)
