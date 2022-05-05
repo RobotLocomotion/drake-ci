@@ -117,7 +117,7 @@ if(REMOTE_CACHE)
   )
 endif()
 
-set(DASHBOARD_BAZEL_BUILD_OPTIONS "--config ${COMPILER} --compilation_mode")
+set(DASHBOARD_BAZEL_BUILD_OPTIONS "--config=${COMPILER} --compilation_mode")
 
 if(DEBUG)
   set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS}=dbg")
