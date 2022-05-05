@@ -134,6 +134,12 @@ set(DASHBOARD_TEST_TAG_FILTERS)
 
 if(EVERYTHING)
   set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=everything")
+  # TODO(jwnimmer-tri) Once we've finished the Clang 12 upgrade and therefore
+  # can enable OpenMP on Clang, we should move `--config omp` into bazelrc as
+  # part of `--config everything`, instead of having special drake-ci logic.
+  if(COMPILER STREQUAL "gcc")
+    set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=omp")
+  endif()
 elseif(GUROBI OR MOSEK OR PACKAGE OR SNOPT)
   set(DASHBOARD_TEST_TAG_FILTERS
     "-gurobi"
