@@ -41,7 +41,44 @@ fi
 systemctl --quiet disable apt-daily-upgrade.timer apt-daily.timer
 
 if [[ ! -d /media/ephemeral0/ubuntu ]]; then
-  readonly DEV_EPHEMERAL0="/dev/$(lsblk | grep -Eo 'nvme[01np]+' | grep -v $(lsblk | grep -Eo  'nvme[01n]+p1' | grep -Eo 'nvme[01n]'))"
+  # NOTE: each distribution upgrade has resulted in changing the search logic
+  # to find the largest disk attached to create /media/ephemeral0/ubuntu.  In
+  # this formulation we rely on `lsblk` reporting type `disk` for the desired
+  # destination drive, which may not always be true.  Example standard outputs:
+  #
+  # Focal:
+  # $ lsblk
+  # NAME        MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+  # ... loop devices ...
+  # nvme1n1     259:0    0 372.5G  0 disk
+  # nvme0n1     259:1    0    16G  0 disk
+  # └─nvme0n1p1 259:2    0    16G  0 part /
+  #
+  # Jammy:
+  # NAME         MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
+  # ... loop devices ...
+  # nvme0n1      259:0    0     8G  0 disk
+  # ├─nvme0n1p1  259:2    0   7.9G  0 part /
+  # ├─nvme0n1p14 259:3    0     4M  0 part
+  # └─nvme0n1p15 259:4    0   106M  0 part /boot/efi
+  # nvme1n1      259:1    0 372.5G  0 disk
+  #
+  # In both instances we desire `/dev/nvme1n1`, which is the largest disk
+  # storage attached.  The pipeline below executes:
+  #
+  # 1. `lsblk` to query SIZE (in bytes via -b to enable sorting), NAME, and
+  #    TYPE, output in key="value" pairs (-P) to make `sed` more reliable.
+  # 2. Filter for just the `disk` types using `grep`.
+  # 3. Transform remaining `SIZE="size" NAME="name" TYPE="type"` lines into
+  #    `size:name` using `sed` to enable sorting on `size` and easy `name`
+  #    extraction via `cut`.
+  # 4. Numerically sort in reverse the output (`sort -nr`), meaning the largest
+  #    `disk` will be the first line, and select the largest (`head -1`).
+  # 5. Finally, extract `name` from `size:name` via `cut`, producing a final
+  #    result of `/dev/{name}` to create the additional storage on.
+  readonly DEV_EPHEMERAL0="/dev/$(lsblk -b -o SIZE,NAME,TYPE -P | grep disk | \
+    sed 's/SIZE="\(.*\)" NAME="\(.*\)" TYPE=.*/\1:\2/g' | sort -nr | head -1 | \
+    cut -d : -f 2)"
 
   mkfs -t ext4 "${DEV_EPHEMERAL0}"
   mkdir -p /media/ephemeral0
