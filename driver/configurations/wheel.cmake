@@ -104,13 +104,9 @@ else()
 endif()
 
 if(APPLE)
-  if(DEFINED ENV{WHEEL_BUILD_DIRECTORY})
-    set(DASHBOARD_WHEEL_BUILD_DIRECTORY "$ENV{WHEEL_BUILD_DIRECTORY}")
-  else()
-    set(DASHBOARD_WHEEL_BUILD_DIRECTORY "/opt/drake-wheel")
-    mkdir("${DASHBOARD_WHEEL_BUILD_DIRECTORY}" 1777 "wheel build directory")
-  endif()
-
+  # Ensure the build can write to /opt and /opt/drake; the latter might have
+  # been created as a parent of DASHBOARD_WHEEL_OUTPUT_DIRECTORY and needs to
+  # be writable by not-root
   mkdir(/opt/drake 1777 "drake install directory")
   chmod(/opt 1777 /opt)
 endif()
@@ -120,8 +116,6 @@ set(BUILD_ARGS
   -t -o "${DASHBOARD_WHEEL_OUTPUT_DIRECTORY}" "${DASHBOARD_DRAKE_VERSION}")
 
 if(APPLE)
-    list(APPEND BUILD_ARGS -r "${DASHBOARD_WHEEL_BUILD_DIRECTORY}")
-
     # Run the build, including tests (includes provisioning)
     execute_step(wheel build-and-test)
 else()
