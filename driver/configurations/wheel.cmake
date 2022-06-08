@@ -98,16 +98,13 @@ report_configuration("
 if(DEFINED ENV{WHEEL_OUTPUT_DIRECTORY})
   set(DASHBOARD_WHEEL_OUTPUT_DIRECTORY "$ENV{WHEEL_OUTPUT_DIRECTORY}")
 else()
-  set(DASHBOARD_WHEEL_OUTPUT_DIRECTORY "/opt/drake/wheelhouse")
+  set(DASHBOARD_WHEEL_OUTPUT_DIRECTORY "/opt/drake-wheel")
   mkdir("${DASHBOARD_WHEEL_OUTPUT_DIRECTORY}" 1777 "wheel output directory")
   list(APPEND DASHBOARD_TEMPORARY_FILES DASHBOARD_WHEEL_OUTPUT_DIRECTORY)
 endif()
 
 if(APPLE)
-  # Ensure the build can write to /opt and /opt/drake; the latter might have
-  # been created as a parent of DASHBOARD_WHEEL_OUTPUT_DIRECTORY and needs to
-  # be writable by not-root
-  mkdir(/opt/drake 1777 "drake install directory")
+  # Ensure the build can write to /opt
   chmod(/opt 1777 /opt)
 endif()
 
