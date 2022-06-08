@@ -104,6 +104,12 @@ else()
 endif()
 
 if(APPLE)
+  # Don't try to clean up after the build, because the wheel gets dumped into
+  # one of the trees that "cleaning up" would try to clean up. This would
+  # result in the wheel being deleted, except that the builder can't delete it
+  # due to permissions, which would be flagged as a build error.
+  list(APPEND BUILD_ARGS -k)
+
   # Ensure the build can write to /opt and /opt/drake; the latter might have
   # been created as a parent of DASHBOARD_WHEEL_OUTPUT_DIRECTORY and needs to
   # be writable by not-root
