@@ -312,6 +312,22 @@ function(mkdir PATH PERMISSIONS MESSAGE)
 endfunction()
 
 #------------------------------------------------------------------------------
+# Upload an artifact to AWS
+#------------------------------------------------------------------------------
+macro(aws_upload ARTIFACT UNSTABLE_MESSAGE)
+  execute_process(
+    COMMAND ${DASHBOARD_PYTHON_COMMAND}
+      "${DASHBOARD_TOOLS_DIR}/upload-to-aws.py"
+      --track "${DASHBOARD_TRACK}"
+      --aws "${DASHBOARD_AWS_COMMAND}"
+      "${ARTIFACT}"
+    RESULT_VARIABLE DASHBOARD_AWS_UPLOAD_RESULT_VARIABLE)
+  if(NOT DASHBOARD_AWS_UPLOAD_RESULT_VARIABLE EQUAL 0)
+    append_step_status("${UNSTABLE_MESSAGE}" UNSTABLE)
+  endif()
+endmacro()
+
+#------------------------------------------------------------------------------
 # Start a dashboard submission
 #------------------------------------------------------------------------------
 function(begin_stage)
