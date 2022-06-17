@@ -38,6 +38,10 @@ else()
   notice("CTest Status: CREATING PACKAGE ARCHIVE")
   string(TIMESTAMP DATE "%Y%m%d")
   string(TIMESTAMP TIME "%H%M%S")
+  # NOTE: DASHBOARD_PACKAGE_DATE and DASHBOARD_PACKAGE_DATE_TIME are used in
+  # step-create-debian-archive.
+  set(DASHBOARD_PACKAGE_DATE "${DATE}")
+  set(DASHBOARD_PACKAGE_DATE_TIME "${DATE}${TIME}")
   execute_process(COMMAND "${CTEST_GIT_COMMAND}" rev-parse HEAD
     WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}"
     RESULT_VARIABLE GIT_REV_PARSE_RESULT_VARIABLE
@@ -47,7 +51,7 @@ else()
     append_step_status("BAZEL PACKAGE ARCHIVE CREATION" UNSTABLE)
   endif()
   if(NOT DASHBOARD_UNSTABLE)
-    file(WRITE /opt/drake/share/doc/drake/VERSION.TXT "${DATE}${TIME} ${GIT_REV_PARSE_OUTPUT_VARIABLE}")
+    file(WRITE /opt/drake/share/doc/drake/VERSION.TXT "${DASHBOARD_PACKAGE_DATE_TIME} ${GIT_REV_PARSE_OUTPUT_VARIABLE}")
     if(APPLE)
       set(DASHBOARD_PACKAGE_ARCHIVE_DISTRIBUTION mac)
     else()
