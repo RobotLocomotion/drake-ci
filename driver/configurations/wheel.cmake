@@ -123,6 +123,8 @@ else()
     execute_step(wheel build-and-test)
 endif()
 
+execute_step(wheel upload-wheel)
+
 # Determine build result
 if(NOT DASHBOARD_FAILURE AND NOT DASHBOARD_UNSTABLE)
   set(DASHBOARD_MESSAGE "SUCCESS")
