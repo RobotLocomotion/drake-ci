@@ -135,8 +135,20 @@ def upload_artifacts(options):
     upload(path, name, expiration, options)
     upload_checksum(path, name, expiration, options)
 
-    if not options.experimental:
+    # For nightly builds, upload the same file as 'latest'.
+    if options.nightly:
         # Names are expected too like like one of:
+        #
+        # TGZ:
+        #   drake-<YYYYMMDD>-<codename>.tar.gz (nightly)
+        #   drake-<YYYYMMDDHHMMSS>-<hash>-<codename>.tar.gz
+        # Deb:
+        #   drake-dev_0.0.<YYYYMMDD>-1_amd64-<codename>.deb (nightly)
+        #   drake-dev_0.0.<YYYYMMDDHHMMSS>-<commit>-1_amd64-<codename>.deb
+        # Wheel:
+        #   drake-0.0.YYYY.M.DD.H.M.S+git<commit>-cp38-cp38-manylinux_2_31_x86_64.whl
+        #   drake-0.0.YYYY.M.DD.H.M.S+git<commit>-cp39-cp39-macosx_11_0_x86_64.whl
+        # Generally:
         #   drake-<version>-<stuff>
         #   drake-<date>-<git sha>-<stuff>
         #
@@ -152,8 +164,9 @@ def upload_artifacts(options):
             upload(path, name, expiration, options)
             upload_checksum(path, name, expiration, options)
         else:
-            print(f'WARNING: Failed to transform version in artifact {name}; '
-                  'no \'latest\' will be uploaded.', file=sys.stderr)
+            raise RuntimeError(
+                f'WARNING: Failed to transform version in artifact {name}; '
+                 'no \'latest\' will be uploaded.')
 
 
 def main(args):
