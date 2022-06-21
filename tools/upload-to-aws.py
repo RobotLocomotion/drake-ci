@@ -40,16 +40,43 @@ import re
 import subprocess
 import sys
 import tempfile
+import urllib.parse
 
 from time import sleep
 
-AWS_ROOT_URI = 's3://drake-packages/drake'
-DOWNLOAD_ROOT_URI = 'https://drake-packages.csail.mit.edu/drake'
 ARCHIVE_STORAGE_CLASS = 'STANDARD'
 MAX_ATTEMPTS = 3
 BACKOFF_DELAY = 15
 
 SUPPORTED_TRACKS = {'nightly', 'continuous', 'experimental'}
+
+
+def canonical_uri(*, name, options, scheme, domain, escape: bool):
+    """
+    Returns the URI for the specified parameters.
+    """
+    path = f'drake/{options.track}/{name}'
+    if escape:
+        path = urllib.parse.quote(path)
+    return urllib.parse.urlunsplit((scheme, domain, path, '', ''))
+
+
+def aws_uri(name, options):
+    """
+    Returns the AWS S3 URI for the specified `name` and `options`.
+    """
+    return canonical_uri(name=name, options=options, scheme='s3',
+                         domain=f'{options.bucket}', escape=False)
+
+
+def download_uri(name, options):
+    """
+    Returns the public-facing download URI for the specified `name` and
+    `options`.
+    """
+    return canonical_uri(name=name, options=options, scheme='https',
+                         domain=f'{options.bucket}.csail.mit.edu',
+                         escape=True)
 
 
 def max_age(options, *, latest: bool):
@@ -78,7 +105,7 @@ def upload(path, name, expiration, options):
         '--acl', 'public-read',
         '--storage-class', ARCHIVE_STORAGE_CLASS,
         '--cache-control', f'max-age={expiration}',
-        path, f'{AWS_ROOT_URI}/{options.track}/{name}']
+        path, aws_uri(name, options)]
 
     print(f'-- Uploading {name} to AWS S3...', flush=True)
     print(command, flush=True)
@@ -98,8 +125,7 @@ def upload(path, name, expiration, options):
                       f'after {MAX_ATTEMPTS} attempts', file=sys.stderr)
                 sys.exit(1)
 
-    download_uri = f'{DOWNLOAD_ROOT_URI}/{options.track}/{name}'
-    print(f'-- Upload complete: {download_uri}', flush=True)
+    print(f'-- Upload complete: {download_uri(name, options)}', flush=True)
 
 
 def upload_checksum(path, name, expiration, options):
@@ -165,6 +191,9 @@ def main(args):
     parser.add_argument(
         '--aws', type=str, default='aws',
         help='Path to AWS executable')
+    parser.add_argument(
+        '--bucket', type=str, required=True,
+        help='Name of target AWS bucket')
     parser.add_argument(
         '--track', type=str.lower, required=True, choices=SUPPORTED_TRACKS,
         help='CI track of artifact')

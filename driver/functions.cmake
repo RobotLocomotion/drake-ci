@@ -318,6 +318,7 @@ macro(aws_upload ARTIFACT UNSTABLE_MESSAGE)
   execute_process(
     COMMAND ${DASHBOARD_PYTHON_COMMAND}
       "${DASHBOARD_TOOLS_DIR}/upload-to-aws.py"
+      --bucket "drake-packages"
       --track "${DASHBOARD_TRACK}"
       --aws "${DASHBOARD_AWS_COMMAND}"
       "${ARTIFACT}"
