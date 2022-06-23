@@ -39,7 +39,6 @@ import os
 import re
 import subprocess
 import sys
-import tempfile
 import urllib.parse
 
 from time import sleep
@@ -163,7 +162,18 @@ def upload_artifacts(options):
 
     if not options.experimental:
         # Names are expected too like like one of:
+        #
+        # TGZ:
+        #   drake-<YYYYMMDD>-<codename>.tar.gz (nightly)
+        #   drake-<YYYYMMDDHHMMSS>-<hash>-<codename>.tar.gz
+        # Deb:
+        #   drake-dev_0.0.<YYYYMMDD>-1_amd64-<codename>.deb (nightly)
+        #   drake-dev_0.0.<YYYYMMDDHHMMSS>-<commit>-1_amd64-<codename>.deb
+        # Wheel:
+        #   drake-0.0.YYYY.M.D.h.m.s+git<commit>-cp39-cp39-<platform>.whl
+        # Generally:
         #   drake-<version>-<stuff>
+        #   drake-dev_0.0.<version>-<stuff>
         #   drake-<date>-<git sha>-<stuff>
         #
         # A 'latest' artifact should preserve '<stuff>' unaltered, but replace
@@ -172,14 +182,18 @@ def upload_artifacts(options):
         m = re.match(r'^drake-[^-]+(-[0-9a-f]{40})?-(.*)$', name)
         if m is not None:
             residue = m.group(2)  # '<stuff>'
-            name = f'drake-latest-{residue}'
+            # Keep drake-dev in the name for debian artifacts.
+            if name.startswith('drake-dev_0.0'):
+                name = f'drake-dev_latest-{residue}'
+            else:
+                name = f'drake-latest-{residue}'
             expiration = max_age(options, latest=True)
 
             upload(path, name, expiration, options)
             upload_checksum(path, name, expiration, options)
         else:
-            print(f'WARNING: Failed to transform version in artifact {name}; '
-                  'no \'latest\' will be uploaded.', file=sys.stderr)
+            raise RuntimeError(
+                f"Failed to transform version in artifact {name} to 'latest'.")
 
 
 def main(args):
