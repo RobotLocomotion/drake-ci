@@ -91,7 +91,7 @@ EOF
 systemctl --now --quiet enable /lib/systemd/system/xvfb.service
 
 apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
-  systemd-timesyncd
+  systemd systemd-timesyncd
 
 timedatectl set-ntp on
 
