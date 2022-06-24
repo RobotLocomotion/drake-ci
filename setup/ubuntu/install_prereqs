@@ -90,8 +90,22 @@ EOF
 
 systemctl --now --quiet enable /lib/systemd/system/xvfb.service
 
-apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
+timesyncd_packages=(
+  libsystemd0
+  systemd
   systemd-timesyncd
+)
+
+systemd_compat_version="$(
+    $WORKSPACE/ci/tools/apt-common-version.py "${timesyncd_packages[@]}"
+)"
+
+for ((i = 0; i < ${#timesyncd_packages[@]}; ++i)); do
+    timesyncd_packages[$i]="${timesyncd_packages[$i]}=$systemd_compat_version"
+done
+
+apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
+  "${timesyncd_packages[@]}"
 
 timedatectl set-ntp on
 
