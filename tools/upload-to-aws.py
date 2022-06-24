@@ -79,33 +79,40 @@ def download_uri(name, options):
                          escape=True)
 
 
-def max_age(options, *, latest: bool):
+def max_age(options):
     """
-    Calculates the appropriate expiration (depending on the CI track and
-    whether this is a 'latest' artifact) for an artifact. Returns some number
-    of seconds as an `int`.
+    Returns the desired Max-Age browser cache duration in seconds as an int.
+    This function should only be used for 'latest' uploads for nightly and
+    continuous builds.
     """
     def to_seconds(**kwargs):
         return int(datetime.timedelta(**kwargs).total_seconds())
 
     if options.nightly:
-        return to_seconds(hours=18) if latest else to_seconds(days=45)
-    else:
-        return to_seconds(minutes=30) if latest else to_seconds(days=10)
+        return to_seconds(hours=18)
+    elif options.continuous:
+        return to_seconds(minutes=30)
+
+    raise ValueError(
+        f"max_age only supports nightly and continuous, not {options.track}")
 
 
-def upload(path, name, expiration, options):
+def upload(path, name, options, *, expiration=None):
     """
     Attempts to upload a specific artifact to AWS S3. Tries up to
     `MAX_ATTEMPTS` times before giving up. This is the internal helper function
     used by the more general wrappers.
+
+    When provided, `expiration` (an int representing seconds) will be added to
+    the s3 cache control for content Max-Age http headers.
     """
     command = [
         options.aws, 's3', 'cp',
         '--acl', 'public-read',
-        '--storage-class', ARCHIVE_STORAGE_CLASS,
-        '--cache-control', f'max-age={expiration}',
-        path, aws_uri(name, options)]
+        '--storage-class', ARCHIVE_STORAGE_CLASS]
+    if expiration is not None:
+        command += ['--cache-control', f'max-age={expiration}']
+    command += [path, aws_uri(name, options)]
 
     print(f'-- Uploading {name} to AWS S3...', flush=True)
     print(command, flush=True)
@@ -128,10 +135,13 @@ def upload(path, name, expiration, options):
     print(f'-- Upload complete: {download_uri(name, options)}', flush=True)
 
 
-def upload_checksum(path, name, expiration, options):
+def upload_checksum(path, name, options, *, expiration=None):
     """
     Computes the checksum of an artifact, creates a checksum file, and uploads
     the checksum file to AWS S3.
+
+    When provided, `expiration` (an int representing seconds) will be added to
+    the s3 cache control for content Max-Age http headers.
     """
     checksum = hashlib.sha512()
 
@@ -146,7 +156,7 @@ def upload_checksum(path, name, expiration, options):
     with open(checksum_path, mode='w') as f:
         f.write(f'{checksum.hexdigest()}  {name}\n')
 
-    upload(checksum_path, f'{name}.sha512', expiration, options)
+    upload(checksum_path, f'{name}.sha512', options, expiration=expiration)
 
 
 def upload_artifacts(options):
@@ -156,11 +166,11 @@ def upload_artifacts(options):
     """
     path = options.artifact
     name = os.path.basename(path)
-    expiration = max_age(options, latest=False)
 
-    upload(path, name, expiration, options)
-    upload_checksum(path, name, expiration, options)
+    upload(path, name, options)
+    upload_checksum(path, name, options)
 
+    # For nightly and continuous, upload a 'latest' artifact as well.
     if not options.experimental:
         # Names are expected too like like one of:
         #   drake-<version>-<stuff>
@@ -173,10 +183,10 @@ def upload_artifacts(options):
         if m is not None:
             residue = m.group(2)  # '<stuff>'
             name = f'drake-latest-{residue}'
-            expiration = max_age(options, latest=True)
+            expiration = max_age(options)
 
-            upload(path, name, expiration, options)
-            upload_checksum(path, name, expiration, options)
+            upload(path, name, options, expiration=expiration)
+            upload_checksum(path, name, options, expiration=expiration)
         else:
             print(f'WARNING: Failed to transform version in artifact {name}; '
                   'no \'latest\' will be uploaded.', file=sys.stderr)
