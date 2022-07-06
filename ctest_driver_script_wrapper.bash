@@ -33,6 +33,8 @@
 
 set -euxo pipefail
 
+readonly CI_ROOT="$(dirname "${BASH_SOURCE}")"
+
 [[ -z "${TERM}" ]] || export CLICOLOR_FORCE=1
 
 # On m1 mac, detect if we can re-run the script under arm64, since Jenkins'
@@ -45,10 +47,40 @@ fi
 
 export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
 
-[[ ! "${JOB_NAME}" =~ unprovisioned || "$(uname -s)" != Darwin ]] || "${BASH_SOURCE%/*}/setup/mac/install_prereqs"
-[[ ! "${JOB_NAME}" =~ unprovisioned || "$(uname -s)" != Linux ]] || sudo --preserve-env "${BASH_SOURCE%/*}/setup/ubuntu/install_prereqs"
+# Provision image, if required.
+if [[ "${JOB_NAME}" =~ unprovisioned ]]; then
+    case "$(uname -s)" in
+        (Darwin) "${CI_ROOT}/setup/mac/install_prereqs";;
+        (Linux) sudo --preserve-env "${CI_ROOT}/setup/ubuntu/install_prereqs";;
+    esac
+fi
 
+# Synchronize the system clock (so log timestamps will be accurate).
+if [ -n "$(type -P chronyc)" ]; then
+    # Synchronize using chrony.
+    # TODO(mwoehlke-kitware) do always when all images are using chrony
+    sudo --preserve-env chronyc makestep
+    chronyc tracking
+elif [ -n "$(type -P timedatectl)" ]; then
+    # Synchronize using systemd-timesyncd; there isn't an explicit command for
+    # this, but toggling synchronization and restarting the daemon should
+    # trigger an explicit synchronization.
+    # TODO(mwoehlke-kitware) remove this when all images are using chrony
+    sudo --preserve-env timedatectl set-ntp off
+    sudo --preserve-env timedatectl set-ntp on
+    sudo --preserve-env systemctl restart systemd-timesyncd
+    timedatectl status
+elif [ "$(uname)" == "Darwin" ]; then
+    : # Allow macOS to proceed without synchronization.
+    # TODO(mwoehlke-kitware) remove this when all images have chrony installed?
+else
+    echo "Unable to locate NTP interface" >&2
+    exit 1
+fi
+
+# Set up SSH agent, used to fetch from private repositories.
 AGENT=ssh-agent
 [[ "$SSH_PRIVATE_KEY_FILE" == '-' ]] && AGENT=
 
-$AGENT ctest --extra-verbose --no-compress-output --script "${BASH_SOURCE%/*}/ctest_driver_script.cmake"
+# Hand off to the CMake driver script.
+$AGENT ctest --extra-verbose --no-compress-output --script "${CI_ROOT}/ctest_driver_script.cmake"

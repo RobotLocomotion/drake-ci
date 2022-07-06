@@ -91,9 +91,10 @@ EOF
 systemctl --now --quiet enable /lib/systemd/system/xvfb.service
 
 apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
-  systemd-timesyncd
+  chrony
 
-timedatectl set-ntp on
+systemctl enable chrony
+systemctl start  chrony
 
 wget -nv -t 4 -O /tmp/gurobi9.5.1_linux64.tar.gz --retry-connrefused \
   https://packages.gurobi.com/9.5/gurobi9.5.1_linux64.tar.gz
