@@ -58,21 +58,10 @@ fi
 # Synchronize the system clock (so log timestamps will be accurate).
 if [ -n "$(type -P chronyc)" ]; then
     # Synchronize using chrony.
-    # TODO(mwoehlke-kitware) do always when all images are using chrony
     sudo --preserve-env chronyc makestep
     chronyc tracking
-elif [ -n "$(type -P timedatectl)" ]; then
-    # Synchronize using systemd-timesyncd; there isn't an explicit command for
-    # this, but toggling synchronization and restarting the daemon should
-    # trigger an explicit synchronization.
-    # TODO(mwoehlke-kitware) remove this when all images are using chrony
-    sudo --preserve-env timedatectl set-ntp off
-    sudo --preserve-env timedatectl set-ntp on
-    sudo --preserve-env systemctl restart systemd-timesyncd
-    timedatectl status
 elif [ "$(uname)" == "Darwin" ]; then
-    : # Allow macOS to proceed without synchronization.
-    # TODO(mwoehlke-kitware) remove this when all images have chrony installed?
+    : # Allow macOS to proceed without explicit synchronization.
 else
     echo "Unable to locate NTP interface" >&2
     exit 1
