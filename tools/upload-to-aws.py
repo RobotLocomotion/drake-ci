@@ -192,7 +192,7 @@ def upload_artifacts(options):
             prefix = m.group(1)
             residue = m.group(4)
             name = f'{prefix}latest-{residue}'
-            expiration = max_age(options, latest=True)
+            expiration = max_age(options)
 
             upload(path, name, options, expiration=expiration)
             upload_checksum(path, name, options, expiration=expiration)
