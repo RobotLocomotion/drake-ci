@@ -102,7 +102,7 @@ else()
   fatal("could not extract generator from job name")
 endif()
 
-string(REGEX MATCH "(continuous|experimental|nightly|weekly)"
+string(REGEX MATCH "(continuous|experimental|nightly|weekly|staging)"
   REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
 if(REGEX_MATCH_RESULT)
   set(TRACK "${REGEX_MATCH_RESULT}")

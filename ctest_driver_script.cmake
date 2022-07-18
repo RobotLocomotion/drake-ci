@@ -40,6 +40,7 @@
 #   ENV{CHANGE_ID}             optional
 #   ENV{CHANGE_TITLE}          optional
 #   ENV{CHANGE_URL}            optional
+#   ENV{DRAKE_VERSION}         required for wheel staging builds
 #   ENV{ghprbPullId}           optional
 #   ENV{ghprbPullLink}         optional
 #   ENV{ghprbPullTitle}        optional
