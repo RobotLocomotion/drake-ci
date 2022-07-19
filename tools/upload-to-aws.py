@@ -47,7 +47,7 @@ ARCHIVE_STORAGE_CLASS = 'STANDARD'
 MAX_ATTEMPTS = 3
 BACKOFF_DELAY = 15
 
-SUPPORTED_TRACKS = {'nightly', 'continuous', 'experimental'}
+SUPPORTED_TRACKS = {'nightly', 'continuous', 'experimental', 'staging'}
 
 
 def canonical_uri(*, name, options, scheme, domain, escape: bool):
@@ -170,7 +170,7 @@ def upload_artifacts(options):
     upload_checksum(path, name, options)
 
     # For nightly and continuous, upload a 'latest' artifact as well.
-    if not options.experimental:
+    if options.nightly or options.continuous:
         # Names are expected too like like one of:
         #
         # TGZ:
