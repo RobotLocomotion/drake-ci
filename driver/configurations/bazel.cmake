@@ -80,7 +80,17 @@ else()
 endif()
 
 if(DASHBOARD_PROCESSOR_COUNT GREATER 1)
-  math(EXPR DASHBOARD_JOBS "7 * ${DASHBOARD_PROCESSOR_COUNT} / 8")
+  # NOTE: linux clang address sanitizer builds experience spurious errors, see
+  # https://github.com/RobotLocomotion/drake/issues/17560
+  if(NOT APPLE AND COMPILER STREQUAL "clang" AND DASHBOARD_JOB_NAME MATCHES "address-sanitizer")
+    if(DASHBOARD_PROCESSOR_COUNT GREATER 2)
+      math(EXPR DASHBOARD_JOBS "7 * ${DASHBOARD_PROCESSOR_COUNT} / 16")
+    else()
+      set(DASHBOARD_JOBS 1)
+    endif()
+  else()
+    math(EXPR DASHBOARD_JOBS "7 * ${DASHBOARD_PROCESSOR_COUNT} / 8")
+  endif()
 else()
   set(DASHBOARD_JOBS 1)
 endif()
