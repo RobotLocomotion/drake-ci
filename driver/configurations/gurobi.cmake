@@ -32,15 +32,31 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+if(GUROBI)
+  set(GRB_LICENSE_FILE "${DASHBOARD_TEMP_DIR}/gurobi.lic")
+  file(REMOVE "${GRB_LICENSE_FILE}")
 
-if(APPLE)
-  set(GRB_LICENSE_FILE "/Library/gurobi951/gurobi.lic")
-else()
-  set(GRB_LICENSE_FILE "/opt/gurobi951/gurobi.lic")
-endif()
+  message(STATUS "Downloading Gurobi license file from AWS S3...")
+  set(TOTAL_DOWNLOAD_ATTEMPTS 3)
+  foreach(DOWNLOAD_ATTEMPT RANGE ${TOTAL_DOWNLOAD_ATTEMPTS})
+    execute_process(
+      COMMAND "${DASHBOARD_AWS_COMMAND}" s3 cp
+        s3://drake-provisioning/gurobi/gurobi.lic "${GRB_LICENSE_FILE}"
+      RESULT_VARIABLE DASHBOARD_AWS_S3_RESULT_VARIABLE)
+    if(DASHBOARD_AWS_S3_RESULT_VARIABLE EQUAL 0)
+      break()
+    elseif(DOWNLOAD_ATTEMPT LESS TOTAL_DOWNLOAD_ATTEMPTS)
+      message(STATUS "Download was NOT successful. Retrying...")
+    else()
+      fatal("Download of Gurobi license file from AWS S3 was NOT successful")
+    endif()
+  endforeach()
 
-if(GUROBI AND NOT EXISTS "${GRB_LICENSE_FILE}")
-  fatal("Gurobi license file was NOT found")
+  if(NOT EXISTS "${GRB_LICENSE_FILE}")
+    fatal("Gurobi license file was NOT found")
+  endif()
+
+  list(APPEND DASHBOARD_TEMPORARY_FILES GRB_LICENSE_FILE)
 endif()
 
 # Always set environment variable so remote caches may be shared.

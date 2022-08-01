@@ -105,9 +105,4 @@ tar -C /opt -xf /tmp/gurobi9.5.1_linux64.tar.gz
 echo '12f63795802c7b74cd0ccc87ed73061346a3a28933e6860fad9c7dbfcf5d9250  /opt/gurobi951/linux64/include/gurobi_c.h' \
   | sha256sum -c -
 
-aws s3 cp --only-show-errors s3://drake-provisioning/gurobi/gurobi.lic \
-  /opt/gurobi951/gurobi.lic
-echo '85a76935617e809af43275fa4d7f7fc38182973c5756edde9b8db59ef65420cb  /opt/gurobi951/gurobi.lic' \
-  | sha256sum -c -
-
 chown -R root:root /opt/gurobi951
