@@ -54,6 +54,11 @@
 
 cmake_minimum_required(VERSION 3.15)
 
+message("docker password file is: $ENV{DOCKER_PASSWORD_FILE}")
+file(READ "$ENV{DOCKER_PASSWORD_FILE}" mein_password)
+message(FATAL_ERROR "mein_password: ${mein_password}")
+
+
 set(CTEST_RUN_CURRENT_SCRIPT OFF)  # HACK
 
 set(DASHBOARD_CDASH_SERVER "drake-cdash.csail.mit.edu")
