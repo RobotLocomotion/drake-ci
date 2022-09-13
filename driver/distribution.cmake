@@ -60,6 +60,20 @@ if(APPLE)
   else()
     fatal("unable to determine distribution code name")
   endif()
+  # Add detection logic for differentiating intel vs arm64 macOS.
+  execute_process(
+    COMMAND "/usr/bin/arch"
+    RESULT_VARIABLE APPLE_ARCHITECTURE_RESULT_VARIABLE
+    OUTPUT_VARIABLE APPLE_ARCHITECTURE
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+  if(NOT APPLE_ARCHITECTURE_RESULT_VARIABLE EQUAL 0)
+    fatal("unable to detect Apple architecture via /usr/bin/arch")
+  endif()
+  if(APPLE_ARCHITECTURE STREQUAL "arm64")
+    set(APPLE_ARM64 ON)
+  else()
+    set(APPLE_ARM64 OFF)
+  endif()
 else()
   find_program(DASHBOARD_LSB_RELEASE_COMMAND NAMES "lsb_release")
   if(NOT DASHBOARD_LSB_RELEASE_COMMAND)
