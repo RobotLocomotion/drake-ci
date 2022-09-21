@@ -36,12 +36,21 @@ if(DASHBOARD_FAILURE OR DASHBOARD_UNSTABLE)
   notice("CTest Status: NOT CREATING PACKAGE ARCHIVE BECAUSE BAZEL BUILD WAS NOT SUCCESSFUL")
 else()
   notice("CTest Status: CREATING PACKAGE ARCHIVE")
-  string(TIMESTAMP DATE "%Y%m%d")
-  string(TIMESTAMP TIME "%H%M%S")
+  # string(TIMESTAMP DATE "%Y%m%d")
+  # string(TIMESTAMP TIME "%H%M%S")
+  # From focal archive VERSION.txt for drake v1.8.0:
+  # 20220919082914 ec6cf7cd27253d4d5066f2efc3cde35ced11a2d6
+  set(DATE "20220919")
+  set(TIME "082914")
   # NOTE: DASHBOARD_PACKAGE_DATE and DASHBOARD_PACKAGE_DATE_TIME are used in
   # step-create-debian-archive.
   set(DASHBOARD_PACKAGE_DATE "${DATE}")
   set(DASHBOARD_PACKAGE_DATE_TIME "${DATE}${TIME}")
+
+  message("Manually set DATE: '${DATE}'")
+  message("Manually set TIME: '${TIME}'")
+  message("Manually set DASHBOARD_PACKAGE_DATE: '${DASHBOARD_PACKAGE_DATE}'")
+  message("Manually set DASHBOARD_PACKAGE_DATE_TIME: '${DASHBOARD_PACKAGE_DATE_TIME}'")
   execute_process(COMMAND "${CTEST_GIT_COMMAND}" rev-parse HEAD
     WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}"
     RESULT_VARIABLE GIT_REV_PARSE_RESULT_VARIABLE
