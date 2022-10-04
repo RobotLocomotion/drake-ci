@@ -87,9 +87,11 @@ def max_age(options):
     def to_seconds(**kwargs):
         return int(datetime.timedelta(**kwargs).total_seconds())
 
-    if options.nightly:
-        return to_seconds(hours=18)
-    elif options.continuous:
+    # NOTE: we need nightly artifacts specifically to expire fairly quickly,
+    # otherwise drake-external-examples may receive a cached version from
+    # Amazon CloudFront (default is 24 hours when not specified):
+    # https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Expiration.html
+    if options.nightly or options.continuous:
         return to_seconds(minutes=30)
 
     raise ValueError(
