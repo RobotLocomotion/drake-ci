@@ -85,6 +85,11 @@ endif()
 
 # Report build configuration
 report_configuration("
+  ==================================== >DASHBOARD_
+  CC_COMMAND
+  CC_VERSION_STRING
+  CXX_COMMAND
+  CXX_VERSION_STRING
   ====================================
   CMAKE_VERSION
   ====================================
