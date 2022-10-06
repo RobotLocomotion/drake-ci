@@ -69,3 +69,7 @@ if("${DASHBOARD_CXX_COMMAND}" STREQUAL "")
 endif()
 
 string(TOUPPER "${COMPILER}" COMPILER_UPPER)
+
+# Extract the compiler version strings for logging purposes.
+compiler_version_string("${DASHBOARD_CC_COMMAND}" DASHBOARD_CC_VERSION_STRING)
+compiler_version_string("${DASHBOARD_CXX_COMMAND}" DASHBOARD_CXX_VERSION_STRING)

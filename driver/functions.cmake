@@ -384,3 +384,28 @@ endfunction()
 macro(execute_step CONFIG NAME)
   include(${DASHBOARD_DRIVER_DIR}/configurations/${CONFIG}/step-${NAME}.cmake)
 endmacro()
+
+#------------------------------------------------------------------------------
+# Execute `${COMPILER} --version` and store the first line of the result in
+# `OUTPUT_VARIABLE`.  This function is used in compiler.cmake only to be able
+# to log the compiler version in Jenkins, we do not care about detecting exact
+# major / minor / patch versions of a given compiler.
+#------------------------------------------------------------------------------
+function(compiler_version_string COMPILER OUTPUT_VARIABLE)
+  if(NOT ARGC EQUAL 2)
+    fatal("Usage: compiler_version_string(\${COMPILER} OUTPUT_VARIABLE)")
+  endif()
+  # Execute `${COMPILER} --version`
+  execute_process(COMMAND "${COMPILER}" "--version"
+    OUTPUT_VARIABLE compiler_version
+    ERROR_VARIABLE compiler_error
+    RESULT_VARIABLE compiler_result_variable)
+  if(compiler_result_variable)
+    fatal("unable to determine '${compiler} --version': ${compiler_error}")
+  endif()
+  # Extract the first line and set the output.
+  string(REGEX REPLACE ";" "\\\\;" compiler_version "${compiler_version}")
+  string(REGEX REPLACE "\n" ";" compiler_version "${compiler_version}")
+  list(GET compiler_version 0 compiler_version)
+  set(${OUTPUT_VARIABLE} "${compiler_version}" PARENT_SCOPE)
+endfunction()
