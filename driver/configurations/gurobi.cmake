@@ -61,3 +61,5 @@ endif()
 
 # Always set environment variable so remote caches may be shared.
 set(ENV{GRB_LICENSE_FILE} "${GRB_LICENSE_FILE}")
+
+set(ENV{GUROBI_HOME} "/opt/gurobi950/linux64")
