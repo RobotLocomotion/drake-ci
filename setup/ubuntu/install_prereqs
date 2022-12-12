@@ -106,3 +106,5 @@ echo '12f63795802c7b74cd0ccc87ed73061346a3a28933e6860fad9c7dbfcf5d9250  /opt/gur
   | sha256sum -c -
 
 chown -R root:root /opt/gurobi951
+# testing to see what error messages there are when we do not have it
+rm -rf /opt/gurobi951
