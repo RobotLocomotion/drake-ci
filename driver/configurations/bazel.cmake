@@ -126,6 +126,8 @@ if(REMOTE_CACHE)
   configure_file("${DASHBOARD_TOOLS_DIR}/remote.bazelrc.in"
     "${CTEST_SOURCE_DIRECTORY}/remote.bazelrc" @ONLY
   )
+  file(READ "${CTEST_SOURCE_DIRECTORY}/remote.bazelrc" supertest)
+  message(FATAL_ERROR "supertest:\n${supertest}")
 endif()
 
 set(DASHBOARD_BAZEL_BUILD_OPTIONS "--config=${COMPILER} --compilation_mode")
