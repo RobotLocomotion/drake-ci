@@ -55,14 +55,18 @@ if(REMOTE_CACHE)
   else()
     set(DASHBOARD_REMOTE_CACHE "http://172.31.20.109")
   endif()
+  message(STATUS
+      "Testing download of remote cache server: '${DASHBOARD_REMOTE_CACHE}'")
   file(DOWNLOAD "${DASHBOARD_REMOTE_CACHE}" "${DASHBOARD_FILE_DOWNLOAD_TEMP}"
     STATUS DASHBOARD_DOWNLOAD_STATUS
+    LOG DASHBOARD_DOWNLOAD_LOG
   )
   list(GET DASHBOARD_DOWNLOAD_STATUS 0 DASHBOARD_DOWNLOAD_STATUS_0)
 
   if(NOT DASHBOARD_DOWNLOAD_STATUS_0 EQUAL 0)
     message(WARNING
       "*** Disabling remote cache because could NOT contact remote cache server"
+      "\n${DASHBOARD_DOWNLOAD_LOG}"
     )
     set(REMOTE_CACHE OFF)
   endif()
