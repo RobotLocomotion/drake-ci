@@ -147,6 +147,41 @@ if(REGEX_MATCH_RESULT)
   set(REMOTE_CACHE ON)
 endif()
 
+string(REGEX MATCH "unprovisioned" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
+if(REGEX_MATCH_RESULT)
+  set(PROVISION ON)
+  set(REMOTE_CACHE OFF)
+else()
+  set(PROVISION OFF)
+endif()
+
+# Special case jobs that do not match the above patterns but we want cached.
+string(REGEX MATCH "^linux-(focal|jammy)-clang-bazel-(continuous|experimental|nightly)-leak-sanitizer$" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
+if(REGEX_MATCH_RESULT)
+  set(REMOTE_CACHE ON)
+endif()
+
+string(REGEX MATCH "^linux-(focal|jammy)-gcc-bazel-(continuous|experimental|nightly)-debug$" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
+if(REGEX_MATCH_RESULT)
+  set(REMOTE_CACHE ON)
+endif()
+
+# TODO(svenevs): sort through the logic above and enable more (debug).
+# This expression is a temporary kludge to test out the cache with mac-arm using
+# the same jobs that mac-x86 is currently caching.
+string(REGEX MATCH "(mac-arm-monterey-clang-bazel-continuous-release|mac-arm-monterey-clang-bazel-experimental-everything-release|mac-arm-monterey-clang-bazel-experimental-release|mac-arm-monterey-clang-bazel-nightly-everything-release|mac-arm-monterey-clang-cmake-experimental-everything-release|mac-arm-monterey-clang-cmake-experimental-release|mac-arm-monterey-clang-cmake-nightly-everything-release|mac-arm-monterey-clang-cmake-nightly-release)" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
+if(REGEX_MATCH_RESULT)
+  set(REMOTE_CACHE ON)
+endif()
+
+# We are also testing out running debug jobs with the new cache server.  There
+# is currently no continuous version of this job but it may get added.
+string(REGEX MATCH "(mac-arm-monterey-clang-bazel-nightly-debug|mac-arm-monterey-clang-bazel-continuous-debug|mac-arm-monterey-clang-bazel-experimental-debug)" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
+if(REGEX_MATCH_RESULT)
+  set(REMOTE_CACHE ON)
+endif()
+# -- END TODO(svenevs)
+
 string(REGEX MATCH "(minsizerel|relwithdebinfo)" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
 if(REGEX_MATCH_RESULT)
   set(DEBUG OFF)
@@ -242,24 +277,6 @@ if(REGEX_MATCH_RESULT)
 else()
   set(PACKAGE OFF)
   set(DOCKER OFF)
-endif()
-
-string(REGEX MATCH "unprovisioned" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
-if(REGEX_MATCH_RESULT)
-  set(PROVISION ON)
-  set(REMOTE_CACHE OFF)
-else()
-  set(PROVISION OFF)
-endif()
-
-string(REGEX MATCH "^linux-(focal|jammy)-clang-bazel-(continuous|experimental|nightly)-leak-sanitizer$" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
-if(REGEX_MATCH_RESULT)
-  set(REMOTE_CACHE ON)
-endif()
-
-string(REGEX MATCH "^linux-(focal|jammy)-gcc-bazel-(continuous|experimental|nightly)-debug$" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
-if(REGEX_MATCH_RESULT)
-  set(REMOTE_CACHE ON)
 endif()
 
 string(STRIP "$ENV{verbose}" VERBOSE)
