@@ -107,13 +107,14 @@ include(${DASHBOARD_DRIVER_DIR}/configurations/cache.cmake)
 if(REMOTE_CACHE)
   set(DASHBOARD_REMOTE_ACCEPT_CACHED "yes")
   set(DASHBOARD_REMOTE_UPLOAD_LOCAL_RESULTS "yes")
-  if(DASHBOARD_TRACK STREQUAL "Nightly")
-    set(DASHBOARD_REMOTE_ACCEPT_CACHED "no")
-  elseif(DASHBOARD_TRACK STREQUAL "Continuous" AND DEBUG)
-    set(DASHBOARD_REMOTE_ACCEPT_CACHED "no")
-  elseif(DASHBOARD_TRACK STREQUAL "Experimental")
-    set(DASHBOARD_REMOTE_UPLOAD_LOCAL_RESULTS "no")
-  endif()
+  # TODO(svenevs): bring these back!  This allows experimental to populate.
+  # if(DASHBOARD_TRACK STREQUAL "Nightly")
+  #   set(DASHBOARD_REMOTE_ACCEPT_CACHED "no")
+  # elseif(DASHBOARD_TRACK STREQUAL "Continuous" AND DEBUG)
+  #   set(DASHBOARD_REMOTE_ACCEPT_CACHED "no")
+  # elseif(DASHBOARD_TRACK STREQUAL "Experimental")
+  #   set(DASHBOARD_REMOTE_UPLOAD_LOCAL_RESULTS "no")
+  # endif()
   if(DEBUG)
     set(DASHBOARD_REMOTE_MAX_CONNECTIONS 16)
     set(DASHBOARD_REMOTE_RETRIES 1)
@@ -126,6 +127,12 @@ if(REMOTE_CACHE)
   configure_file("${DASHBOARD_TOOLS_DIR}/remote.bazelrc.in"
     "${CTEST_SOURCE_DIRECTORY}/remote.bazelrc" @ONLY
   )
+  file(READ
+    "${CTEST_SOURCE_DIRECTORY}/remote.bazelrc"
+    DASHBOARD_REMOTE_BAZELRC_CONTENTS)
+  message(
+    "Remote-cache configuration '${CTEST_SOURCE_DIRECTORY}/remote.bazelrc':\n"
+    "${DASHBOARD_REMOTE_BAZELRC_CONTENTS}")
 endif()
 
 set(DASHBOARD_BAZEL_BUILD_OPTIONS "--config=${COMPILER} --compilation_mode")
