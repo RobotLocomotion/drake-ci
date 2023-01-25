@@ -116,7 +116,7 @@ if(REMOTE_CACHE)
     "build --remote_max_connections=64\n"
     "build --remote_retries=4\n"
     "build --remote_timeout=120\n")
-  if(DASHBOARD_TRACK STREQUAL "Nightly")
+  if(DASHBOARD_TRACK STREQUAL "Nightly" OR TRUE)
     file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
       "build --remote_accept_cached=no\n"
       "build --remote_upload_local_results=yes\n")
