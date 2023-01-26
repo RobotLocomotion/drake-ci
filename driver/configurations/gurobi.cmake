@@ -61,3 +61,6 @@ endif()
 
 # Always set environment variable so remote caches may be shared.
 set(ENV{GRB_LICENSE_FILE} "${GRB_LICENSE_FILE}")
+
+# Run Gurobi tests in parallel in the CI
+set(ENV{GUROBI_EXCLUSIVE} 0)
