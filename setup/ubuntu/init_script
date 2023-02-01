@@ -103,6 +103,8 @@ fi
 
 export DEBIAN_FRONTEND=noninteractive
 
+apt-mark hold libglapi-mesa libegl-mesa0 libgbm1 libgl1-mesa-dri libglx-mesa0 libllvm15
+
 apt-get update -o APT::Acquire::Retries=4 -qq \
   || (sleep 15; apt-get update -o APT::Acquire::Retries=4 -qq)
 trap 'set +x; rm -rf /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin /var/lib/apt/lists/* /var/log/apt/*; set -x' EXIT
