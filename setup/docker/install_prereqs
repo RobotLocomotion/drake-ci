@@ -63,4 +63,4 @@ echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -c
 apt-get update -o APT::Acquire::Retries=4 -qq \
   || (sleep 15; apt-get update -o APT::Acquire::Retries=4 -qq)
 apt-get install --no-install-recommends -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 -qy \
-  docker-ce
+  docker-ce docker-buildx-plugin
