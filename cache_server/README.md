@@ -64,7 +64,7 @@ to simply setting the `bazel` cache server entries to different subdirectories.
    the cache cleanup routine is pruning everything it needs to.  Overutilized
    caches litter the nightly and continuous jobs with 500 internal server errors
    as the `nginx` server cannot write any new files.  This is managed by
-   [`disk_usage_alert.sh`](disk_usage_alert.sh), a sample entry in
+   [`disk_usage_alert.py`](disk_usage_alert.py), a sample entry in
    `/etc/crontab`:
 
    ```shell
@@ -73,7 +73,7 @@ to simply setting the `bazel` cache server entries to different subdirectories.
     # EDT: +4 hours to get to UTC
     #
     # Cache (over)utilization alerting: run ~7am eastern.
-    0 12    * * *   root    /cache/drake-ci/cache_server/disk_usage_alert.sh
+    0 12    * * *   root    /cache/disk_usage_alert.py --name mac-arm64 --log-file /cache/logs/disk_usage_alert.log /cache/toyotacache
    ```
 
 [drake_18286]: https://github.com/RobotLocomotion/drake/issues/18286
@@ -117,18 +117,24 @@ the storage is mounted to or how often cleanup should happen.
 
    This will confirm that `ssmtp` can authenticate and send emails.
 
-3. Configure [`disk_usage_alerts.sh`](disk_usage_alerts.sh) to update the
-   variables at the top for the cache server in question.  Place it at
-   `/cache/disk_usage_alerts.sh` and add an entry to `/etc/crontab` as shown
+3. Make the logging directory: `sudo mkdir /cache/logs`.  This is where we will
+   be storing logging information about disk usage alerts as well as file
+   cleanup.
+
+4. TODO(svenevs): Copy `rotate_logs.py` to `/cache/rotate_logs.py` and add an
+   entry to `/etc/crontab`.  TBD: how often should we rotate logs.
+
+4. Copy [`disk_usage_alerts.py`](disk_usage_alerts.py) to
+   `/cache/disk_usage_alerts.py` and add an entry to `/etc/crontab` as shown
    above.  We desire this alert to run around 7am eastern, take care to confirm
    which time zone your cache server believes it is in.
 
-4. Copy [`cleanup_old_files.py`](cleanup_old_files.py) to
+5. Copy [`cleanup_old_files.py`](cleanup_old_files.py) to
    `/cache/cleanup_old_files.py` and add an entry to `/etc/crontab` as shown
    above.  We desire this cleanup to run around 10pm eastern, take care to
    confirm which time zone your cache server believes it is in.
 
-5. Make sure that the new server will have its initial `DASHBOARD_REMOTE_CACHE`
+6. Make sure that the new server will have its initial `DASHBOARD_REMOTE_CACHE`
    value set at the top of [`cache.cmake`][cache_cmake], doing so in a pull
    request against drake-ci.  You can test a populate / read job by temporarily
    changing [`remote.bazelrc.in`][remote_bazelrc] to have hard-coded values.
