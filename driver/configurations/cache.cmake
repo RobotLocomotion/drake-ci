@@ -48,7 +48,7 @@ if(REMOTE_CACHE)
 
   if(APPLE)
     if(APPLE_ARM64)
-      set(DASHBOARD_REMOTE_CACHE "http://10.221.188.4:6060")
+      set(DASHBOARD_REMOTE_CACHE "http://10.221.188.9:6060")
     else()
       set(DASHBOARD_REMOTE_CACHE "http://207.254.3.135")
     endif()
