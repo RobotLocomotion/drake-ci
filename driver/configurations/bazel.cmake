@@ -246,6 +246,10 @@ if(APPLE)
   set(DASHBOARD_BAZEL_TEST_OPTIONS "${DASHBOARD_BAZEL_TEST_OPTIONS} --test_timeout=300,1500,4500,-1")
 endif()
 
+if(DEBUG AND APPLE)
+  set(DASHBOARD_BAZEL_TEST_OPTIONS "${DASHBOARD_BAZEL_TEST_OPTIONS} --copt=-g0 --host_copt=-g0")
+endif()
+
 configure_file("${DASHBOARD_TOOLS_DIR}/user.bazelrc.in" "${CTEST_SOURCE_DIRECTORY}/user.bazelrc" @ONLY)
 
 # Report build configuration
