@@ -48,33 +48,11 @@ to simply setting the `bazel` cache server entries to different subdirectories.
    the remote cache can be communicated with -- if `GET /` fails, the remote
    cache is disabled.
 
-3. Each server should have a `cron` job running each evening to cleanup older
-   files.  This is managed by [`cleanup_old_files.py`](cleanup_old_files.py),
-   a sample entry in `/etc/crontab`:
+3. Each server should have three `cron` jobs running to cleanup old files
+   using [`cleanup_old_files.py`](cleanup_old_files.py), monitor the disk usage
+   using [`disk_usage_alert.py`](disk_usage_alert.py), and rotate the logs
+   (using `logrotate`).
 
-   ```shell
-    # This cache server's date / time are in UTC!  Conversion:
-    # EST: +5 hours to get to UTC
-    # EDT: +4 hours to get to UTC
-    # Cache cleanup: run ~10pm eastern (before nightlies).
-    0 3     * * *   root    /cache/drake-ci/cache_server/cleanup_old_files.py -s --days 4 /cache/toyotacache
-   ```
-
-4. Each server should also have a `cron` job running each morning to confirm
-   the cache cleanup routine is pruning everything it needs to.  Overutilized
-   caches litter the nightly and continuous jobs with 500 internal server errors
-   as the `nginx` server cannot write any new files.  This is managed by
-   [`disk_usage_alert.py`](disk_usage_alert.py), a sample entry in
-   `/etc/crontab`:
-
-   ```shell
-    # This cache server's date / time are in UTC!  Conversion:
-    # EST: +5 hours to get to UTC
-    # EDT: +4 hours to get to UTC
-    #
-    # Cache (over)utilization alerting: run ~7am eastern.
-    0 12    * * *   root    /cache/disk_usage_alert.py --name mac-arm64 --log-file /cache/logs/disk_usage_alert.log /cache/toyotacache
-   ```
 
 [drake_18286]: https://github.com/RobotLocomotion/drake/issues/18286
 [remote_bazelrc]: https://github.com/RobotLocomotion/drake-ci/blob/main/tools/remote.bazelrc.in
@@ -96,43 +74,42 @@ the storage is mounted to or how often cleanup should happen.
    - You can confirm your server is running by `curl localhost:6060` on the
      machine, noting that the port is defined by [`nginx.conf`](nginx.conf).
 
-2. Install `ssmtp` and `mailutils` and update the contents of
-   `/etc/ssmtp/ssmtp.conf` with [our `ssmtp.conf`](ssmtp.conf).  A new cache
-   server should receive a new App Password, which should be stored in the
-   [AWS Secrets Manager][aws_secrets].  This is the value for `AuthPass`.
+2. Install required software and configure root user.
 
-   Test that you can use `ssmtp` to send a test email to yourself from the
-   server before continuing:
-
-   ```console
-   # Create a text file with a subject and message body.
-   $ cat test_message.txt
-   Subject: Drake Cache Email Test
-
-   This message is coming from the cache server!
-
-   # Send a test e-mail to ONLY you.  Do not spam buildcop emails.
-   $ ssmtp -F "Drake Cache Server" my.email@domain.com < test_message.txt
-   ```
-
-   This will confirm that `ssmtp` can authenticate and send emails.
+    - `apt-get install [ final package list ]`
+    - Add `export EDITOR=vim` to the `root` account's `~/.bashrc`.  Otherwise
+      when running `crontab -e` later it may choose nonsense such as `nano`.
 
 3. Make the logging directory: `sudo mkdir /cache/logs`.  This is where we will
    be storing logging information about disk usage alerts as well as file
    cleanup.
 
-4. TODO(svenevs): Copy `rotate_logs.py` to `/cache/rotate_logs.py` and add an
-   entry to `/etc/crontab`.  TBD: how often should we rotate logs.
+4. Clone `drake-ci` to `/cache/drake-ci`.  Do be careful that when editing files
+   on a given cache server you are conscious of the fact that these files are
+   live and a cron job may run.  After a given PR merges, login to each server
+   and `git pull` and checkout `main`.
 
-4. Copy [`disk_usage_alerts.py`](disk_usage_alerts.py) to
-   `/cache/disk_usage_alerts.py` and add an entry to `/etc/crontab` as shown
-   above.  We desire this alert to run around 7am eastern, take care to confirm
-   which time zone your cache server believes it is in.
+5. Become the `root` user, and execute `crontab -e`.  Your final crontab entries
+   for the root user should be:
 
-5. Copy [`cleanup_old_files.py`](cleanup_old_files.py) to
-   `/cache/cleanup_old_files.py` and add an entry to `/etc/crontab` as shown
-   above.  We desire this cleanup to run around 10pm eastern, take care to
-   confirm which time zone your cache server believes it is in.
+   ```bash
+   # This cache server's date / time are in UTC!  Conversion:
+   # EST: +5 hours to get to UTC
+   # EDT: +4 hours to get to UTC
+   # Cache cleanup: run ~10pm eastern (before nightlies).
+   0 3     * * *   /cache/drake-ci/cache_server/cleanup_old_files.py -s --days 3 /cache/toyotacache >>/cache/logs/cleanup_old_files.log 2>&1
+   #
+   # Cache (over)utilization alerting: run ~7am eastern.
+   0 12    * * *   /cache/drake-ci/cache_server/disk_usage_alert.py /cache/toyotacache >>/cache/logs/disk_usage_alert.log 2>&1
+   #
+   # Rotate cache logs.  Note that the verbose output of logrotate goes to the
+   # provided logfile, but it always overwrites.  We do not want it rotating
+   # itself, so it goes to /cache/logrotate.log (not /cache/logs/logrotate.log).
+   # Run this daily after the other jobs are anticipated to finish: ~10am eastern.
+   0 15    * * *   /usr/sbin/logrotate --verbose --log /cache/logrotate.log /cache/drake-ci/cache_server/logrotate_cache.conf >/dev/null 2>&1
+   ```
+
+   You should be able to save and `cat /var/spool/cron/crontabs/root` to confirm.
 
 6. Make sure that the new server will have its initial `DASHBOARD_REMOTE_CACHE`
    value set at the top of [`cache.cmake`][cache_cmake], doing so in a pull
@@ -158,5 +135,10 @@ the storage is mounted to or how often cleanup should happen.
 
    After testing the populate / read jobs work as desired, manually delete the
    cache so that it starts clean when nightly / continuous begin running.
+
+7. Give better docs on how to add a dummy commit to test an experimental job
+   for (a) populating the cache and (b) reading from the cache.  Note that best
+   course of action is to observer `tail -f /var/log/nginx/access.log` and
+   `tail -f /var/log/nginx/error.log` while this test job is running.
 
 [aws_secrets]: https://us-east-1.console.aws.amazon.com/secretsmanager/listsecrets?region=us-east-1
