@@ -127,7 +127,7 @@ endif()
 
 set(BUILD_ARGS
   run //tools/wheel:builder --
-  -t -o "${DASHBOARD_WHEEL_OUTPUT_DIRECTORY}" "${DASHBOARD_DRAKE_VERSION}")
+  --output-dir "${DASHBOARD_WHEEL_OUTPUT_DIRECTORY}" "${DASHBOARD_DRAKE_VERSION}")
 
 if(APPLE)
     # Run the build, including tests (includes provisioning)
