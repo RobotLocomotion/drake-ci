@@ -37,3 +37,4 @@ build --remote_max_connections=@DASHBOARD_REMOTE_MAX_CONNECTIONS@
 build --remote_retries=@DASHBOARD_REMOTE_RETRIES@
 build --remote_timeout=@DASHBOARD_REMOTE_TIMEOUT@
 build --remote_upload_local_results=@DASHBOARD_REMOTE_UPLOAD_LOCAL_RESULTS@
+build --remote_download_minimal
