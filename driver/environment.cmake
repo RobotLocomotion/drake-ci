@@ -134,17 +134,12 @@ else()
   set(COVERAGE OFF)
 endif()
 
-string(REGEX MATCH "cache" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
-if(REGEX_MATCH_RESULT)
-  set(REMOTE_CACHE ON)
-else()
-  set(REMOTE_CACHE OFF)
-endif()
-
 string(REGEX MATCH "release" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
 if(REGEX_MATCH_RESULT)
   set(DEBUG OFF)
-  set(REMOTE_CACHE ON)
+  if(NOT APPLE_X86)
+    set(REMOTE_CACHE ON)
+  endif()
 endif()
 
 string(REGEX MATCH "unprovisioned" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
@@ -155,7 +150,7 @@ else()
   set(PROVISION OFF)
 endif()
 
-# Special case jobs that do not match the above patterns but we want cached.
+# Special case Linux jobs that do not match the above patterns but we want cached.
 string(REGEX MATCH "^linux-(focal|jammy)-clang-bazel-(continuous|experimental|nightly)-leak-sanitizer$" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
 if(REGEX_MATCH_RESULT)
   set(REMOTE_CACHE ON)
@@ -166,21 +161,11 @@ if(REGEX_MATCH_RESULT)
   set(REMOTE_CACHE ON)
 endif()
 
-# TODO(svenevs): sort through the logic above and enable more (debug).
-# This expression is a temporary kludge to test out the cache with mac-arm using
-# the same jobs that mac-x86 is currently caching.
-string(REGEX MATCH "(mac-arm-monterey-clang-bazel-continuous-release|mac-arm-monterey-clang-bazel-experimental-everything-release|mac-arm-monterey-clang-bazel-experimental-release|mac-arm-monterey-clang-bazel-nightly-everything-release|mac-arm-monterey-clang-cmake-experimental-everything-release|mac-arm-monterey-clang-cmake-experimental-release|mac-arm-monterey-clang-cmake-nightly-everything-release|mac-arm-monterey-clang-cmake-nightly-release)" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
-if(REGEX_MATCH_RESULT)
-  set(REMOTE_CACHE ON)
-endif()
-
-# We are also testing out running debug jobs with the new cache server.  There
-# is currently no continuous version of this job but it may get added.
+# Special case Mac ARM jobs that do not match the above patterns but we want cached.
 string(REGEX MATCH "(mac-arm-monterey-clang-bazel-nightly-debug|mac-arm-monterey-clang-bazel-continuous-debug|mac-arm-monterey-clang-bazel-experimental-debug)" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
 if(REGEX_MATCH_RESULT)
   set(REMOTE_CACHE ON)
 endif()
-# -- END TODO(svenevs)
 
 string(REGEX MATCH "(minsizerel|relwithdebinfo)" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
 if(REGEX_MATCH_RESULT)
