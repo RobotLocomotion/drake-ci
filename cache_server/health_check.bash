@@ -59,4 +59,4 @@ timeout 30 \
     ssh \
     -o StrictHostKeyChecking=no\
     "root@${cache_server_url}" \
-    '/cache/disk_usage_alert.py /cache/toyotacache'
+    '/cache/disk_usage_alert.py /cache/toyotacache -t 1'
