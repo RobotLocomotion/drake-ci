@@ -40,6 +40,10 @@ set(DASHBOARD_OS_CACHE_VERSION)
 set(DASHBOARD_PYTHON_CACHE_VERSION)
 set(DASHBOARD_REMOTE_CACHE_KEY)
 
+# TODO(svenevs): remote cache disabled to bring the new cache server(s) and
+# updated configuration files online.
+set(REMOTE_CACHE OFF)
+
 if(REMOTE_CACHE)
   mktemp(DASHBOARD_FILE_DOWNLOAD_TEMP file_download_XXXXXXXX
     "temporary download file"
