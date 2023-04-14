@@ -53,7 +53,7 @@ if(REMOTE_CACHE)
       fatal("Caching is not supported for Mac x86 jobs.")
     endif()
   else()
-    set(DASHBOARD_REMOTE_CACHE "http://172.31.20.109")
+    set(DASHBOARD_REMOTE_CACHE "http://172.31.19.73")
   endif()
   message(STATUS
       "Testing download of remote cache server: '${DASHBOARD_REMOTE_CACHE}'")
