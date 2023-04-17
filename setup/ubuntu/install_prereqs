@@ -77,6 +77,27 @@ echo 'verbose = off' > /root/.wgetrc
 cp /root/.wgetrc /home/ubuntu/.wgetrc
 chown ubuntu:ubuntu /home/ubuntu/.wgetrc
 
+# Downgrade mesa per https://github.com/RobotLocomotion/drake/issues/18726.
+if [[ "$(lsb_release -cs)" == "jammy" ]]; then
+  # 1. Install the pinned versions we know work.
+  apt-get install -o Dpkg::Use-Pty=0 -y --allow-downgrades \
+    xvfb \
+    libegl1 \
+    libegl-mesa0=22.0.1-1ubuntu2 \
+    libgbm1=22.0.1-1ubuntu2 \
+    libgl1-mesa-dri=22.0.1-1ubuntu2 \
+    libglapi-mesa=22.0.1-1ubuntu2 \
+    libglx-mesa0=22.0.1-1ubuntu2
+  # 2. Prevent any subsequent `apt-get update && apt-get upgrade` from
+  #    installing the newer versions.
+  apt-mark hold \
+    libegl-mesa0 \
+    libgbm1 \
+    libgl1-mesa-dri \
+    libglapi-mesa \
+    libglx-mesa0
+fi
+
 cat << EOF > /lib/systemd/system/xvfb.service
 [Unit]
 After=network.target
