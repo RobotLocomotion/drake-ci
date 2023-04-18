@@ -82,5 +82,15 @@ fi
 AGENT=ssh-agent
 [[ "$SSH_PRIVATE_KEY_FILE" == '-' ]] && AGENT=
 
+# The root volumes on the AWS runners have 8GB of space in the root volume /,
+# which is configured in setup/ubuntu/init_script at /media/ephemeral0/ubuntu.
+# Set TEST_TMPDIR to somewhere on a larger volume, see:
+# https://bazel.build/remote/output-directories
+if [[ "$(uname -s)" == "Linux" ]]; then
+    readonly _bazel_tmp="/media/ephemeral0/ubuntu/bazel_cache"
+    mkdir -p "${_bazel_tmp}"
+    export TEST_TMPDIR="${_bazel_tmp}"
+fi
+
 # Hand off to the CMake driver script.
 $AGENT ctest --extra-verbose --no-compress-output --script "${CI_ROOT}/ctest_driver_script.cmake"
