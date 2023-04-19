@@ -241,8 +241,8 @@ All of the configuration options should be executed as `root`.
     `rm -rf /cache/data/*`
 
 14. Consult the drake continuous integration details document for the final
-    steps needed to setup the cache server (copy over authentication credentials
-    to enable the jenkins cache server monitoring jobs).
+    steps needed to set up the cache server (copy over authentication
+    credentials to enable the jenkins cache server monitoring jobs).
 
 ## Cache Server Automated Monitoring
 
