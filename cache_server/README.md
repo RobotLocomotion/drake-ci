@@ -236,8 +236,8 @@ All of the configuration options should be executed as `root`.
     + build --remote_upload_local_results=no
     ```
 
-13. After testing the populate / read jobs work as desired, manually delete the
-    cache so that it starts clean when nightly / continuous begin running:
+13. After testing that the populate / read jobs work as desired, manually delete
+    the cache so that it starts clean when nightly / continuous begin running:
     `rm -rf /cache/data/*`
 
 14. Consult the drake continuous integration details document for the final
