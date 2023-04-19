@@ -4,7 +4,7 @@
 doc='This script is expected to be run on an AWS linux instance, launched by a
 production jenkins job so that buildcops will receive failure notifications.
 
-Args:
+Arguments:
   $1: The server ip address of the cache server to health check.  This should
       be the same as the value of `DASHBOARD_REMOTE_CACHE` in
       driver/configurations/cache.cmake.
