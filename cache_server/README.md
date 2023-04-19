@@ -250,13 +250,13 @@ In addition to routine logging via `cron`, it is helpful to know that the cache
 server has enough space via some form of direct notification.  When a cache
 server is out of disk space, builds will continue on Jenkins without failing and
 can go unnoticed.  The build log for jobs that populate the cache (nightly,
-continuous) will be littered with "HTTP Internal 500 Errors".  `bazel` tried to
-do an HTTP `PUT`, but the server did not have the ability to store it.  While
-the `bazel build` will continue without error, this means that our cache is
-getting out of sync and pruning should happen quickly.  After pruning, it may be
-worth checking the logs in `/cache/log/` for more data on when the cache server
-disk utilization started growing too quickly.  Perhaps the nightly pruning
-routine should be more aggressive.
+continuous) will be littered with HTTP "500 Internal Server Error"s.  `bazel`
+tried to do an HTTP `PUT`, but the server did not have the ability to store it.
+While the `bazel build` will continue without error, this means that our cache
+is getting out of sync and pruning should happen quickly.  After pruning, it may
+be worth checking the logs in `/cache/log/` for more data on when the cache
+server disk utilization started growing too quickly.  Perhaps the nightly
+pruning routine should be more aggressive.
 
 The easiest way to achieve email notifications about this is to have production
 jobs on Jenkins that run [`health_check.bash`](./health_check.bash) for a given
