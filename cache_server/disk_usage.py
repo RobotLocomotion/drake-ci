@@ -41,7 +41,7 @@ def main() -> None:
     # shutil.disk_usage accepts files as well, but we want a directory for this script.
     if not args.mount_point.is_dir():
         parser.error(
-            f"the provided mount_point='{str(args.mount_point)}' is not a directory."
+            f"the provided mount_point='{args.mount_point}' is not a directory."
         )
 
     # This script must should be run as root in order to analyze filesystems.
@@ -57,7 +57,7 @@ def main() -> None:
     # An invalid path may result in zero total size being reported.
     if du.total <= 0:
         parser.error(
-            f"the provided mount_point='{str(args.mount_point)}' has zero total size."
+            f"the provided mount_point='{args.mount_point}' has zero total size."
         )
 
     # Set up logging configurations.
@@ -66,17 +66,17 @@ def main() -> None:
     # Compute and report the data / statistics we care about.  All of our cache servers
     # operate on the order of gigabytes, so there is no need to be able to detect
     # MB or KB, for example.
-    BYTES_TO_GB = 1073741824.0  # 1024.0 * 1024.0 * 1024.0
-    used_GB = du.used / BYTES_TO_GB
-    free_GB = du.free / BYTES_TO_GB
-    total_GB = du.total / BYTES_TO_GB
+    BYTES_TO_GiB = 1073741824.0  # 1024.0 * 1024.0 * 1024.0
+    used_GiB = du.used / BYTES_TO_GiB
+    free_GiB = du.free / BYTES_TO_GiB
+    total_GiB = du.total / BYTES_TO_GiB
     percent_used = (du.used / du.total) * 100.0
     mount_data = dedent(
         f"""
-        - Mount: {str(args.mount_point)}
-        - Used:  {round(used_GB, 4)} GB
-        - Free:  {round(free_GB, 4)} GB
-        - Total: {round(total_GB, 4)} GB
+        - Mount: {args.mount_point}
+        - Used:  {round(used_GiB, 4)} GiB
+        - Free:  {round(free_GiB, 4)} GiB
+        - Total: {round(total_GiB, 4)} GiB
         - %Used: {round(percent_used, 2)}%
     """
     )
@@ -85,7 +85,7 @@ def main() -> None:
     if percent_used < args.threshold:
         # Simply report back to the logs everything is as expected.
         log_message(
-            f"\n==> {percent_used}% usage is adequately beneath {args.threshold}%!",
+            f"\n==> {percent_used}% usage is adequately beneath {args.threshold}%",
         )
     else:
         log_message(
@@ -97,11 +97,11 @@ def main() -> None:
 
             Please start a thread in the #buildcop slack channel delegating to Kitware:
 
-            https://drakedevelopers.slack.com/archives/C270MN28G
+                https://drakedevelopers.slack.com/archives/C270MN28G
 
             Or follow the instructions to prune manually:
 
-            https://github.com/RobotLocomotion/drake-ci/tree/main/cache_server
+                https://github.com/RobotLocomotion/drake-ci/tree/main/cache_server
         """
             )
         )
