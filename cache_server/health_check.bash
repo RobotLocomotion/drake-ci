@@ -53,12 +53,17 @@ curl --fail \
     -X GET \
     "${public_ip}/"
 
-# Download the cache server ssh key and make it usable.
+# Download the cache server ssh key.
 this_file_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 cache_server_id_rsa_path="${this_file_dir}/cache_server_id_rsa"
 aws s3 cp \
   s3://drake-provisioning/cache_server/cache_server_id_rsa \
   "${cache_server_id_rsa_path}"
+
+# Remove downloaded files on exit (success *and* failure).
+trap "rm -f \"${cache_server_id_rsa_path}\"" EXIT
+
+# Make the downloaded ssh key usable.
 chmod 0600 "${cache_server_id_rsa_path}"
 eval "$(ssh-agent -s)"
 
@@ -76,6 +81,3 @@ timeout 120 \
         -o StrictHostKeyChecking=no\
         "root@${private_ip}" \
         '/cache/drake-ci/cache_server/disk_usage.py /cache/data'
-
-# Remove downloaded files.
-rm -f "${cache_server_id_rsa_path}"
