@@ -61,6 +61,7 @@ aws s3 cp \
   "${cache_server_id_rsa_path}"
 
 # Remove downloaded files on exit (success *and* failure).
+# shellcheck disable=SC2064
 trap "rm -f \"${cache_server_id_rsa_path}\"" EXIT
 
 # Make the downloaded ssh key usable.
