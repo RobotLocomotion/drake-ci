@@ -54,7 +54,7 @@ curl --fail \
     "${public_ip}/"
 
 # Download the cache server ssh key and make it usable.
-this_file_dir="$(cd -- "$(dirname "$0")" >/dev/null 2>&1; pwd -P)"
+this_file_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 cache_server_id_rsa_path="${this_file_dir}/cache_server_id_rsa"
 aws s3 cp \
   s3://drake-provisioning/cache_server/cache_server_id_rsa \
