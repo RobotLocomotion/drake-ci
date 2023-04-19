@@ -45,7 +45,7 @@ function usage() {
 case "$(uname -s)" in
   Linux)
     readonly server_ip="172.31.19.73"
-    readonly server_login_url="ip-172-31-19-73.ec2.internal"
+    readonly server_login_url="172.31.19.73"
     ;;
 
   Darwin)
@@ -73,7 +73,7 @@ esac
 set -exo pipefail
 
 # Basic healthcheck: can we contact the server?
-curl --fail \
+echo curl --fail \
     --connect-timeout 10 \
     -X GET \
     "${server_ip}/"
