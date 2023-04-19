@@ -6,7 +6,7 @@ production jenkins job so that buildcops will receive failure notifications.
 
 Args:
   $1: The server ip address of the cache server to health check.  This should
-      be the same value `DASHBOARD_REMOTE_CACHE` in
+      be the same as the value of `DASHBOARD_REMOTE_CACHE` in
       driver/configurations/cache.cmake.
 
   $2: The login uri of the cache server.  For the MacStadium server it should be
