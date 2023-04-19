@@ -45,12 +45,21 @@ function usage() {
 case "$(uname -s)" in
   Linux)
     readonly server_ip="172.31.19.73"
-    readonly server_login_url="ec2-34-224-184-167.compute-1.amazonaws.com"
+    readonly server_login_url="ip-172-31-19-73.ec2.internal"
     ;;
 
   Darwin)
+    # On m1 mac, detect if we can re-run the script under arm64, since Jenkins'
+    # login initially runs in an emulated x86_64 (Rosetta 2) environment.
+    if [[ "$(uname -s)" == Darwin && "$(uname -p)" != "arm" ]]; then
+        if arch -arch arm64 true &>/dev/null; then
+            exec arch -arch arm64 "$0" "$@"
+        fi
+    fi
+
     readonly server_ip="10.221.188.9"
     readonly server_login_url="10.221.188.9"
+    export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
     # For `timeout` command.
     HOMEBREW_NO_AUTO_UPDATE=1 brew install coreutils
     ;;
