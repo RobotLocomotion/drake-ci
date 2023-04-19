@@ -63,7 +63,7 @@ chmod 0600 "${cache_server_id_rsa_path}"
 eval "$(ssh-agent -s)"
 
 # This file should already live on the cache server in this exact location.
-# If anything goes wrong (script not there, ssh hangs) the below command will
+# If anything goes wrong (script not there, ssh hangs), the below command will
 # produce a nonzero exit code.
 #
 # Requires being root, yes.  Using -o StrictHostKeyChecking=no tells ssh to
