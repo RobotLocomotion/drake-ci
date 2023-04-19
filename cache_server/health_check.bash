@@ -102,7 +102,7 @@ eval "$(ssh-agent -s)"
 # (~/.ssh/known_hosts does not know the cache server when this runs in CI).
 timeout 120 \
     ssh \
-        -v \
+        -vvv \
         -i "${cache_server_id_rsa_path}" \
         -o StrictHostKeyChecking=no\
         "root@${server_login_url}" \
