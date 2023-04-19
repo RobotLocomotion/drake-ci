@@ -57,8 +57,8 @@ to simply setting the `bazel` cache server entries to different subdirectories.
 4. Each server is checked by a daily automated jenkins production job (that
    emails buildcops upon failure).  This `cache-server-health-check` job will
    first verify that each cache server is reachable, then log in and verify that
-   the server has enough disk space remaining for new cache populate jobs to
-   upload to.
+   the server has enough disk space remaining for additional cache uploads from
+   nightly / continuous.
 
 [drake_18286]: https://github.com/RobotLocomotion/drake/issues/18286
 [remote_bazelrc]: ../tools/remote.bazelrc.in
