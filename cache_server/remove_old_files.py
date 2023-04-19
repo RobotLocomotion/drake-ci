@@ -33,18 +33,18 @@ from cache_logging import cache_logging_basic_setup, log_message
 
 def bytes_to_human_string(size_bytes: int) -> str:
     """Return a human readable conversion of the provided ``size_bytes`` to either GiB,
-    MiB, KiB, or Bytes (all base 1024).  The largest whole unit available is chosen."""
-    BYTES_TO_GB = 1073741824.0  # 1024.0 * 1024.0 * 1024.0
-    BYTES_TO_MB = 1048576.0  # 1024.0 * 1024.0
-    BYTES_TO_KB = 1024.0
-    if size_bytes >= BYTES_TO_GB:
-        value = size_bytes / BYTES_TO_GB
+    MiB, KiB, or Bytes.  The largest whole unit available is chosen."""
+    BYTES_TO_GiB = 1073741824.0  # 1024.0 * 1024.0 * 1024.0
+    BYTES_TO_MiB = 1048576.0  # 1024.0 * 1024.0
+    BYTES_TO_KiB = 1024.0
+    if size_bytes >= BYTES_TO_GiB:
+        value = size_bytes / BYTES_TO_GiB
         units = "GiB"
-    elif size_bytes >= BYTES_TO_MB:
-        value = size_bytes / BYTES_TO_MB
+    elif size_bytes >= BYTES_TO_MiB:
+        value = size_bytes / BYTES_TO_MiB
         units = "MiB"
-    elif size_bytes >= BYTES_TO_KB:
-        value = size_bytes / BYTES_TO_KB
+    elif size_bytes >= BYTES_TO_KiB:
+        value = size_bytes / BYTES_TO_KiB
         units = "KiB"
     else:
         value = size_bytes
