@@ -32,6 +32,6 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-# See cache_server/health_check.bash, it downloads this file, we do not want
+# cache_server/health_check.bash downloads this file; we do not want
 # developers to accidentally add it.
 cache_server_id_rsa
