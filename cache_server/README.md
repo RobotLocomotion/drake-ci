@@ -66,7 +66,7 @@ to simply setting the `bazel` cache server entries to different subdirectories.
 
 ## Configuring a New Cache Server
 
-By convention,
+By convention:
 
 - Cache data storage volumes are mounted to `/cache`.
 - This repository should be cloned to `/cache/drake-ci`.
