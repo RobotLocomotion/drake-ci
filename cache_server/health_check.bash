@@ -66,9 +66,9 @@ eval "$(ssh-agent -s)"
 # If anything goes wrong (script not there, ssh hangs), the below command will
 # produce a nonzero exit code.
 #
-# Requires being root, yes.  Using -o StrictHostKeyChecking=no tells ssh to
-# accept new finger prints (~/.ssh/known_hosts does not know the cache server
-# when this runs in CI).
+# The disk_usage.py script must be run as `root` to access `/cache/data`.  Using
+# `-o StrictHostKeyChecking=no` tells ssh to accept new fingerprints
+# (~/.ssh/known_hosts does not know the cache server when this runs in CI).
 timeout 120 \
     ssh \
         -v \
