@@ -35,15 +35,15 @@ function usage() {
     exit 1
 }
 
-public_ip="$1"
-private_ip="$2"
-
 # NOTE: we rely on core utilities such as `timeout` that are not in the  macos
 # images.  The script also needs to be `exec arch -arch arm64`'ed as done in
 # `ctest_driver_script_wrapper.bash`.  Since the linux runners are faster to
 # boot and connect to, we do not want to run this on macOS CI.
 [[ "$(uname -s)" != "Linux" ]] && usage
 [[ $# != 2 ]] && usage
+
+readonly public_ip="$1"
+readonly private_ip="$2"
 
 set -exo pipefail
 
