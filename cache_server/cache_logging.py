@@ -7,18 +7,18 @@ This file must live in the same directory as the helper scripts that use it."""
 
 import logging
 import sys
+from typing import TextIO
 
 
 def _logging_basic_config(
     format: str = "%(asctime)s :: %(message)s",
     datefmt: str = "%Y-%m-%d %H:%M:%S",
+    stream: TextIO = sys.stdout,
     **kwargs
 ) -> None:
     """Configure the builtin python logging module log format.  This needs to be
     executed by the script running (rather than execute this at the module scope)."""
-    if "stream" not in kwargs:
-        kwargs["stream"] = sys.stdout
-    logging.basicConfig(format=format, datefmt=datefmt, **kwargs)
+    logging.basicConfig(format=format, datefmt=datefmt, stream=stream, **kwargs)
 
 
 def log_message(message: str) -> None:
