@@ -109,7 +109,7 @@ All of the configuration options should be executed as `root`.
 5. Add the line `export EDITOR=vim` to the top of `/root/.bashrc`.  This way
    when we run `crontab -e` later on, it will use `vim` rather than `nano`.
 
-6. Logout of `root` (`ctrl+d`) and log back in (`sudo -i -u root`) and confirm
+6. Log out of `root` (`ctrl+d`) and log back in (`sudo -i -u root`) and confirm
    `echo $EDITOR` prints `vim`.
 
 7. Clone this repository to `/cache/drake-ci`:
