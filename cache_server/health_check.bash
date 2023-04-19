@@ -15,15 +15,15 @@ Arguments:
 
 The script performs in order:
 
-1. Verify the server is running via an HTTP GET $1/.  This public ip address
-   is what bazel will try and connect to.
-2. Download the cache server ssh key from s3.
+1. Verify that the server is running via an HTTP GET $1/.  This public ip
+   address is what bazel will try to connect to.
+2. Download the cache server ssh key from S3.
 3. Login to the server $2 and run disk_usage_alert.py to monitor free space.
 
-To develop locally, you will need to have the aws cli configured to be able to
+To develop locally, you will need to have the AWS CLI configured to be able to
 `aws s3 cp ...` (make sure `~/.aws` is configured for drake).  To test:
 
-- The mac-arm64 cache server, connect to the TRI VPN.
+- The mac-arm64 cache server: connect to the TRI VPN.
 - The linux cache server: you need to get behind the firewall either by
   connecting to a new AWS EC2 instance, or via pull requests.  You can connect
   to the Kitware VPN to check $2, but the ip address used in $1 is not reachable
