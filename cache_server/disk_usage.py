@@ -60,7 +60,7 @@ def main() -> None:
             f"the provided mount_point='{str(args.mount_point)}' has zero total size."
         )
 
-    # Setup logging configurations.
+    # Set up logging configurations.
     cache_logging_basic_setup()
 
     # Compute and report the data / statistics we care about.  All of our cache servers

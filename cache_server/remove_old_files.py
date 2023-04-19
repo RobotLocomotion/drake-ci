@@ -335,7 +335,7 @@ def main() -> None:
 
     delta_max = timedelta(**td_kwargs)
 
-    # Setup logging configurations.
+    # Set up logging configurations.
     cache_logging_basic_setup()
     log_message(f"Age strategy:   {time_metric}")
     log_message(f"Time delta max: {delta_max}")
