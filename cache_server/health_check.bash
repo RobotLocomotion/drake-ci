@@ -39,11 +39,27 @@ function usage() {
 # images.  The script also needs to be `exec arch -arch arm64`'ed as done in
 # `ctest_driver_script_wrapper.bash`.  Since the linux runners are faster to
 # boot and connect to, we do not want to run this on macOS CI.
-[[ "$(uname -s)" != "Linux" ]] && usage
-[[ $# != 2 ]] && usage
+# [[ "$(uname -s)" != "Linux" ]] && usage
+# [[ $# != 2 ]] && usage
 
-readonly public_ip="$1"
-readonly private_ip="$2"
+case "$(uname -s)" in
+  Linux)
+    readonly server_ip="172.31.19.73"
+    readonly server_login_url="ec2-34-224-184-167.compute-1.amazonaws.com"
+    ;;
+
+  Darwin)
+    readonly server_ip="10.221.188.9"
+    readonly server_login_url="10.221.188.9"
+    # For `timeout` command.
+    HOMEBREW_NO_AUTO_UPDATE=1 brew install coreutils
+    ;;
+
+  *)
+    echo "Unsupported operating system." >&2
+    exit 1
+    ;;
+esac
 
 set -exo pipefail
 
@@ -51,7 +67,7 @@ set -exo pipefail
 curl --fail \
     --connect-timeout 10 \
     -X GET \
-    "${public_ip}/"
+    "${server_ip}/"
 
 # Download the cache server ssh key.
 this_file_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
@@ -80,5 +96,5 @@ timeout 120 \
         -v \
         -i "${cache_server_id_rsa_path}" \
         -o StrictHostKeyChecking=no\
-        "root@${private_ip}" \
+        "root@${server_login_url}" \
         '/cache/drake-ci/cache_server/disk_usage.py /cache/data'

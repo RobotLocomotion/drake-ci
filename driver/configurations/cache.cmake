@@ -50,7 +50,8 @@ if(REMOTE_CACHE)
   # In addition to updating `DASHBOARD_REMOTE_CACHE` below, you must update:
   #
   # 1. drake-ci/cache_server/README.md heading section enumerating the servers.
-  # 2. drake-jenkins-jobs/jobs.yaml cache-server-health-check job.
+  # 2. drake-ci/cache_server/health_check.bash section enumerating Linux vs
+  #    Darwin ip addresses.
   if(APPLE)
     if(APPLE_ARM64)
       set(DASHBOARD_REMOTE_CACHE "http://10.221.188.9")
