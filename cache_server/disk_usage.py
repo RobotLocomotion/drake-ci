@@ -85,7 +85,7 @@ def main() -> None:
     if percent_used < args.threshold:
         # Simply report back to the logs everything is as expected.
         log_message(
-            f"\n==> {percent_used}% usage is adequately beneath {args.threshold}%",
+            f"\n==> {percent_used:.2f}% usage is adequately beneath {args.threshold}%",
         )
     else:
         log_message(
@@ -93,7 +93,7 @@ def main() -> None:
                 f"""
             [X] The cache server disk usage is too high:
 
-            {percent_used}% usage exceeds the provided threshold of {args.threshold}%!
+            {percent_used:.2f}% usage exceeds provided threshold of {args.threshold}%
 
             Please start a thread in the #buildcop slack channel delegating to Kitware:
 
