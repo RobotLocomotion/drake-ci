@@ -12,7 +12,7 @@ Arguments:
         Internally the script will determine the server_ip based on the provided
         name.
 
-The script performs in order:
+The script performs, in order:
 
 1. Verify that the server is running via an HTTP GET ${server_ip}/.  This
    will confirm that the nginx server is running (or fail if not).
