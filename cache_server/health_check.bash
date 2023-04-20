@@ -23,7 +23,8 @@ The script performs in order:
 To develop locally, you will need to have the AWS CLI configured to be able to
 `aws s3 cp ...` (make sure `~/.aws` is configured for drake).  To test:
 
-- The mac-arm64 cache server: connect to the TRI VPN.
+- The mac-arm64 cache server: connect to the TRI VPN.  You can run this test
+  from a linux machine.
 - The linux cache server: you must spin up a test instance on EC2 with the
   groups `default`, `ping`, `ssh`, and `node` as well as set the IAM role to
   `aws-ec2-role-for-s3`.'
@@ -58,8 +59,8 @@ if [[ "$(uname -s)" == Darwin && "$(uname -p)" != "arm" ]]; then
         exec arch -arch arm64 "$0" "$@"
     fi
     export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
-    # For `timeout` command.
-    HOMEBREW_NO_AUTO_UPDATE=1 brew install coreutils
+    # For `timeout` and `aws` commands.
+    HOMEBREW_NO_AUTO_UPDATE=1 brew install coreutils awscli
 fi
 
 set -exo pipefail
