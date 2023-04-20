@@ -54,13 +54,15 @@ fi
 
 # On m1 mac, detect if we can re-run the script under arm64, since Jenkins'
 # login initially runs in an emulated x86_64 (Rosetta 2) environment.
-if [[ "$(uname -s)" == Darwin && "$(uname -p)" != "arm" ]]; then
-    if arch -arch arm64 true &>/dev/null; then
-        exec arch -arch arm64 "$0" "$@"
+if [[ "$(uname -s)" == Darwin ]]; then
+    if [[ "$(uname -p)" != "arm" ]]; then
+        if arch -arch arm64 true &>/dev/null; then
+            exec arch -arch arm64 "$0" "$@"
+        fi
     fi
     export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
-    # For `timeout` and `aws` commands.
-    HOMEBREW_NO_AUTO_UPDATE=1 brew install coreutils awscli
+    # For `timeout` command.
+    HOMEBREW_NO_AUTO_UPDATE=1 brew install coreutils
 fi
 
 set -exo pipefail
