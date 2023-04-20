@@ -34,12 +34,13 @@ function usage() {
     exit 1
 }
 
-# Determine cache server ip address to health check based off provided name.
-# This is setup this way so that we do not have to edit the drake-jenkins-jobs
-# yaml in addition to drake-ci whenever a cache server ip address changes.
-# Instead, we hard-code the values here and in driver/configurations/cache.cmake
-# in order to be able to update them once.  Co-modifying drake-ci and
-# drake-jenkins-jobs is an unnecessary maintenance burden.
+# Determine the cache server ip address to health check based on the provided
+# name.  This is set up this way so that we do not have to edit the
+# drake-jenkins-jobs yaml in addition to drake-ci whenever a cache server ip
+# address changes.  Instead, we hard-code the values here and in
+# driver/configurations/cache.cmake in order to be able to update them once.
+# Co-modifying drake-ci and drake-jenkins-jobs is an unnecessary maintenance
+# burden.
 [[ $# != 1 ]] && usage
 [[ "$1" =~ ^(linux|mac-arm64)$ ]] || usage
 readonly server_name="$1"
