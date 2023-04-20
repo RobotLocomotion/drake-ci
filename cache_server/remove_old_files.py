@@ -159,8 +159,8 @@ class CacheDirectory:
         log_message(f"==> {self.root}")
         log_message(f"Found: {self.files_scanned} total files.")
         log_message(f"{len(self.files)} file(s) eligible for pruning.")
-        human_readbale = bytes_to_human_string(self.size_bytes)
-        log_message(f"{human_readbale} disk space eligible for pruning.")
+        human_readable = bytes_to_human_string(self.size_bytes)
+        log_message(f"{human_readable} disk space eligible for pruning.")
 
     def maybe_prune(self) -> None:
         """Print relevant data to the console and perform the pruning (if
