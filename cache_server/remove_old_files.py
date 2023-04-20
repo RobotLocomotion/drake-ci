@@ -188,7 +188,7 @@ class CacheDirectory:
             if errors:
                 log_message("Errors found deleting files:")
                 for f_path, error_message in errors:
-                    log_message(f"- {str(f_path)}: {error_message}")
+                    log_message(f"- {f_path}: {error_message}")
                 sys.exit(1)
 
 
