@@ -31,6 +31,10 @@ To develop locally, you will need to have the AWS CLI configured to be able to
 
 function usage() {
     echo -e "Usage:\n    $0 <server_name>\n\n${doc}" >&2
+    # If an additional error message was provided, log it last so it stands out.
+    if [[ -n "$1" ]]; then
+        echo -e "\n[X] $1" >&2
+    fi
     exit 1
 }
 
@@ -41,17 +45,24 @@ function usage() {
 # driver/configurations/cache.cmake in order to be able to update them once.
 # Co-modifying drake-ci and drake-jenkins-jobs is an unnecessary maintenance
 # burden.
-[[ $# != 1 ]] && usage
-[[ "$1" =~ ^(linux|mac-arm64)$ ]] || usage
+[[ $# != 1 ]] && usage "Exactly one argument (server_name) must be provided."
+
 readonly server_name="$1"
-if [[ "${server_name}" == "linux" ]]; then
-    readonly server_ip="172.31.19.73"
-elif [[ "${server_name}" == "mac-arm64" ]]; then
-    readonly server_ip="10.221.188.9"
-else
-    echo "INTERNAL ERROR: unexpected server_name=${server_name}." >&2
-    exit 1
-fi
+case "${server_name}" in
+    linux)
+        readonly server_ip="172.31.19.73"
+        ;;
+
+    mac-arm64)
+        readonly server_ip="10.221.188.9"
+        ;;
+
+    *)
+        message="Invalid server_name='${server_name}'.  Must be one of 'linux' \
+or 'mac-arm64'."
+        usage "${message}"
+        ;;
+esac
 
 # On m1 mac, detect if we can re-run the script under arm64, since Jenkins'
 # login initially runs in an emulated x86_64 (Rosetta 2) environment.
