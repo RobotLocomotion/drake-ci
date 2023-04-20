@@ -145,57 +145,18 @@ class CacheDirectory:
                 except Exception as e:
                     self.invalid_files.append((f_path, str(e)))
 
-    def dump_stats(self, summary_only: bool = False) -> None:
-        """Print various statistics about the files and storage found.
-
-        If ``summary_only=True``, only the final summary is printed.
-        """
+    def dump_stats(self) -> None:
+        """Print various statistics about the files and storage found."""
         # If there are invalid files (likely only broken symlinks), print them all first
         # so that the log has this information, but the more important data comes last.
-        if not summary_only and self.invalid_files:
+        if self.invalid_files:
             log_message("--- INVALID FILES:")
             for f_path, err_msg in self.invalid_files:
-                log_message(f"INVALID: {str(f_path)}: {err_msg}")
+                log_message(f"INVALID: {f_path}: {err_msg}")
             log_message(f"--- END INVALID FILES ({len(self.invalid_files)} total)")
 
-        # Reorganize a mapping of access time => (path, size_bytes) to make
-        # sorting and binning based off date easier.
-        time_map: dict[datetime, list[tuple[Path, int]]] = {}
-        for f_path, size_bytes, time_query in self.files:
-            value = (f_path, size_bytes)
-            if time_query in time_map:
-                time_map[time_query].append(value)
-            else:
-                time_map[time_query] = [value]
-
-        # Print by access/modification time first, gather data about size.
-        if not summary_only:
-            log_message(f"==> By {self.time_metric} ({len(time_map)} total):")
-            size_to_time_map: dict[int, list[datetime]] = {}
-            for key in sorted(time_map):
-                file_path_size_bytes = time_map[key]
-                size_bytes = sum(fpsb[1] for fpsb in file_path_size_bytes)
-                # Two access/modification times *may* end up having the same total
-                # size_bytes, make sure not to overwrite.
-                if size_bytes in size_to_time_map:
-                    size_to_time_map[size_bytes].append(key)
-                else:
-                    size_to_time_map[size_bytes] = [key]
-                human_readable = bytes_to_human_string(size_bytes)
-                log_message(f"{key} ({len(value)} total): {human_readable}")
-
-        # Print out by size next.
-        if not summary_only:
-            log_message(f"==> By size ({len(size_to_time_map)} total):")
-            for size_bytes in reversed(sorted(size_to_time_map)):
-                values = size_to_time_map[size_bytes]
-                human_readable = bytes_to_human_string(size_bytes)
-                # Duplicates are printed multiple times for simplicity.
-                for v in values:
-                    log_message(f"{human_readable}: {v}")
-
         # Print out the most useful information last so it is readily available.
-        log_message(f"==> {str(self.root)}")
+        log_message(f"==> {self.root}")
         log_message(f"Found: {self.files_scanned} total files.")
         log_message(f"{len(self.files)} file(s) eligible for pruning.")
         human_readbale = bytes_to_human_string(self.size_bytes)
@@ -242,12 +203,6 @@ def main() -> None:
         choices=[tm.value for tm in TimeMetric],
         default=TimeMetric.ACCESS_TIME.value,
         help="Which time metric of the file to consider (default: %(default)s).",
-    )
-    parser.add_argument(
-        "-s",
-        "--summary",
-        action="store_true",
-        help="Only print a summary in the statistics.",
     )
     parser.add_argument(
         "-n",
@@ -346,7 +301,7 @@ def main() -> None:
         delta_max=delta_max,
         dry_run=args.dry_run,
     )
-    cache_dir.dump_stats(summary_only=args.summary)
+    cache_dir.dump_stats()
     cache_dir.maybe_prune()
 
 
