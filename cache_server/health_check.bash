@@ -45,7 +45,7 @@ function usage() {
 case "$(uname -s)" in
   Linux)
     readonly server_ip="172.31.19.73"
-    readonly server_login_url="34.224.184.167"
+    readonly server_login_url="172.31.19.73"
     ;;
 
   Darwin)
