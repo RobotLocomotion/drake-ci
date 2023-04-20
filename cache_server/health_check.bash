@@ -45,7 +45,6 @@ function usage() {
 case "$(uname -s)" in
   Linux)
     readonly server_ip="172.31.19.73"
-    readonly server_login_url="172.31.19.73"
     ;;
 
   Darwin)
@@ -58,7 +57,6 @@ case "$(uname -s)" in
     fi
 
     readonly server_ip="10.221.188.9"
-    readonly server_login_url="10.221.188.9"
     export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
     # For `timeout` command.
     HOMEBREW_NO_AUTO_UPDATE=1 brew install coreutils
@@ -104,6 +102,7 @@ timeout 120 \
     ssh \
         -vvv \
         -i "${cache_server_id_rsa_path}" \
-        -o StrictHostKeyChecking=no\
-        "root@${server_login_url}" \
+        -o IdentitiesOnly=yes \
+        -o StrictHostKeyChecking=no \
+        "root@${server_ip}" \
         'echo /cache/drake-ci/cache_server/disk_usage.py /cache/data'
