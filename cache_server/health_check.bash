@@ -7,10 +7,10 @@ associated with the cache server being checked (an AWS linux instance to check
 the AWS cache server, a macos-arm64 instance to check the macOS cache server).
 
 Arguments:
-    server_ip:
-        The ip address of the cache server to health check.  This should be the
-        same as the value of `DASHBOARD_REMOTE_CACHE` in
-        driver/configurations/cache.cmake.
+    server_name:
+        The name of the server to health check.  Must be `linux` or
+        `macos-arm64`.  Internally the script will determine the server_ip based
+        on the provided name.
 
 The script performs in order:
 
@@ -29,12 +29,27 @@ To develop locally, you will need to have the AWS CLI configured to be able to
   `aws-ec2-role-for-s3`.'
 
 function usage() {
-    echo -e "Usage:\n    $0 <server_ip>\n\n${doc}" >&2
+    echo -e "Usage:\n    $0 <server_name>\n\n${doc}" >&2
     exit 1
 }
 
+# Determine cache server ip address to health check based off provided name.
+# This is setup this way so that we do not have to edit the drake-jenkins-jobs
+# yaml in addition to drake-ci whenever a cache server ip address changes.
+# Instead, we hard-code the values here and in driver/configurations/cache.cmake
+# in order to be able to update them once.  Co-modifying drake-ci and
+# drake-jenkins-jobs is an unnecessary maintenance burden.
 [[ $# != 1 ]] && usage
-readonly server_ip="$1"
+[[ "$1" =~ ^(linux|macos-arm64)$ ]] || usage
+readonly server_name="$1"
+if [[ "${server_name}" == "linux" ]]; then
+    readonly server_ip="172.31.19.73"
+elif [[ "${server_name}" == "macos-arm64" ]]; then
+    readonly server_ip="10.221.188.9"
+else
+    echo "INTERNAL ERROR: unexpected server_name=${server_name}." >&2
+    exit 1
+fi
 
 # On m1 mac, detect if we can re-run the script under arm64, since Jenkins'
 # login initially runs in an emulated x86_64 (Rosetta 2) environment.
