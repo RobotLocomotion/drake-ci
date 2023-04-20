@@ -17,7 +17,7 @@ The script performs, in order:
 1. Verify that the server is running via an HTTP GET ${server_ip}/.  This
    will confirm that the nginx server is running (or fail if not).
 2. Download the cache server ssh key from S3.
-3. Login to the server at ${server_ip} and run disk_usage.py to monitor free
+3. Log in to the server at ${server_ip} and run disk_usage.py to monitor free
    space.
 
 To develop locally, you will need to have the AWS CLI configured to be able to
