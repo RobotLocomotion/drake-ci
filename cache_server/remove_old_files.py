@@ -84,7 +84,7 @@ class CacheDirectory:
         The time at which scanning began for access time comparison to delta_max.
 
     files: list[tuple[Path, int, datetime]]
-        Candidates for deletion, this list holds (file path, size bytes, access time)
+        Candidates for deletion.  This list holds (file path, size bytes, access time)
         tuples describing all files found under ``root`` that are older than ``delta``
         time units.
 
