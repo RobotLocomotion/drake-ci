@@ -46,6 +46,12 @@ if(REMOTE_CACHE)
   )
   list(APPEND DASHBOARD_TEMPORARY_FILES DASHBOARD_FILE_DOWNLOAD_TEMP)
 
+  # NOTE: is there a new cache server being added (or an ip address changing)?
+  # In addition to updating `DASHBOARD_REMOTE_CACHE` below, you must update:
+  #
+  # 1. drake-ci/cache_server/README.md heading section enumerating the servers.
+  # 2. drake-ci/cache_server/health_check.bash section enumerating Linux vs
+  #    Darwin ip addresses.
   if(APPLE)
     if(APPLE_ARM64)
       set(DASHBOARD_REMOTE_CACHE "http://10.221.188.9")
