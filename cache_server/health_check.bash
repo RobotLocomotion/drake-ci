@@ -8,9 +8,9 @@ the AWS cache server, a macos-arm64 instance to check the macOS cache server).
 
 Arguments:
     server_name:
-        The name of the server to health check.  Must be `linux` or
-        `macos-arm64`.  Internally the script will determine the server_ip based
-        on the provided name.
+        The name of the server to health check.  Must be `linux` or `mac-arm64`.
+        Internally the script will determine the server_ip based on the provided
+        name.
 
 The script performs in order:
 
@@ -40,11 +40,11 @@ function usage() {
 # in order to be able to update them once.  Co-modifying drake-ci and
 # drake-jenkins-jobs is an unnecessary maintenance burden.
 [[ $# != 1 ]] && usage
-[[ "$1" =~ ^(linux|macos-arm64)$ ]] || usage
+[[ "$1" =~ ^(linux|mac-arm64)$ ]] || usage
 readonly server_name="$1"
 if [[ "${server_name}" == "linux" ]]; then
     readonly server_ip="172.31.19.73"
-elif [[ "${server_name}" == "macos-arm64" ]]; then
+elif [[ "${server_name}" == "mac-arm64" ]]; then
     readonly server_ip="10.221.188.9"
 else
     echo "INTERNAL ERROR: unexpected server_name=${server_name}." >&2
