@@ -167,6 +167,13 @@ if(REGEX_MATCH_RESULT)
   set(REMOTE_CACHE ON)
 endif()
 
+# Do not cache weekly jobs, they run too infrequently to be useful and just
+# waste space on the cache server.
+string(REGEX MATCH ".*-weekly-.*" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
+if(REGEX_MATCH_RESULT)
+  set(REMOTE_CACHE OFF)
+endif()
+
 string(REGEX MATCH "(minsizerel|relwithdebinfo)" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
 if(REGEX_MATCH_RESULT)
   set(DEBUG OFF)
