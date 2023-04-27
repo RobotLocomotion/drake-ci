@@ -129,7 +129,7 @@ All of the configuration options should be executed as `root`.
     validated by `nginx -t` and then the service must be restarted via
     `systemctl restart nginx`.
 
-7. Link our server configuration to `/etc/nginx/conf.d` (which is included by
+8. Link our server configuration to `/etc/nginx/conf.d` (which is included by
    `/etc/nginx/nginx.conf`):
 
     ```console
@@ -138,18 +138,19 @@ All of the configuration options should be executed as `root`.
         /etc/nginx/conf.d/
     ```
 
-8. Remove the default server (which also uses port 80):
+9. Remove the default server (which also uses port 80):
    `rm /etc/nginx/sites-enabled/default`.
 
-9. Now that our server configurations are in place, verify that `nginx` is happy
-   with `nginx -t`:
+10. Now that our server configurations are in place, verify that `nginx` is happy
+    with `nginx -t`:
 
     ```console
     $ nginx -t
     nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
     nginx: configuration file /etc/nginx/nginx.conf test is successful
     ```
-10. Restart `nginx`, and make sure it is configured to start on boot:
+
+11. Restart `nginx`, and make sure it is configured to start on boot:
 
     ```console
     $ systemctl restart nginx
@@ -176,7 +177,7 @@ All of the configuration options should be executed as `root`.
     Apr 07 16:53:18 tytrsr-ubuntu-01 systemd[1]: Started A high performance web server and a reverse proxy server.
     ```
 
-11. Confirm that `echo $USER` reveals you are `root`, and then execute
+12. Confirm that `echo $USER` reveals you are `root`, and then execute
     `crontab -e`.  Your final crontab entries for the `root` user should be:
 
     ```bash
@@ -201,7 +202,7 @@ All of the configuration options should be executed as `root`.
     currently it is being cleaned every `--days 2` but this value may update
     in the future.
 
-12. Add the new cache server to `drake-ci` in a pull request that sets the
+13. Add the new cache server to `drake-ci` in a pull request that sets the
     appropriate `DASHBOARD_REMOTE_CACHE` value set at the top of
     [`cache.cmake`][cache_cmake].  To test the server (before merging the PR
     adding it), we will need to add two dummy commits to launch test jobs
@@ -241,11 +242,11 @@ All of the configuration options should be executed as `root`.
     + build --remote_upload_local_results=no
     ```
 
-13. After testing that the populate / read jobs work as desired, manually delete
+14. After testing that the populate / read jobs work as desired, manually delete
     the cache so that it starts clean when nightly / continuous begin running:
     `rm -rf /cache/data/*`
 
-14. Consult the drake continuous integration details document for the final
+15. Consult the drake continuous integration details document for the final
     steps needed to set up the cache server (copy over authentication
     credentials to enable the jenkins cache server monitoring jobs).
 
