@@ -72,7 +72,7 @@ else()
 endif()
 
 if(APPLE)
-  set(DISTRIBUTION_REGEX "(monterey)")
+  set(DISTRIBUTION_REGEX "(monterey|ventura)")
 else()
   set(DISTRIBUTION_REGEX "(focal|jammy)")
 endif()
