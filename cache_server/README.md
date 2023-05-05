@@ -17,7 +17,7 @@ continuous integration details document.
     - IP address: `10.221.188.9`
 - linux:
     - Hosted on AWS.  Requires Kitware VPN to access.
-    - 750GB EBS volume.
+    - 1TB EBS volume.
     - IP address: `172.31.19.73`
 
 ## Cache Server Overview
@@ -70,8 +70,14 @@ to simply setting the `bazel` cache server entries to different subdirectories.
 By convention:
 
 - Cache data storage volumes are mounted to `/cache`.
-- This repository should be cloned to `/cache/drake-ci`.
-- The logs are stored in `/cache/log/nginx/{access,error}.log`.
+- This repository should be cloned to `/opt/cache_server/drake-ci`.  Do not put
+  it on the same volume as the cache data storage.  If monitoring or file
+  removal are not working correctly, you will not be able to develop in
+  production (e.g., cannot `git pull` new files) or get new logging information.
+    - **NOTE**: this directory path is also used by
+      [`health_check.bash`](./health_check.bash).
+- The logs for `nginx`, file removal, and disk monitoring are are stored in
+  `/opt/cache_server/log`.
 - The build cache is written to `/cache/data`.  The [`cache.cmake`][cache_cmake]
   configuration sets as an example `DASHBOARD_REMOTE_CACHE_KEY_VERSION=v2`, so
   the action cache (ac) and content addressed storage (cas) will be stored at
@@ -83,65 +89,82 @@ All of the configuration options should be executed as `root`.
 
 1. Become the `root` user: `sudo -i -u root`
 
-2. Make the directory structure we need with ownership that `nginx` will be able
+2. When you first image a new cache server, make sure to fully upgrade it:
+
+    ```console
+    apt-get update && apt-get upgrade
+    ```
+
+    Pay attention to the output, if the kernel upgrades, make sure to `reboot` it and
+    prune the old kernels.  See the "Biannual Linux Kernel/Security Update" section of
+    the drake-ci document for more information.
+
+3. Make the directory structure we need with ownership that `nginx` will be able
    to work with:
 
     ```console
-    mkdir -p /cache/data /cache/log/nginx
-    chown -R www-data:www-data /cache/data /cache/log/nginx
+    (
+        mkdir -p \
+            /cache/data \
+            /opt/cache_server \
+            /opt/cache_server/log/nginx;
+        chown -R www-data:www-data /cache/data /opt/cache_server/log/nginx;
+    )
     ```
 
-3. Install the packages we need (and desire):
+4. Install the packages we need (and desire):
 
     ```console
-    $ apt-get install -y \
+    apt-get install -y \
         git \
+        python3-venv \
         nginx \
         nginx-extras \
         ncdu \
+        tmux \
         tree \
         vim
     ```
 
-4. Set the timezone to New York rather than UTC using
+5. Set the timezone to New York rather than UTC using
    `timedatectl set-timezone America/New_York`.  The timezone of the server is
    relevant for the `cron` entries that follow!
 
-5. Add the line `export EDITOR=vim` to the top of `/root/.bashrc`.  This way
+6. Add the line `export EDITOR=vim` to the top of `/root/.bashrc`.  This way
    when we run `crontab -e` later on, it will use `vim` rather than `nano`.
 
-6. Log out of `root` (`ctrl+d`) and log back in (`sudo -i -u root`) and confirm
+7. Log out of `root` (`ctrl+d`) and log back in (`sudo -i -u root`) and confirm
    `echo $EDITOR` prints `vim`.
 
-7. Clone this repository to `/cache/drake-ci`:
+8. Clone this repository to `/opt/cache_server/drake-ci`:
 
     ```console
-    $ (cd /cache && git clone https://github.com/RobotLocomotion/drake-ci.git)
+    (cd /opt/cache_server && git clone https://github.com/RobotLocomotion/drake-ci.git)
     ```
 
     Be aware that changing branches or making local edits to files on a cache
-    server under `/cache/drake-ci` affects a production system.  The pruning
-    routines under `cron` as well as monitoring scripts may behave unexpectedly
-    depending on what local changes are made.
+    server under `/opt/cache_server/drake-ci` affects a production system.  The
+    file removal routines under `cron` as well as Jenkins monitoring scripts may
+    behave unexpectedly depending on what local changes are made.
 
     Also be aware that changes to the `nginx` configuration (e.g., via
     `git pull`) do **not** go live.  The newly updated configuration should be
     validated by `nginx -t` and then the service must be restarted via
     `systemctl restart nginx`.
 
-8. Link our server configuration to `/etc/nginx/conf.d` (which is included by
+9. Link our server configuration to `/etc/nginx/conf.d` (which is included by
    `/etc/nginx/nginx.conf`):
 
     ```console
-    $ ln -s \
-        /cache/drake-ci/cache_server/drake_cache_server_nginx.conf \
+    ln -s \
+        /opt/cache_server/drake-ci/cache_server/drake_cache_server_nginx.conf \
         /etc/nginx/conf.d/
     ```
 
-9. Remove the default server (which also uses port 80):
-   `rm /etc/nginx/sites-enabled/default`.
+10. Remove the default server (which also uses port 80):
+    `rm /etc/nginx/sites-enabled/default`.
 
-10. Now that our server configurations are in place, verify that `nginx` is happy
+11. Now that our server configurations are in place, verify that `nginx` is happy
     with `nginx -t`:
 
     ```console
@@ -150,7 +173,7 @@ All of the configuration options should be executed as `root`.
     nginx: configuration file /etc/nginx/nginx.conf test is successful
     ```
 
-11. Restart `nginx`, and make sure it is configured to start on boot:
+12. Restart `nginx`, and make sure it is configured to start on boot:
 
     ```console
     $ systemctl restart nginx
@@ -177,32 +200,30 @@ All of the configuration options should be executed as `root`.
     Apr 07 16:53:18 tytrsr-ubuntu-01 systemd[1]: Started A high performance web server and a reverse proxy server.
     ```
 
-12. Confirm that `echo $USER` reveals you are `root`, and then execute
+13. Confirm that `echo $USER` reveals you are `root`, and then execute
     `crontab -e`.  Your final crontab entries for the `root` user should be:
 
     ```bash
     # This cache server's date / time are in America/New_York!
-    # Cache pruning: run 10pm eastern (before nightlies).
-    0 22 * * *   /cache/drake-ci/cache_server/remove_old_files.py --days 3 /cache/data >>/cache/log/remove_old_files.log 2>&1
+    # Cache pruning (https://crontab.guru/#0_8-22_*_*_*): every hour between 8am and
+    # 10pm.  Stop running in the evening to allow nightlies to be untouched.
+    0 8-22 * * *   /opt/cache_server/drake-ci/cache_server/remove_old_files.py auto /cache/data >>/opt/cache_server/log/remove_old_files.log 2>&1
     #
-    # Disk usage monitoring: run 7am eastern.
-    0 7  * * *   /cache/drake-ci/cache_server/disk_usage.py /cache/data >>/cache/log/disk_usage.log 2>&1
+    # Disk usage monitoring: 30 minutes after running the pruning.
+    30 8-22 * * *   /opt/cache_server/drake-ci/cache_server/disk_usage.py /cache/data >>/opt/cache_server/log/disk_usage_cache_data.log 2>&1
+    # Additionally monitor disk usage of the root volume.
+    30 8-22 * * *   /opt/cache_server/drake-ci/cache_server/disk_usage.py / >>/opt/cache_server/log/disk_usage_root.log 2>&1
     #
-    # Rotate cache logs.  Note that the verbose output of logrotate goes to the
-    # provided logfile, but it always overwrites.  We do not want it rotating
-    # itself, so it goes to /cache/logrotate.log (not /cache/log/logrotate.log).
-    # Run this daily after the other jobs are anticipated to finish: 10am eastern.
-    0 10 * * *   /usr/sbin/logrotate --verbose --log /cache/logrotate.log /cache/drake-ci/cache_server/logrotate_cache.conf >/dev/null 2>&1
+    # Rotate cache logs.  See the script for more information, this must be run
+    # frequently since the nginx access.log can grow quite quickly.  Run it when
+    # the other two jobs above are unlikely to also be running (and logging).
+    45 * * * *   /opt/cache_server/drake-ci/cache_server/rotate_logs.py >>/opt/cache_server/log/rotate_logs.log 2>&1
     ```
 
     You should be able to save and `cat /var/spool/cron/crontabs/root` to
     confirm.
 
-    **Important**: the `linux` cache server must be cleaned up more often,
-    currently it is being cleaned every `--days 2` but this value may update
-    in the future.
-
-13. Add the new cache server to `drake-ci` in a pull request that sets the
+14. Add the new cache server to `drake-ci` in a pull request that sets the
     appropriate `DASHBOARD_REMOTE_CACHE` value set at the top of
     [`cache.cmake`][cache_cmake].  To test the server (before merging the PR
     adding it), we will need to add two dummy commits to launch test jobs
@@ -242,11 +263,11 @@ All of the configuration options should be executed as `root`.
     + build --remote_upload_local_results=no
     ```
 
-14. After testing that the populate / read jobs work as desired, manually delete
+15. After testing that the populate / read jobs work as desired, manually delete
     the cache so that it starts clean when nightly / continuous begin running:
     `rm -rf /cache/data/*`
 
-15. Consult the drake continuous integration details document for the final
+16. Consult the drake continuous integration details document for the final
     steps needed to set up the cache server (copy over authentication
     credentials to enable the jenkins cache server monitoring jobs).
 
@@ -290,18 +311,27 @@ Once on the server, become the `root` user (`sudo -iu root`) and run a handful
 of different time windows using the `-n` (dry run) flag:
 
 ```console
-$ /cache/drake-ci/cache_server/remove_old_files.py -n --days 3 /cache/data/
-$ /cache/drake-ci/cache_server/remove_old_files.py -n --days 2 /cache/data/
-$ /cache/drake-ci/cache_server/remove_old_files.py -n --days 1 /cache/data/
-$ /cache/drake-ci/cache_server/remove_old_files.py -n --days 1 --hours 12 /cache/data/
+/opt/cache_server/drake-ci/cache_server/remove_old_files.py -n auto -t 60 /cache/data/
 ```
 
-Depending on how much disk space you need to free up, anything longer than 1.5
-days (`--days 1 --hours 12`) should be safe to delete immediately.  For a given
-cache server, if this happens multiple times then one of three changes must
-occur:
+Or manually search yourself:
+
+```
+$ /opt/cache_server/drake-ci/cache_server/remove_old_files.py -n manual --days 2 /cache/data/
+$ /opt/cache_server/drake-ci/cache_server/remove_old_files.py -n manual --days 1 /cache/data/
+$ /opt/cache_server/drake-ci/cache_server/remove_old_files.py -n manual --days 1 --hours 12 /cache/data/
+```
+
+While the data on the cache server itself is fairly easy to replace (it is never
+worth making a backup of this data), **be extremely conscious of what you are
+doing**.  If you delete the entire cache during the day, **all pull request
+builds will become over 10x slower** and will not speed up until continuous
+and/or nightly start repopulating the cache.
+
+Depending on your findings, likely you will want to choose one or more of:
 
 - Update the time interval for the `cron` job running
   [`remove_old_files.py`](./remove_old_files.py).
+- Change the disk percent usage threshold in the `cron` job`.
 - Increase the storage attached to the cache server.
 - Reduce the number of jenkins jobs that add to this cache server.
