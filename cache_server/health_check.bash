@@ -113,4 +113,4 @@ timeout 120 \
         -o StrictHostKeyChecking=no \
         -i "${cache_server_id_rsa_path}" \
         "root@${server_ip}" \
-        '/cache/drake-ci/cache_server/disk_usage.py /cache/data'
+        '/opt/cache_server/drake-ci/cache_server/disk_usage.py /cache/data'
