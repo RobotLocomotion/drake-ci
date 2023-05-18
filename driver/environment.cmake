@@ -137,41 +137,59 @@ endif()
 string(REGEX MATCH "release" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
 if(REGEX_MATCH_RESULT)
   set(DEBUG OFF)
-  if(NOT APPLE_X86)
-    set(REMOTE_CACHE ON)
-  endif()
 endif()
 
 string(REGEX MATCH "unprovisioned" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
 if(REGEX_MATCH_RESULT)
   set(PROVISION ON)
-  set(REMOTE_CACHE OFF)
 else()
   set(PROVISION OFF)
 endif()
 
-# Special case Linux jobs that do not match the above patterns but we want cached.
-string(REGEX MATCH "^linux-(focal|jammy)-clang-bazel-(continuous|experimental|nightly)-leak-sanitizer$" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
+
+# Cache all release jobs with the following exceptions:
+# - Unprovisioned jobs are never cached
+# - Weekly jobs are never cached
+# - Mac x86 jobs are never cached
+
+string(REGEX MATCH "release" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
 if(REGEX_MATCH_RESULT)
   set(REMOTE_CACHE ON)
 endif()
 
-string(REGEX MATCH "^linux-(focal|jammy)-gcc-bazel-(continuous|experimental|nightly)-debug$" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
-if(REGEX_MATCH_RESULT)
-  set(REMOTE_CACHE ON)
-endif()
-
-# Special case Mac ARM jobs that do not match the above patterns but we want cached.
-string(REGEX MATCH "(mac-arm-monterey-clang-bazel-nightly-debug|mac-arm-monterey-clang-bazel-continuous-debug|mac-arm-monterey-clang-bazel-experimental-debug)" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
-if(REGEX_MATCH_RESULT)
-  set(REMOTE_CACHE ON)
-endif()
-
-# Do not cache weekly jobs, they run too infrequently to be useful and just
-# waste space on the cache server.
-string(REGEX MATCH ".*-weekly-.*" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
+string(REGEX MATCH "unprovisioned" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
 if(REGEX_MATCH_RESULT)
   set(REMOTE_CACHE OFF)
+endif()
+
+string(REGEX MATCH "weekly" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
+if(REGEX_MATCH_RESULT)
+  set(REMOTE_CACHE OFF)
+endif()
+
+if(APPLE_X86)
+  set(REMOTE_CACHE OFF)
+endif()
+
+# Special non-release cases that should be cached
+string(REGEX MATCH "^linux-focal-clang-bazel-(continuous|experimental|nightly)-leak-sanitizer$" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
+if(REGEX_MATCH_RESULT)
+  set(REMOTE_CACHE ON)
+endif()
+
+string(REGEX MATCH "^linux-focal-clang-bazel-(continuous|experimental|nightly)-debug$" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
+if(REGEX_MATCH_RESULT)
+  set(REMOTE_CACHE ON)
+endif()
+
+string(REGEX MATCH "^linux-jammy-gcc-bazel-(continuous|experimental|nightly)-debug$" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
+if(REGEX_MATCH_RESULT)
+  set(REMOTE_CACHE ON)
+endif()
+
+string(REGEX MATCH "(^mac-arm-monterey-clang-bazel-(continuous|experimental|nightly)-debug$" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
+if(REGEX_MATCH_RESULT)
+  set(REMOTE_CACHE ON)
 endif()
 
 string(REGEX MATCH "(minsizerel|relwithdebinfo)" REGEX_MATCH_RESULT "${DASHBOARD_JOB_NAME}")
