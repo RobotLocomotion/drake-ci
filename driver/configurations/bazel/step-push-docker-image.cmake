@@ -32,7 +32,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-function(docker_push)
+macro(docker_push TAG)
   if(NOT DASHBOARD_UNSTABLE)
     set(DOCKER_PUSH_IMAGE_ARGS "push robotlocomotion/drake:${TAG}")
     separate_arguments(
@@ -54,7 +54,7 @@ function(docker_push)
         "BAZEL PUSHING DOCKER IMAGE (ROBOTLOCOMOTION/DRAKE:${TAG})" UNSTABLE)
     endif()
   endif()
-endfunction()
+endmacro()
 
 if(DASHBOARD_FAILURE OR DASHBOARD_UNSTABLE)
   notice("CTest Status: NOT PUSHING DOCKER IMAGE BECAUSE BAZEL BUILD WAS NOT SUCCESSFUL")
