@@ -83,9 +83,9 @@ else()
     endif()
   elseif(DASHBOARD_TRACK STREQUAL "Staging")
     # Push the staging images, tagged both with and without the distro name.
-    docker_push("${DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME}-${DASHBOARD_DRAKE_VERSION}+staging")
+    docker_push("${DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME}-${DASHBOARD_DRAKE_VERSION}-staging")
     if(DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME STREQUAL "focal")
-      docker_push("${DASHBOARD_DRAKE_VERSION}+staging")
+      docker_push("${DASHBOARD_DRAKE_VERSION}-staging")
     endif()
   else()
     # Should never get here...

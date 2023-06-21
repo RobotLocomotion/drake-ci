@@ -83,7 +83,7 @@ else()
   endif()
 
   if(DASHBOARD_TRACK STREQUAL "Staging")
-    set(DOCKER_TAG "${DASHBOARD_DRAKE_VERSION}+staging")
+    set(DOCKER_TAG "${DASHBOARD_DRAKE_VERSION}-staging")
   else()
     set(DOCKER_TAG "${DATE}")
   endif()
