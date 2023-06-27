@@ -123,38 +123,31 @@ else()
   set(COVERAGE OFF)
 endif()
 
-if(DASHBOARD_JOB_NAME MATCHES "release")
-  set(DEBUG OFF)
-  if(NOT APPLE_X86)
-    set(REMOTE_CACHE ON)
-  endif()
-endif()
-
 if(DASHBOARD_JOB_NAME MATCHES "unprovisioned")
   set(PROVISION ON)
-  set(REMOTE_CACHE OFF)
 else()
   set(PROVISION OFF)
 endif()
 
-# Special case Linux jobs that do not match the above patterns but we want cached.
-if(DASHBOARD_JOB_NAME MATCHES "^linux-(focal|jammy)-clang-bazel-(continuous|experimental|nightly)-leak-sanitizer$")
-  set(REMOTE_CACHE ON)
-endif()
+set(REMOTE_CACHE ON)
 
-if(DASHBOARD_JOB_NAME MATCHES "^linux-(focal|jammy)-gcc-bazel-(continuous|experimental|nightly)-debug$")
-  set(REMOTE_CACHE ON)
-endif()
-
-# Special case Mac ARM jobs that do not match the above patterns but we want cached.
-if(DASHBOARD_JOB_NAME MATCHES "(mac-arm-monterey-clang-bazel-nightly-debug|mac-arm-monterey-clang-bazel-continuous-debug|mac-arm-monterey-clang-bazel-experimental-debug)")
-  set(REMOTE_CACHE ON)
-endif()
-
-# Do not cache weekly jobs, they run too infrequently to be useful and just
-# waste space on the cache server.
-if(DASHBOARD_JOB_NAME MATCHES ".*-weekly-.*")
+if(APPLE_X86)
   set(REMOTE_CACHE OFF)
+endif()
+
+if(DASHBOARD_JOB_NAME MATCHES "(coverage|health-check|unprovisioned)")
+  set(REMOTE_CACHE OFF)
+endif()
+
+if(REMOTE_CACHE)
+  # All jobs, unless explicitly excluded above, read from the cache
+  set(DASHBOARD_REMOTE_ACCEPT_CACHED "yes")
+  if(TRACK STREQUAL "continuous")
+    # All continuous jobs that read from the cache also write to the cache
+    set(DASHBOARD_REMOTE_UPLOAD_LOCAL_RESULTS "yes")
+  else()
+    set(DASHBOARD_REMOTE_UPLOAD_LOCAL_RESULTS "no")
+  endif()
 endif()
 
 if(DASHBOARD_JOB_NAME MATCHES "(minsizerel|relwithdebinfo)")
