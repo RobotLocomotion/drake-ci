@@ -115,20 +115,9 @@ if(REMOTE_CACHE)
     "build --remote_local_fallback=yes\n"
     "build --remote_max_connections=64\n"
     "build --remote_retries=4\n"
-    "build --remote_timeout=120\n")
-  if(DASHBOARD_TRACK STREQUAL "Nightly")
-    file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
-      "build --remote_accept_cached=no\n"
-      "build --remote_upload_local_results=yes\n")
-  elseif(DASHBOARD_TRACK STREQUAL "Experimental")
-    file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
-      "build --remote_accept_cached=yes\n"
-      "build --remote_upload_local_results=no\n")
-  else()
-     file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
-      "build --remote_accept_cached=yes\n"
-      "build --remote_upload_local_results=yes\n")
-  endif()
+    "build --remote_timeout=120\n"
+    "build --remote_accept_cached=${DASHBOARD_REMOTE_ACCEPT_CACHED}\n"
+    "build --remote_upload_local_results=${DASHBOARD_REMOTE_UPLOAD_LOCAL_RESULTS}\n")
 endif()
 
 report_configuration("
