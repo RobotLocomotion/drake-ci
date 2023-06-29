@@ -73,18 +73,23 @@ else()
     endif()
   endif()
 
+  # The default Ubuntu version for Docker should be the newest base OS.
+  # If this value changes, the Docker documentation in the drake repository
+  # (drake/doc/_pages/docker.md) also needs to be updated.
+  set(DEFAULT_DOCKER_DISTRIBUTION "jammy")
+
   if(DASHBOARD_TRACK STREQUAL "Nightly")
     # Push the nightly images, tagged both with and without the distro name.
     docker_push("${DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME}-${DATE}")
     docker_push("${DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME}")
-    if(DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME STREQUAL "focal")
+    if(DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME STREQUAL ${DEFAULT_DOCKER_DISTRIBUTION})
       docker_push("${DATE}")
       docker_push("latest")
     endif()
   elseif(DASHBOARD_TRACK STREQUAL "Staging")
     # Push the staging images, tagged both with and without the distro name.
     docker_push("${DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME}-${DASHBOARD_DRAKE_VERSION}-staging")
-    if(DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME STREQUAL "focal")
+    if(DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME STREQUAL ${DEFAULT_DOCKER_DISTRIBUTION})
       docker_push("${DASHBOARD_DRAKE_VERSION}-staging")
     endif()
   else()
