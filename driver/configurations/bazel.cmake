@@ -344,6 +344,11 @@ if(PACKAGE)
     endif()
   endif()
   if(DOCKER)
+    # The default Ubuntu version for Docker should be the newest base OS.
+    # If this value changes, the Docker documentation in the drake repository
+    # (drake/doc/_pages/docker.md) also needs to be updated.
+    set(DEFAULT_DOCKER_DISTRIBUTION "jammy")
+
     execute_step(bazel build-docker-image)
     if(DOCKER STREQUAL "publish")
       execute_step(bazel push-docker-image)
