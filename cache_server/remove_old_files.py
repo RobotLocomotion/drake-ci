@@ -244,7 +244,18 @@ class CacheDirectory:
                 log_message("Errors found deleting files:")
                 for f_path, error_message in errors:
                     log_message(f"- {f_path}: {error_message}")
-                sys.exit(1)
+
+                # When this script is running under cron (see README.md, the
+                # crontab exports this environment variable), do not give a
+                # failing exit code if files could not be removed.  If two cron
+                # jobs are running at the same time, they may try to delete the
+                # same files, meaning one will error.
+                if "DRAKE_CRON_JOB" not in os.environ:
+                    log_message(
+                        "NOT failing the job as this ran from cron, another "
+                        "job may have already deleted the file(s) above."
+                    )
+                    sys.exit(1)
 
 
 def main() -> None:
