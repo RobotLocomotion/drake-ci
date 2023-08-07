@@ -135,7 +135,7 @@ if(APPLE_X86)
   set(REMOTE_CACHE OFF)
 endif()
 
-if(DASHBOARD_JOB_NAME MATCHES "(coverage|health-check|unprovisioned)")
+if(DASHBOARD_JOB_NAME MATCHES "(health-check|unprovisioned)")
   set(REMOTE_CACHE OFF)
 endif()
 
