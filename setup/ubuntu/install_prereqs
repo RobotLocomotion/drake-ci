@@ -117,13 +117,11 @@ apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
 systemctl enable chrony
 systemctl start  chrony
 
-wget -nv -t 4 -O /tmp/gurobi9.5.2_linux64.tar.gz --retry-connrefused \
-  https://packages.gurobi.com/9.5/gurobi9.5.2_linux64.tar.gz
-echo '95d8ca18b7f86116ba834a27fd6228c5b1708ae67927e7ea0e954c09374a2d0f  /tmp/gurobi9.5.2_linux64.tar.gz' \
+wget -nv -t 4 -O /tmp/gurobi10.0.2_linux64.tar.gz --retry-connrefused \
+  https://packages.gurobi.com/10.0/gurobi10.0.2_linux64.tar.gz
+echo '03da2c61494f5f80098270ba459d7567db8b0bf05884ddbd8a78e5b28b008dc9  /tmp/gurobi10.0.2_linux64.tar.gz' \
   | sha256sum -c -
-trap 'set +x; rm -rf /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin /var/lib/apt/lists/* /var/log/apt/* /tmp/gurobi9.5.2_linux64.tar.gz; set -x' EXIT
-tar -C /opt -xf /tmp/gurobi9.5.2_linux64.tar.gz
-echo '6cea846c5994d96ac50aab4d1f9f6df33386fc4f5b832777822f8cbc8774452f  /opt/gurobi952/linux64/include/gurobi_c.h' \
+tar -C /opt -xf /tmp/gurobi10.0.2_linux64.tar.gz
+echo '99f71fb7075f21ac50c8f11d66ecf69a82bbe95617d3a8eb401a30e52e719bd8  /opt/gurobi1002/linux64/include/gurobi_c.h' \
   | sha256sum -c -
-
-chown -R root:root /opt/gurobi952
+chown -R root:root /opt/gurobi1002
