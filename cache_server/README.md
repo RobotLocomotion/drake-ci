@@ -210,20 +210,19 @@ All of the configuration options should be executed as `root`.
     DRAKE_CRON_JOB=1
     #
     # This cache server's date / time are in America/New_York!
-    # Cache pruning (https://crontab.guru/#0_8-22_*_*_*): every 15 minutes
-    # between 8am and 10pm.  Stop running in the evening to allow nightlies to
-    # be untouched.
-    */15 8-22 * * *   /opt/cache_server/drake-ci/cache_server/remove_old_files.py auto /cache/data >>/opt/cache_server/log/remove_old_files.log 2>&1
+    # Cache pruning (https://crontab.guru/#*/15_*_*_*_*): every 15th minute.
+    */15 * * * *   /opt/cache_server/drake-ci/cache_server/remove_old_files.py auto /cache/data >>/opt/cache_server/log/remove_old_files.log 2>&1
     #
-    # Disk usage monitoring: every 30 minutes.  Note that there is a continuous
+    # Disk usage monitoring: on minute 40 (the file removal above runs on minute
+    # 30, allow it to complete before checking).  Note that there is a continuous
     # cache server health check job that runs on a completely unrelated
     # schedule.  This log primarily exists as a backup for us to consult if we
     # desire to monitor how much is deleted when.
-    30 8-22 * * *   /opt/cache_server/drake-ci/cache_server/disk_usage.py /cache/data >>/opt/cache_server/log/disk_usage_cache_data.log 2>&1
+    40 * * * *   /opt/cache_server/drake-ci/cache_server/disk_usage.py /cache/data >>/opt/cache_server/log/disk_usage_cache_data.log 2>&1
     #
     # Additionally monitor disk usage of the root volume.  This is where the
     # logging data is stored.
-    30 8-22 * * *   /opt/cache_server/drake-ci/cache_server/disk_usage.py / >>/opt/cache_server/log/disk_usage_root.log 2>&1
+    40 * * * *   /opt/cache_server/drake-ci/cache_server/disk_usage.py / >>/opt/cache_server/log/disk_usage_root.log 2>&1
     #
     # Rotate cache logs.  See the script for more information, this must be run
     # frequently since the nginx access.log can grow quite quickly.  Run it when
