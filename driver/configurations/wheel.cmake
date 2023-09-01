@@ -141,6 +141,7 @@ else()
 endif()
 
 execute_step(wheel upload-wheel)
+execute_step(wheel upload-pip-index-url)
 
 # Determine build result
 if(NOT DASHBOARD_FAILURE AND NOT DASHBOARD_UNSTABLE)
