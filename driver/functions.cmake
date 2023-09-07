@@ -329,6 +329,19 @@ macro(aws_upload ARTIFACT UNSTABLE_MESSAGE)
 endmacro()
 
 #------------------------------------------------------------------------------
+# Generate the pip index url
+#------------------------------------------------------------------------------
+macro(generate_pip_index_url)
+  execute_process(
+    COMMAND ${DASHBOARD_PYTHON_COMMAND}
+      "${DASHBOARD_TOOLS_DIR}/pip_index_url.py"
+    RESULT_VARIABLE DASHBOARD_PIP_INDEX_URL_RESULT_VARIABLE)
+  if(NOT DASHBOARD_PIP_INDEX_URL_RESULT_VARIABLE EQUAL 0)
+    append_step_status("PIP INDEX URL" UNSTABLE)
+  endif()
+endmacro()
+
+#------------------------------------------------------------------------------
 # Start a dashboard submission
 #------------------------------------------------------------------------------
 function(begin_stage)
