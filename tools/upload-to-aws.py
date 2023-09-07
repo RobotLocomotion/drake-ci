@@ -109,6 +109,7 @@ def upload(path, name, options, *, expiration=None):
     """
     command = [
         options.aws, 's3', 'cp',
+        '--only-show-errors',
         '--acl', 'public-read',
         '--storage-class', ARCHIVE_STORAGE_CLASS]
     if expiration is not None:
