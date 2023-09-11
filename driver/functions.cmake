@@ -329,6 +329,38 @@ macro(aws_upload ARTIFACT UNSTABLE_MESSAGE)
 endmacro()
 
 #------------------------------------------------------------------------------
+# Generate the pip index url
+#------------------------------------------------------------------------------
+macro(generate_pip_index_url)
+  # NOTE: this macro should only run at the end *AFTER* the wheel build has
+  # completed.  Rather than making the setup/ logic for drake-ci more
+  # complicated, defer to the end and use a virtual environment to install
+  # boto3.  By the end of the script, python3 will be available.
+  set(venv "${DASHBOARD_TOOLS_DIR}/venv")
+  execute_process(
+    COMMAND ${DASHBOARD_PYTHON_COMMAND} -m venv "${venv}"
+    RESULT_VARIABLE DASHBOARD_PYTHON_VENV_RESULT_VARIABLE)
+  if(DASHBOARD_PYTHON_VENV_RESULT_VARIABLE EQUAL 0)
+    execute_process(
+      COMMAND "${venv}/bin/pip" install boto3
+      RESULT_VARIABLE DASHBOARD_PYTHON_PIP_BOTO3_RESULT_VARIABLE)
+    if(DASHBOARD_PYTHON_PIP_BOTO3_RESULT_VARIABLE EQUAL 0)
+      execute_process(
+        COMMAND "${venv}/bin/python3" "${DASHBOARD_TOOLS_DIR}/pip_index_url.py"
+        RESULT_VARIABLE DASHBOARD_PIP_INDEX_URL_RESULT_VARIABLE)
+      if(NOT DASHBOARD_PIP_INDEX_URL_RESULT_VARIABLE EQUAL 0)
+        append_step_status("PIP INDEX URL" UNSTABLE)
+      endif()
+    else()
+      append_step_status("PIP INDEX URL PIP INSTALL BOTO3" UNSTABLE)
+    endif()
+  else()
+    append_step_status("PIP INDEX URL VENV CREATION" UNSTABLE)
+  endif()
+  unset(venv)
+endmacro()
+
+#------------------------------------------------------------------------------
 # Start a dashboard submission
 #------------------------------------------------------------------------------
 function(begin_stage)
