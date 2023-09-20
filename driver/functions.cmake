@@ -374,7 +374,7 @@ function(begin_stage)
   set(CTEST_BUILD_NAME "${_bs_BUILD_NAME}")
   set(CTEST_PROJECT_NAME "${_bs_PROJECT_NAME}")
   set(CTEST_NIGHTLY_START_TIME "${DASHBOARD_NIGHTLY_START_TIME}")
-  set(CTEST_DROP_METHOD "https")
+  set(CTEST_DROP_METHOD "http")
   set(CTEST_DROP_SITE "${DASHBOARD_CDASH_SERVER}")
   set(CTEST_DROP_LOCATION "/submit.php?project=${_bs_PROJECT_NAME}")
   set(CTEST_DROP_SITE_CDASH ON)
@@ -382,7 +382,7 @@ function(begin_stage)
   # Prepare message to report CDash URL to Jenkins
   if(DASHBOARD_LABEL)
     set(DASHBOARD_CDASH_URL
-      "https://${DASHBOARD_CDASH_SERVER}/index.php?project=${_bs_PROJECT_NAME}&showfilters=1&filtercount=2&showfilters=1&filtercombine=and&field1=label&compare1=61&value1=${DASHBOARD_LABEL}&field2=buildstarttime&compare2=84&value2=now"
+      "${DASHBOARD_CDASH_SERVER}/index.php?project=${_bs_PROJECT_NAME}&showfilters=1&filtercount=2&showfilters=1&filtercombine=and&field1=label&compare1=61&value1=${DASHBOARD_LABEL}&field2=buildstarttime&compare2=84&value2=now"
       PARENT_SCOPE)
   endif()
 
