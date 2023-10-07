@@ -66,12 +66,12 @@ apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
   git \
   gnupg \
   lsb-release \
-  openjdk-17-jre-headless \
+  openjdk-8-jre-headless \
   python3-venv \
   wget \
   xvfb
 
-update-java-alternatives --jre-headless -s java-1.17.0-openjdk-amd64
+update-java-alternatives --jre-headless -s java-1.8.0-openjdk-amd64
 
 echo 'verbose = off' > /root/.wgetrc
 

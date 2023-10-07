@@ -109,7 +109,7 @@ trap 'set +x; rm -rf /var/cache/apt/archives/*.deb /var/cache/apt/archives/parti
 
 apt-get install --no-install-recommends -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 -qy \
   git \
-  openjdk-17-jre-headless \
+  openjdk-8-jre-headless \
   openssh-client
 
-update-java-alternatives --jre-headless -s java-1.17.0-openjdk-amd64
+update-java-alternatives --jre-headless -s java-1.8.0-openjdk-amd64
