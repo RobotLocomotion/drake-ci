@@ -38,5 +38,5 @@ tap 'robotlocomotion/director'
 brew 'awscli'
 brew 'cmake'
 
-cask 'adoptopenjdk8'
+cask 'temurin17'
 cask 'gurobi@10.0.2'
