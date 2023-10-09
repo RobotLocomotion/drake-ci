@@ -332,7 +332,7 @@ if(REMOTE_CACHE AND Java_JAVA_EXECUTABLE)
     message(STATUS "${DASHBOARD_JAVA_VERSION_ERROR_VARIABLE}")
     if(DASHBOARD_JAVA_VERSION_RESULT_VARIABLE EQUAL 0 AND
        DASHBOARD_JAVA_VERSION_ERROR_VARIABLE MATCHES
-       "^(java|openjdk) version \"([0-9]+[.][0-9]+[.][0-9]+(_[0-9]+)?)\""
+       "^(java|openjdk) version \"([0-9]+[.][0-9]+[.][0-9]+[.][0-9]+(_[0-9]+)?)\""
     )
       set(DASHBOARD_JAVA_CACHE_VERSION "${CMAKE_MATCH_2}")
     else()
