@@ -138,6 +138,9 @@ endif()
 # Report disk usage after build
 execute_step(common report-disk-usage)
 
+# Report uploads (if any)
+execute_step(common report-uploads)
+
 # Remove any temporary files that we created
 foreach(_file ${DASHBOARD_TEMPORARY_FILES})
   file(REMOVE_RECURSE ${${_file}})

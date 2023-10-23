@@ -321,10 +321,23 @@ macro(aws_upload ARTIFACT UNSTABLE_MESSAGE)
       --bucket "drake-packages"
       --track "${DASHBOARD_TRACK}"
       --aws "${DASHBOARD_AWS_COMMAND}"
+      --log "${CTEST_BINARY_DIRECTORY}/aws_artifacts.log"
       "${ARTIFACT}"
     RESULT_VARIABLE DASHBOARD_AWS_UPLOAD_RESULT_VARIABLE)
   if(NOT DASHBOARD_AWS_UPLOAD_RESULT_VARIABLE EQUAL 0)
     append_step_status("${UNSTABLE_MESSAGE}" UNSTABLE)
+  endif()
+endmacro()
+
+#------------------------------------------------------------------------------
+# Report list of artifacts uploaded to AWS
+#------------------------------------------------------------------------------
+macro(aws_report)
+  if(EXISTS "${CTEST_BINARY_DIRECTORY}/aws_artifacts.log")
+    message(STATUS "Artifacts uploaded to AWS:")
+    execute_process(
+      COMMAND grep -vE "[.]sha[0-9]*\$"
+        "${CTEST_BINARY_DIRECTORY}/aws_artifacts.log")
   endif()
 endmacro()
 

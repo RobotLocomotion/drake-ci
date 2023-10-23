@@ -134,7 +134,11 @@ def upload(path, name, options, *, expiration=None):
                       f'after {MAX_ATTEMPTS} attempts', file=sys.stderr)
                 sys.exit(1)
 
-    print(f'-- Upload complete: {download_uri(name, options)}', flush=True)
+    uri = download_uri(name, options)
+    print(f'-- Upload complete: {uri}', flush=True)
+    if options.logfile is not None:
+        with open(options.logfile, 'a') as lf:
+            print(uri, file=lf)
 
 
 def upload_checksum(path, name, options, *, expiration=None):
@@ -219,6 +223,9 @@ def main(args):
     parser.add_argument(
         '--track', type=str.lower, required=True, choices=SUPPORTED_TRACKS,
         help='CI track of artifact')
+    parser.add_argument(
+        '--log', type=str, metavar='LOGFILE', dest='logfile',
+        help='Append list of uploaded URIs to %(metavar)s')
 
     options = parser.parse_args(args)
 
