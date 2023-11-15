@@ -59,7 +59,7 @@ elseif(PROVISION AND DOCUMENTATION)
     "${DASHBOARD_BAZEL_STARTUP_OPTIONS} test ${DASHBOARD_BAZEL_BUILD_OPTIONS} ${DASHBOARD_BAZEL_TEST_OPTIONS} //doc/... //doc:manual_tests")
 else()
   set(BUILD_ARGS
-    "${DASHBOARD_BAZEL_STARTUP_OPTIONS} test ${DASHBOARD_BAZEL_BUILD_OPTIONS} ${DASHBOARD_BAZEL_TEST_OPTIONS} ...")
+    "${DASHBOARD_BAZEL_STARTUP_OPTIONS} test ${DASHBOARD_BAZEL_BUILD_OPTIONS} ${DASHBOARD_BAZEL_TEST_OPTIONS} --nocache_test_results --runs_per_test=200 //geometry/optimization:cspace_free_polytope_with_mosek_test")
 endif()
 
 set(CTEST_CUSTOM_ERROR_EXCEPTION "^WARNING: " ":[0-9]+: Failure$")
@@ -73,7 +73,7 @@ if(EXISTS "${CTEST_SOURCE_DIRECTORY}/CTestCustom.cmake.in")
   ctest_read_custom_files("${CTEST_BINARY_DIRECTORY}")
 endif()
 
-set(BUILD_ARGS "${DASHBOARD_BAZEL_STARTUP_OPTIONS} test --config=clang --compilation_mode=dbg --config=lsan_everything //geometry/optimization:cspace_free_polytope_with_mosek_test --test_arg=--gtest_filter=CIrisToyRobotTest.FindSeparationCertificateGivenPolytopeFailure --nocache_test_results --runs_per_test=200")
+# set(BUILD_ARGS "${DASHBOARD_BAZEL_STARTUP_OPTIONS} test --config=clang --compilation_mode=dbg --config=lsan_everything //geometry/optimization:cspace_free_polytope_with_mosek_test --test_arg=--gtest_filter=CIrisToyRobotTest.FindSeparationCertificateGivenPolytopeFailure --nocache_test_results --runs_per_test=200")
 separate_arguments(BUILD_ARGS_LIST UNIX_COMMAND "${BUILD_ARGS}")
 execute_process(COMMAND ${DASHBOARD_BAZEL_COMMAND} ${BUILD_ARGS_LIST}
   WORKING_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}"
