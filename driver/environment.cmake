@@ -201,7 +201,7 @@ else()
 endif()
 
 if(DASHBOARD_JOB_NAME MATCHES "mirror-to-s3")
-  if(DISTRIBUTION STREQUAL "focal" AND TRACK STREQUAL "continuous")
+  if(DISTRIBUTION STREQUAL "jammy" AND TRACK STREQUAL "continuous")
     set(MIRROR_TO_S3 "publish")
   else()
     set(MIRROR_TO_S3 ON)
