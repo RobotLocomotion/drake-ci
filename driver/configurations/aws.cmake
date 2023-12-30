@@ -78,7 +78,4 @@ if(NOT SSH_PRIVATE_KEY_FILE STREQUAL "-")
   if(NOT DASHBOARD_SSH_AGENT_RESULT_VARIABLE EQUAL 0)
     fatal("adding private key to ssh-agent was not successful")
   endif()
-
-  # Forward the credentials.
-  set(ENV{GIT_SSH_COMMAND} "ssh -o StrictHostKeyChecking=no -i '${SSH_PRIVATE_KEY_FILE}'")
 endif()
