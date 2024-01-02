@@ -121,6 +121,8 @@ set(DASHBOARD_CDASH_URL "")
 set(ENV{CMAKE_CONFIG_TYPE} "${DASHBOARD_CONFIGURATION_TYPE}")
 set(CTEST_CONFIGURATION_TYPE "${DASHBOARD_CONFIGURATION_TYPE}")
 
+message(FATAL_ERROR "this build is broken intentionally")
+
 # Report disk usage before build
 execute_step(common report-disk-usage)
 
