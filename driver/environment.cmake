@@ -89,7 +89,7 @@ endif()
 # underlying Curl and CMake have updated, we should be able to remove this
 # hack to get CDash job submissions to work.
 if(DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME STREQUAL "sonoma")
-  set(ENV{CURL_SSL_BACKEND} "SecureTransport")
+  set(ENV{CURL_SSL_BACKEND} "OpenSSL")
 endif()
 
 if(DASHBOARD_JOB_NAME MATCHES "(clang|gcc)")
