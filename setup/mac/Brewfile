@@ -39,4 +39,4 @@ brew 'awscli'
 brew 'cmake'
 
 cask 'temurin17'
-cask 'gurobi@10.0.2'
+cask 'gurobi1002'
