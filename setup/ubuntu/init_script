@@ -101,6 +101,14 @@ if [[ ! -d /media/ephemeral0/ubuntu ]]; then
   chmod u=rwx,go=rx /media/ephemeral0/ubuntu
 fi
 
+# Although `docker` may be installed at a later phase (via `install_prereqs`),
+# we need our build user to already be in that group before the login completes
+# and therefore need to do this unconditionally.  Previously this was a
+# provisioning step, but it is easier to keep it in the init script.  For
+# builds that are not using `docker`, this does exactly nothing meaningful.
+groupadd docker
+usermod -aG docker ubuntu
+
 export DEBIAN_FRONTEND=noninteractive
 
 apt-get update -o APT::Acquire::Retries=4 -qq \
