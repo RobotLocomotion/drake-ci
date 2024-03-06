@@ -62,7 +62,20 @@ else()
     "${DASHBOARD_BAZEL_STARTUP_OPTIONS} test ${DASHBOARD_BAZEL_BUILD_OPTIONS} ${DASHBOARD_BAZEL_TEST_OPTIONS} ...")
 endif()
 
-set(CTEST_CUSTOM_ERROR_EXCEPTION "^WARNING: " ":[0-9]+: Failure$")
+string(ASCII 27 ESC)
+set(CTEST_CUSTOM_ERROR_EXCEPTION
+  # NOTE: these should also match what is in
+  # https://github.com/RobotLocomotion/drake/blob/master/CTestCustom.cmake.in
+  "^DEBUG: "
+  ": DrakeDeprecationWarning: "
+  "^WARNING: "
+  ": warning: "
+  ":[0-9]+: Failure$"
+  "(^${ESC}\\[33mDEBUG|^${ESC}\\[35mWARNING|: ${ESC}\\[0m${ESC}\\[0\;1\;35mwarning): ${ESC}\\[0m"
+  # Issues related to macOS updates
+  # https://drakedevelopers.slack.com/archives/C270MN28G/p1709736230811259?thread_ts=1709736131.932479&cid=C270MN28G
+  "SyntaxWarning: invalid escape sequence '\\s'"
+  )
 set(CTEST_CUSTOM_ERROR_MATCH "^ERROR: " "^FAIL: " "^TIMEOUT: ")
 set(CTEST_CUSTOM_WARNING_MATCH "^WARNING: ")
 
