@@ -38,8 +38,6 @@ if [[ "${EUID}" -ne 0 ]]; then
   exit 1
 fi
 
-systemctl --quiet disable apt-daily-upgrade.timer apt-daily.timer
-
 if [[ ! -d /media/ephemeral0/ubuntu ]]; then
   # NOTE: each distribution upgrade has resulted in changing the search logic
   # to find the largest disk attached to create /media/ephemeral0/ubuntu.  In
@@ -100,16 +98,3 @@ if [[ ! -d /media/ephemeral0/ubuntu ]]; then
   chown ubuntu:ubuntu /media/ephemeral0/ubuntu
   chmod u=rwx,go=rx /media/ephemeral0/ubuntu
 fi
-
-export DEBIAN_FRONTEND=noninteractive
-
-apt-get update -o APT::Acquire::Retries=4 -qq \
-  || (sleep 15; apt-get update -o APT::Acquire::Retries=4 -qq)
-trap 'set +x; rm -rf /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin /var/lib/apt/lists/* /var/log/apt/*; set -x' EXIT
-
-apt-get install --no-install-recommends -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 -qy \
-  git \
-  openjdk-17-jre-headless \
-  openssh-client
-
-update-java-alternatives --jre-headless -s java-1.17.0-openjdk-amd64

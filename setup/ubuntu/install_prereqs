@@ -71,8 +71,6 @@ apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
   wget \
   xvfb
 
-update-java-alternatives --jre-headless -s java-1.17.0-openjdk-amd64
-
 echo 'verbose = off' > /root/.wgetrc
 
 cp /root/.wgetrc /home/ubuntu/.wgetrc
