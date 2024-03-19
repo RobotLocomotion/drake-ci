@@ -40,8 +40,8 @@ readonly CI_ROOT="$(dirname "${BASH_SOURCE}")"
 # On m1 mac, detect if we can re-run the script under arm64, since Jenkins'
 # login initially runs in an emulated x86_64 (Rosetta 2) environment.
 if [[ "$(uname -s)" == Darwin && "$(uname -p)" != "arm" ]]; then
-    if arch -arch arm64 true &>/dev/null; then
-        exec arch -arch arm64 "$0" "$@"
+    if arch -arch arm64e true &>/dev/null; then
+        exec arch -arch arm64e "$0" "$@"
     fi
 fi
 

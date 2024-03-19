@@ -59,7 +59,7 @@ elseif(PROVISION AND DOCUMENTATION)
     "${DASHBOARD_BAZEL_STARTUP_OPTIONS} test ${DASHBOARD_BAZEL_BUILD_OPTIONS} ${DASHBOARD_BAZEL_TEST_OPTIONS} //doc/... //doc:manual_tests")
 else()
   set(BUILD_ARGS
-    "${DASHBOARD_BAZEL_STARTUP_OPTIONS} test ${DASHBOARD_BAZEL_BUILD_OPTIONS} ${DASHBOARD_BAZEL_TEST_OPTIONS} ...")
+    "${DASHBOARD_BAZEL_STARTUP_OPTIONS} test ${DASHBOARD_BAZEL_BUILD_OPTIONS} ${DASHBOARD_BAZEL_TEST_OPTIONS} //geometry/render_vtk:internal_render_engine_vtk_test")
 endif()
 
 set(CTEST_CUSTOM_ERROR_EXCEPTION "^WARNING: " ":[0-9]+: Failure$")
@@ -77,6 +77,16 @@ separate_arguments(BUILD_ARGS_LIST UNIX_COMMAND "${BUILD_ARGS}")
 execute_process(COMMAND ${DASHBOARD_BAZEL_COMMAND} ${BUILD_ARGS_LIST}
   WORKING_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}"
   RESULT_VARIABLE DASHBOARD_BUILD_RETURN_VALUE)
+
+if(APPLE_ARM64)
+  string(TIMESTAMP date_time "%Y%m%d-%H%M%S")
+  set(input_file "${DASHBOARD_WORKSPACE}/drake/bazel-testlogs/geometry/render_vtk/internal_render_engine_vtk_test/test.outputs/outputs.zip")
+  set(output_file "${DASHBOARD_WORKSPACE}/render_vtk_testing_outputs_${date_time}.zip")
+  notice("Copying ${input_file} to ${output_file}")
+  file(COPY_FILE "${input_file}" "${output_file}")
+  notice("Uploading ${output_file} to aws")
+  aws_upload("${output_file}" "RenderEngineVtk test outputs.zip upload")
+endif()
 
 set(DASHBOARD_SUBMIT ON)
 
