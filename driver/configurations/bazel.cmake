@@ -243,6 +243,9 @@ endif()
 
 configure_file("${DASHBOARD_TOOLS_DIR}/user.bazelrc.in" "${CTEST_SOURCE_DIRECTORY}/user.bazelrc" @ONLY)
 
+# Set package version
+execute_step(common set-package-version)
+
 # Report build configuration
 report_configuration("
   ==================================== ENV
@@ -284,6 +287,7 @@ report_configuration("
   ==================================== >DASHBOARD_
   GIT_COMMIT
   ACTUAL_GIT_COMMIT
+  DRAKE_VERSION
   ==================================== >DASHBOARD_
   ${COMPILER_UPPER}_CACHE_VERSION(CC_CACHE_VERSION)
   GFORTRAN_CACHE_VERSION
