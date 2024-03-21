@@ -233,6 +233,9 @@ All of the configuration options should be executed as `root`.
     You should be able to save and `cat /var/spool/cron/crontabs/root` to
     confirm.
 
+    **Note**: if updating the `remove_old_files.py` cron job interval, please
+    also update the verbiage in `disk_usage.py` to match the new schedule.
+
 14. Add the new cache server to `drake-ci` in a pull request that sets the
     appropriate `DASHBOARD_REMOTE_CACHE` value set at the top of
     [`cache.cmake`][cache_cmake].  To test the server (before merging the PR
