@@ -95,7 +95,13 @@ def main() -> None:
 
             {percent_used:.2f}% usage exceeds provided threshold of {args.threshold}%
 
-            Please start a thread in the #buildcop slack channel delegating to Kitware:
+            The `remove_old_files.py` cron job runs every 15 minutes (e.g., at
+            12:00, 12:15, 12:30, and 12:45).  It can take up to 5 minutes to
+            complete, please wait until the automated file removal routine is
+            complete and re-launch this cache server health check job.
+
+            If it fails again, please start a thread in the #buildcop slack
+            channel delegating to Kitware:
 
                 https://drakedevelopers.slack.com/archives/C270MN28G
 
