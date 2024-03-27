@@ -43,7 +43,7 @@ export WHEEL_OUTPUT_DIRECTORY="$(pwd)"
 
 export BUILD_ID="$(date -u +'%y%j.%H.%M')"
 export GIT_COMMIT="$(git --git-dir=${WORKSPACE}/src/.git rev-parse HEAD)"
-export JOB_NAME="linux-focal-gcc-bazel-experimental-release"
+export JOB_NAME="linux-jammy-gcc-bazel-experimental-release"
 export NODE_NAME="$(hostname -s)"
 export SSH_PRIVATE_KEY_FILE="-"
 

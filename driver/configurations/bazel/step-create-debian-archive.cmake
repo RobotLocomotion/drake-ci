@@ -72,7 +72,7 @@ else()
       append_step_status("BAZEL PACKAGE DEBIAN CREATION COULD NOT FIND ${repack_deb_output} in ${DASHBOARD_WORKSPACE}" UNSTABLE)
     else()
       # For the uploaded package name, we want to structure it to include the
-      # ubuntu codename (focal, jammy, etc.).  Additionally, for nightly uploads
+      # ubuntu codename (e.g. jammy).  Additionally, for nightly uploads
       # we only want YYYYMMDD so that the users do not need to guess the build
       # time, and for the other builds inject the commit hash.  The version of
       # the installed debian package will report YYYYMMDDHHMMSS for all, but the
