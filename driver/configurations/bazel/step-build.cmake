@@ -83,30 +83,24 @@ set(DASHBOARD_SUBMIT ON)
 # https://bazel.build/blog/2016/01/27/continuous-integration.html
 if(DASHBOARD_BUILD_RETURN_VALUE EQUAL 1)
   # Build failed.
-  set(DASHBOARD_FAILURE ON)
-  list(APPEND DASHBOARD_FAILURES "BAZEL BUILD")
+  append_step_status("BAZEL BUILD" FAILURE)
 elseif(DASHBOARD_BUILD_RETURN_VALUE EQUAL 2)
   # Command line problem, bad or illegal flags or command combination, or bad
   # environment variables. Your command line must be modified.
-  set(DASHBOARD_FAILURE ON)
-  list(APPEND DASHBOARD_FAILURES "BAZEL COMMAND OR ENVIRONMENT")
+  append_step_status("BAZEL COMMAND OR ENVIRONMENT" FAILURE)
 elseif(DASHBOARD_BUILD_RETURN_VALUE EQUAL 3)
   # Build OK, but some tests failed or timed out.
-  set(DASHBOARD_UNSTABLE ON)
-  list(APPEND DASHBOARD_UNSTABLES "BAZEL TEST")
+  append_step_status("BAZEL TEST" UNSTABLE)
 elseif(DASHBOARD_BUILD_RETURN_VALUE EQUAL 4)
   # Build successful, but no tests were found even though testing was requested.
-  set(DASHBOARD_UNSTABLE ON)
-  list(APPEND DASHBOARD_UNSTABLES "BAZEL TEST")
+  append_step_status("BAZEL TEST" UNSTABLE)
 elseif(DASHBOARD_BUILD_RETURN_VALUE EQUAL 8)
   # Build interrupted, but we terminated with an orderly shutdown.
-  set(DASHBOARD_FAILURE ON)
+  append_step_status("BAZEL BUILD OR TEST (BUILD INTERRUPTED)" FAILURE)
   set(DASHBOARD_SUBMIT OFF)
-  list(APPEND DASHBOARD_FAILURES "BAZEL BUILD OR TEST (BUILD INTERRUPTED)")
   message("*** Not submitting to CDash because build was interrupted")
 elseif(NOT DASHBOARD_BUILD_RETURN_VALUE EQUAL 0)
-  set(DASHBOARD_FAILURE ON)
-  list(APPEND DASHBOARD_FAILURES "BAZEL BUILD OR TEST (UNKNOWN ERROR)")
+  append_step_status("BAZEL BUILD OR TEST (UNKNOWN ERROR)" FAILURE)
 endif()
 
 if(DASHBOARD_SUBMIT)
