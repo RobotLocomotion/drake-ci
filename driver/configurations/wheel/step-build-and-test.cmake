@@ -64,8 +64,7 @@ set(DASHBOARD_SUBMIT ON)
 # https://bazel.build/blog/2016/01/27/continuous-integration.html
 if(NOT DASHBOARD_BUILD_RETURN_VALUE EQUAL 0)
   # Build failed.
-  set(DASHBOARD_FAILURE ON)
-  list(APPEND DASHBOARD_FAILURES "WHEEL BUILD")
+  append_step_status("WHEEL BUILD" FAILURE)
 endif()
 
 if(DASHBOARD_SUBMIT)
