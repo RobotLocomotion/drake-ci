@@ -61,18 +61,7 @@ if [ -n "$(type -P chronyc)" ]; then
     sudo --preserve-env chronyc makestep
     chronyc tracking
 elif [ "$(uname)" == "Darwin" ]; then
-    # TODO(svenevs): after the orka x86 trial, either confirm this works on
-    # orka arm64 and run unconditionally or find a backend solution with
-    # MacStadium.  The date and time of the runner appear to be at VM creation
-    # time, and despite macOS settings it never pings Apple's NTP.  If the date
-    # is too far in the past, we cannot `aws s3 cp <any license files>`.
-    if [[ "${JOB_NAME}" =~ mac-x86-beta- ]]; then
-        date
-        sudo systemsetup -settimezone America/New_York
-        date
-        sudo sntp -sS time.apple.com
-        date
-    fi
+    : # Allow macOS to proceed without explicit synchronization.
 else
     echo "Unable to locate NTP interface" >&2
     exit 1
