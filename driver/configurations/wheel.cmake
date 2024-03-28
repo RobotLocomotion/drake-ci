@@ -55,33 +55,8 @@ endif()
 
 include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
 
-if(DASHBOARD_JOB_NAME MATCHES "staging")
-  set(DASHBOARD_DRAKE_VERSION "$ENV{DRAKE_VERSION}")
-  if(NOT DASHBOARD_DRAKE_VERSION MATCHES "^[0-9].[0-9]")
-    fatal("drake version is invalid or not set")
-  endif()
-else()
-  if(DASHBOARD_JOB_NAME MATCHES "nightly")
-    string(TIMESTAMP DATE "%Y%m%d")
-    set(DASHBOARD_DRAKE_VERSION "0.0.${DATE}")
-  else()
-    string(TIMESTAMP DATE "%Y.%m.%d")
-    string(TIMESTAMP TIME "%H.%M.%S")
-    execute_process(COMMAND "${CTEST_GIT_COMMAND}" rev-parse --short=8 HEAD
-      WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}"
-      RESULT_VARIABLE GIT_REV_PARSE_RESULT_VARIABLE
-      OUTPUT_VARIABLE GIT_REV_PARSE_OUTPUT_VARIABLE
-      OUTPUT_STRIP_TRAILING_WHITESPACE)
-    if(GIT_REV_PARSE_RESULT_VARIABLE EQUAL 0)
-      set(DASHBOARD_DRAKE_VERSION
-        "0.0.${DATE}.${TIME}+git${GIT_REV_PARSE_OUTPUT_VARIABLE}")
-    else()
-      set(DASHBOARD_DRAKE_VERSION "0.0.${DATE}.${TIME}+unknown")
-    endif()
-  endif()
-  string(REGEX REPLACE "[.]0([0-9])" ".\\1"
-    DASHBOARD_DRAKE_VERSION "${DASHBOARD_DRAKE_VERSION}")
-endif()
+# Set package version
+execute_step(common set-package-version)
 
 # Report build configuration
 report_configuration("
