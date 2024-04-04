@@ -133,7 +133,7 @@ endif()
 
 # Set package version
 execute_step(common set-package-version)
-cache_append(DRAKE_VERSION_OVERRIDE "${DASHBOARD_DRAKE_VERSION}")
+cache_append(DRAKE_VERSION_OVERRIDE STRING "${DASHBOARD_DRAKE_VERSION}")
 
 # Report build configuration
 execute_step(common get-bazel-version)
