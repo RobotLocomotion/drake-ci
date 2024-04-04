@@ -32,17 +32,22 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+# Set build locations and ensure there are no leftover artifacts
+set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}")
+set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/_cmake_$ENV{USER}")
+set(DASHBOARD_INSTALL_PREFIX "${CTEST_BINARY_DIRECTORY}/install")
+
+file(REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
+file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
+file(REMOVE_RECURSE "${DASHBOARD_INSTALL_PREFIX}")
+
 # Jenkins passes down an incorrect value of JAVA_HOME from controller to agent
 # for some inexplicable reason.
 unset(ENV{JAVA_HOME})
 
-# Pass along compiler.
+# Pass along compiler
 set(ENV{CC} "${DASHBOARD_CC_COMMAND}")
 set(ENV{CXX} "${DASHBOARD_CXX_COMMAND}")
-
-set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}")
-set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/_cmake_$ENV{USER}")
-set(DASHBOARD_INSTALL_PREFIX "${CTEST_BINARY_DIRECTORY}/install")
 
 set(DASHBOARD_CXX_FLAGS)
 if(DEFINED ENV{TERM})
@@ -56,12 +61,9 @@ else()
   set(DASHBOARD_COLOR_MAKEFILE OFF)
 endif()
 
+# Set up build configuration
 set(CTEST_CONFIGURATION_TYPE "${DASHBOARD_CONFIGURATION_TYPE}")
 set(CTEST_TEST_TIMEOUT 300)
-
-file(REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
-file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
-file(REMOVE_RECURSE "${DASHBOARD_INSTALL_PREFIX}")
 
 include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
 include(${DASHBOARD_DRIVER_DIR}/configurations/gurobi.cmake)
@@ -113,6 +115,7 @@ file(COPY "${DASHBOARD_CI_DIR}/user.bazelrc"
 file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
   "startup --output_user_root=${DASHBOARD_WORKSPACE}/_bazel_$ENV{USER}\n")
 
+# Set up cache
 include(${DASHBOARD_DRIVER_DIR}/configurations/cache.cmake)
 
 if(REMOTE_CACHE)
@@ -127,6 +130,13 @@ if(REMOTE_CACHE)
     "build --remote_accept_cached=${DASHBOARD_REMOTE_ACCEPT_CACHED}\n"
     "build --remote_upload_local_results=${DASHBOARD_REMOTE_UPLOAD_LOCAL_RESULTS}\n")
 endif()
+
+# Set package version
+execute_step(common set-package-version)
+cache_append(DRAKE_VERSION_OVERRIDE "${DASHBOARD_DRAKE_VERSION}")
+
+# Report build configuration
+execute_step(common get-bazel-version)
 
 report_configuration("
   ==================================== ENV
@@ -184,13 +194,18 @@ report_configuration("
   OS_CACHE_VERSION
   PYTHON_CACHE_VERSION
   ==================================== >DASHBOARD_
+  BAZEL_COMMAND
+  BAZEL_VERSION
+  ==================================== >DASHBOARD_
   REMOTE_CACHE_KEY_VERSION
   REMOTE_CACHE_KEY
   ====================================
   ")
 
+# Run the build
 execute_step(cmake build)
 
+# Determine build result
 if(NOT DASHBOARD_FAILURE)
   format_plural(DASHBOARD_MESSAGE
     ZERO "SUCCESS"
@@ -199,3 +214,30 @@ if(NOT DASHBOARD_FAILURE)
     ${DASHBOARD_BUILD_NUMBER_WARNINGS})
 endif()
 
+# Create packages (if applicable)
+if(PACKAGE)
+  execute_step(cmake create-package-archive)
+  if(NOT APPLE)
+    execute_step(cmake create-debian-archive)
+  endif()
+  if(PACKAGE STREQUAL "publish")
+    execute_step(cmake upload-package-archive)
+    if(NOT APPLE)
+      execute_step(cmake upload-debian-archive)
+    endif()
+  endif()
+  if(DOCKER)
+    # The default Ubuntu version for Docker should be the newest base OS.
+    # If this value changes, the Docker documentation in the drake repository
+    # (drake/doc/_pages/docker.md) also needs to be updated.
+    set(DEFAULT_DOCKER_DISTRIBUTION "jammy")
+
+    execute_step(cmake build-docker-image)
+    if(DOCKER STREQUAL "publish")
+      execute_step(cmake push-docker-image)
+    endif()
+  endif()
+  if(DISTRIBUTION STREQUAL "jammy" AND DASHBOARD_TRACK STREQUAL "Nightly")
+    execute_step(cmake push-nightly-release-branch)
+  endif()
+endif()
