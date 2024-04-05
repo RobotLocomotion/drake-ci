@@ -202,6 +202,13 @@ report_configuration("
   ====================================
   ")
 
+if(PACKAGE)
+  set(DASHBOARD_PACKAGE_OUTPUT_DIRECTORY "${DASHBOARD_INSTALL_PREFIX}")
+  mkdir("${DASHBOARD_PACKAGE_OUTPUT_DIRECTORY}" 1777
+    "package output directory")
+  list(APPEND DASHBOARD_TEMPORARY_FILES DASHBOARD_PACKAGE_OUTPUT_DIRECTORY)
+endif()
+
 # Run the build
 execute_step(cmake build)
 
@@ -216,6 +223,7 @@ endif()
 
 # Create packages (if applicable)
 if(PACKAGE)
+  execute_step(cmake install)
   execute_step(cmake create-package-archive)
   if(NOT APPLE)
     execute_step(cmake create-debian-archive)
