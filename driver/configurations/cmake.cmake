@@ -115,6 +115,11 @@ file(COPY "${DASHBOARD_CI_DIR}/user.bazelrc"
 file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
   "startup --output_user_root=${DASHBOARD_WORKSPACE}/_bazel_$ENV{USER}\n")
 
+if(PACKAGE)
+  file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
+    "build --config=packaging\n"
+endif()
+
 # Set up cache
 include(${DASHBOARD_DRIVER_DIR}/configurations/cache.cmake)
 
@@ -179,6 +184,8 @@ report_configuration("
   CTEST_UPDATE_VERSION_ONLY
   CTEST_UPDATE_VERSION_OVERRIDE
   CTEST_USE_LAUNCHERS
+  ====================================
+  PACKAGE
   ==================================== >DASHBOARD_
   WITH_GUROBI
   WITH_MOSEK
