@@ -3,8 +3,8 @@
 
 # BSD 3-Clause License
 #
-# Copyright (c) 2019, Massachusetts Institute of Technology.
-# Copyright (c) 2019, Toyota Research Institute.
+# Copyright (c) 2022, Massachusetts Institute of Technology.
+# Copyright (c) 2022, Toyota Research Institute.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -33,28 +33,9 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 if(DASHBOARD_FAILURE OR DASHBOARD_UNSTABLE)
-  notice("CTest Status: NOT CREATING PACKAGE ARCHIVE BECAUSE CMAKE BUILD WAS NOT SUCCESSFUL")
+  notice("CTest Status: NOT UPLOADING DEBIAN ARCHIVE BECAUSE CMAKE BUILD WAS NOT SUCCESSFUL")
 else()
-  notice("CTest Status: CREATING PACKAGE ARCHIVE")
-  if(NOT DASHBOARD_UNSTABLE)
-    if(APPLE)
-      if(APPLE_ARM64)
-        set(DASHBOARD_PACKAGE_ARCHIVE_DISTRIBUTION mac-arm64)
-      else()
-        set(DASHBOARD_PACKAGE_ARCHIVE_DISTRIBUTION mac)
-      endif()
-    else()
-      set(DASHBOARD_PACKAGE_ARCHIVE_DISTRIBUTION "${DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME}")
-    endif()
-
-    set(DASHBOARD_PACKAGE_NAME "drake-${DASHBOARD_DRAKE_VERSION}")
-    set(DASHBOARD_PACKAGE_ARCHIVE_NAME "${DASHBOARD_PACKAGE_NAME}-${DASHBOARD_PACKAGE_ARCHIVE_DISTRIBUTION}.tar.gz")
-
-    execute_process(COMMAND "${CMAKE_COMMAND}" -E tar czf "${DASHBOARD_WORKSPACE}/${DASHBOARD_PACKAGE_ARCHIVE_NAME}" drake
-      WORKING_DIRECTORY /opt
-      RESULT_VARIABLE TAR_RESULT_VARIABLE)
-    if(NOT TAR_RESULT_VARIABLE EQUAL 0)
-      append_step_status("CMAKE PACKAGE ARCHIVE CREATION" UNSTABLE)
-    endif()
-  endif()
+  notice("CTest Status: UPLOADING DEBIAN ARCHIVE")
+  aws_upload("${DASHBOARD_WORKSPACE}/${DASHBOARD_DEBIAN_ARCHIVE_NAME}"
+    "CMAKE DEBIAN ARCHIVE UPLOAD")
 endif()
