@@ -53,11 +53,7 @@ if(REMOTE_CACHE)
   # 2. drake-ci/cache_server/health_check.bash section enumerating Linux vs
   #    Darwin ip addresses.
   if(APPLE)
-    if(APPLE_ARM64)
-      set(DASHBOARD_REMOTE_CACHE "http://10.221.188.9")
-    else()
-      fatal("Caching is not supported for Mac x86 jobs.")
-    endif()
+    set(DASHBOARD_REMOTE_CACHE "http://10.221.188.9")
   else()
     set(DASHBOARD_REMOTE_CACHE "http://172.31.25.87")
   endif()
