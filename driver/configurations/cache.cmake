@@ -55,7 +55,7 @@ if(REMOTE_CACHE)
   if(APPLE)
     set(DASHBOARD_REMOTE_CACHE "http://10.221.188.9")
   else()
-    set(DASHBOARD_REMOTE_CACHE "http://172.31.25.87")
+    set(DASHBOARD_REMOTE_CACHE "http://172.31.18.175")
   endif()
   message(STATUS
       "Testing download of remote cache server: '${DASHBOARD_REMOTE_CACHE}'")

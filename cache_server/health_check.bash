@@ -50,7 +50,7 @@ function usage() {
 readonly server_name="$1"
 case "${server_name}" in
     linux)
-        readonly server_ip="172.31.25.87"
+        readonly server_ip="172.31.18.175"
         ;;
 
     mac-arm64)
