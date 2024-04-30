@@ -40,8 +40,7 @@ else()
   set(DEBIAN_ARGS
     "run" "//tools/release_engineering:repack_deb" "--" "--tgz"
     "${DASHBOARD_WORKSPACE}/${DASHBOARD_PACKAGE_ARCHIVE_NAME}"
-    "--output-dir" "${DASHBOARD_WORKSPACE}"
-    "--version" "${DASHBOARD_DRAKE_VERSION}")
+    "--output-dir" "${DASHBOARD_WORKSPACE}")
   execute_process(COMMAND ${DASHBOARD_BAZEL_COMMAND} ${DEBIAN_ARGS}
     WORKING_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}"
     RESULT_VARIABLE DEBIAN_RESULT_VARIABLE)
