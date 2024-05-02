@@ -117,8 +117,6 @@ set(DASHBOARD_TEST_TAG_FILTERS)
 
 if(EVERYTHING)
   set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=everything")
-elseif(PACKAGE)
-  set(DASHBOARD_BAZEL_BUILD_OPTIONS "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=packaging")
 elseif(GUROBI OR MOSEK OR SNOPT)
   set(DASHBOARD_TEST_TAG_FILTERS
     "-gurobi"
@@ -225,9 +223,6 @@ endif()
 
 configure_file("${DASHBOARD_TOOLS_DIR}/user.bazelrc.in" "${CTEST_SOURCE_DIRECTORY}/user.bazelrc" @ONLY)
 
-# Set package version
-execute_step(common set-package-version)
-
 # Report build configuration
 report_configuration("
   ==================================== ENV
@@ -269,7 +264,6 @@ report_configuration("
   ==================================== >DASHBOARD_
   GIT_COMMIT
   ACTUAL_GIT_COMMIT
-  DRAKE_VERSION
   ==================================== >DASHBOARD_
   ${COMPILER_UPPER}_CACHE_VERSION(CC_CACHE_VERSION)
   GFORTRAN_CACHE_VERSION
@@ -281,13 +275,6 @@ report_configuration("
   REMOTE_CACHE_KEY
   ====================================
   ")
-
-if(PACKAGE)
-  set(DASHBOARD_PACKAGE_OUTPUT_DIRECTORY "/opt/drake")
-  mkdir("${DASHBOARD_PACKAGE_OUTPUT_DIRECTORY}" 1777
-    "package output directory")
-  list(APPEND DASHBOARD_TEMPORARY_FILES DASHBOARD_PACKAGE_OUTPUT_DIRECTORY)
-endif()
 
 # Run the build
 execute_step(bazel build)
@@ -307,33 +294,6 @@ endif()
 
 if(MIRROR_TO_S3 STREQUAL "publish")
   execute_step(bazel mirror-to-s3)
-endif()
-
-if(PACKAGE)
-  execute_step(bazel create-package-archive)
-  if(NOT APPLE)
-    execute_step(bazel create-debian-archive)
-  endif()
-  if(PACKAGE STREQUAL "publish")
-    execute_step(bazel upload-package-archive)
-    if(NOT APPLE)
-      execute_step(bazel upload-debian-archive)
-    endif()
-  endif()
-  if(DOCKER)
-    # The default Ubuntu version for Docker should be the newest base OS.
-    # If this value changes, the Docker documentation in the drake repository
-    # (drake/doc/_pages/docker.md) also needs to be updated.
-    set(DEFAULT_DOCKER_DISTRIBUTION "jammy")
-
-    execute_step(bazel build-docker-image)
-    if(DOCKER STREQUAL "publish")
-      execute_step(bazel push-docker-image)
-    endif()
-  endif()
-  if(DISTRIBUTION STREQUAL "jammy" AND DASHBOARD_TRACK STREQUAL "Nightly")
-    execute_step(bazel push-nightly-release-branch)
-  endif()
 endif()
 
 # Report Bazel command without CI-specific options
