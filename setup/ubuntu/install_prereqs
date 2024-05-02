@@ -59,8 +59,12 @@ rm -rf /etc/cron.daily/apt-compat /var/log/unattended-upgrades
 apt-get upgrade -o Dpkg::Options::=--force-confdef \
   -o Dpkg::Options::=--force-confnew -o Dpkg::Use-Pty=0 -qy
 
+if [[ "$(lsb_release -cs)" == "jammy" ]]; then
+  apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
+    awscli
+fi
+
 apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
-  awscli \
   ca-certificates \
   cmake \
   git \
