@@ -2,8 +2,8 @@
 
 # BSD 3-Clause License
 #
-# Copyright (c) 2016, Massachusetts Institute of Technology.
-# Copyright (c) 2016, Toyota Research Institute.
+# Copyright (c) 2024, Massachusetts Institute of Technology.
+# Copyright (c) 2024, Toyota Research Institute.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,10 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+# This script is expected to only be used in the creation of provisioned images
+# NOT during normal CI setup
+
+git clone --depth 1 https://github.com/RobotLocomotion/drake-ci.git
 WORKSPACE=setup ./drake-ci/setup/mac/install_prereqs
 
 
