@@ -140,9 +140,21 @@ endif()
 
 if(COVERAGE)
   set(KCOV_TOOL "${DASHBOARD_SOURCE_DIRECTORY}/tools/dynamic_analysis/kcov_tool")
-  execute_process(COMMAND "${KCOV_TOOL}" ci_merge)
+  execute_process(
+    COMMAND "${KCOV_TOOL}" ci_merge
+    COMMAND_ECHO STDERR
+    OUTPUT_VARIABLE KCOV_MERGE_LOG
+    ERROR_VARIABLE KCOV_MERGE_LOG
+    RESULT_VARIABLE KCOV_MERGE_RESULT_VARIABLE)
+  if(NOT KCOV_MERGE_RESULT_VARIABLE EQUAL 0)
+    message("kcov log: ${KCOV_MERGE_LOG}")
+    fatal("kcov merge failed")
+  endif()
   set(KCOV_MERGED "${DASHBOARD_SOURCE_DIRECTORY}/bazel-kcov/kcov-merged")
-  execute_process(COMMAND "${CMAKE_COMMAND}" -E copy "${KCOV_MERGED}/cobertura.xml" "${KCOV_MERGED}/coverage.xml")
+  execute_process(
+    COMMAND "${CMAKE_COMMAND}" -E copy "${KCOV_MERGED}/cobertura.xml" "${KCOV_MERGED}/coverage.xml"
+    COMMAND_ECHO STDERR
+    COMMAND_ERROR_IS_FATAL ANY)
   set(ENV{COBERTURADIR} "${KCOV_MERGED}")
   ctest_coverage(RETURN_VALUE DASHBOARD_COVERAGE_RETURN_VALUE
     CAPTURE_CMAKE_ERROR DASHBOARD_COVERAGE_CAPTURE_CMAKE_ERROR
