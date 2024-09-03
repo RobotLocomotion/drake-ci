@@ -57,7 +57,8 @@ if [[ "$(lsb_release -cs)" == "jammy" ]]; then
     grub-efi-amd64-signed \
     linux-aws \
     linux-headers-aws \
-    linux-image-aws
+    linux-image-aws \
+    shim-signed
 fi
 
 apt-get update -qq || (sleep 15; apt-get update -qq)
