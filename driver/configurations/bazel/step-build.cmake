@@ -56,7 +56,7 @@ elseif(PROVISION AND DOCUMENTATION)
     "${DASHBOARD_BAZEL_STARTUP_OPTIONS} test ${DASHBOARD_BAZEL_BUILD_OPTIONS} ${DASHBOARD_BAZEL_TEST_OPTIONS} //doc/... //doc:manual_tests")
 else()
   set(BUILD_ARGS
-    "${DASHBOARD_BAZEL_STARTUP_OPTIONS} test ${DASHBOARD_BAZEL_BUILD_OPTIONS} ${DASHBOARD_BAZEL_TEST_OPTIONS} ...")
+    "${DASHBOARD_BAZEL_STARTUP_OPTIONS} test ${DASHBOARD_BAZEL_BUILD_OPTIONS} ${DASHBOARD_BAZEL_TEST_OPTIONS} //common:drake_assert_test //common:ssize_test")
 endif()
 
 set(CTEST_CUSTOM_ERROR_EXCEPTION "^WARNING: " ":[0-9]+: Failure$")
@@ -150,10 +150,11 @@ if(COVERAGE)
   else()
     set(KCOV_MERGED "${DASHBOARD_SOURCE_DIRECTORY}/bazel-kcov/kcov-merged")
     execute_process(
-      COMMAND "${CMAKE_COMMAND}" -E copy "${KCOV_MERGED}/cobertura.xml" "${KCOV_MERGED}/coverage.xml"
+      COMMAND "${CMAKE_COMMAND}" -E copy "${KCOV_MERGED}/FILETHATDOESNTEXISTcobertura.xml" "${KCOV_MERGED}/coverage.xml"
       COMMAND_ECHO STDERR
       RESULT_VARIABLE KCOV_COPY_RESULT_VARIABLE)
     if(NOT KCOV_MERGE_RESULT_VARIABLE EQUAL 0)
+      message("---> KCOV FAILURE")
       append_step_status("COVERAGE" UNSTABLE)
     else()
       set(ENV{COBERTURADIR} "${KCOV_MERGED}")
