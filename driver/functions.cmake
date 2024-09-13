@@ -113,6 +113,7 @@ endmacro()
 #------------------------------------------------------------------------------
 macro(append_step_status STEP STATUS)
   set(DASHBOARD_${STATUS} ON)
+  message("---> KCOV FAILURE - status = ${STATUS} - ${DASHBOARD_UNSTABLE}")
   list(APPEND DASHBOARD_${STATUS}S "${STEP}")
 endmacro()
 
