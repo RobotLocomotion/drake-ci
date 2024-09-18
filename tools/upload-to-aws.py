@@ -123,13 +123,15 @@ def upload(path, name, options, *, expiration=None):
     while True:
         try:
             attempt += 1
-            subprocess.check_call(command)
+            subprocess.run(command, check=True, capture_output=True)
             break
 
-        except Exception:
+        except subprocess.CalledProcessError as e:
             if attempt < MAX_ATTEMPTS:
                 sleep(BACKOFF_DELAY)
             else:
+                print(e.stdout)
+                print(e.stderr)
                 print(f'ERROR: Artifact {path} could not be uploaded '
                       f'after {MAX_ATTEMPTS} attempts', file=sys.stderr)
                 sys.exit(1)
