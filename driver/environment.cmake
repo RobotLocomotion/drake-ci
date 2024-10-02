@@ -222,7 +222,7 @@ endif()
 
 if(DASHBOARD_JOB_NAME MATCHES "packaging")
   if(APPLE)
-    if(DISTRIBUTION STREQUAL "ventura")
+    if(DISTRIBUTION STREQUAL "sonoma")
       set(PACKAGE "publish")
     else()
       set(PACKAGE ON)
