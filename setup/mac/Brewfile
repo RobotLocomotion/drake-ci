@@ -37,5 +37,4 @@ tap 'robotlocomotion/director'
 brew 'awscli'
 brew 'cmake'
 
-cask 'temurin@17'
 cask 'gurobi1002'
