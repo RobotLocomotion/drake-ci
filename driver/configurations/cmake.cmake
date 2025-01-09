@@ -221,11 +221,7 @@ execute_step(cmake build)
 
 # Determine build result
 if(NOT DASHBOARD_FAILURE)
-  format_plural(DASHBOARD_MESSAGE
-    ZERO "SUCCESS"
-    ONE "SUCCESS BUT WITH 1 BUILD WARNING"
-    MANY "SUCCESS BUT WITH # BUILD WARNINGS"
-    ${DASHBOARD_BUILD_NUMBER_WARNINGS})
+  set(DASHBOARD_MESSAGE "SUCCESS")
 endif()
 
 # Create packages (if applicable)
