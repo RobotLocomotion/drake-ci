@@ -108,17 +108,13 @@ cache_append(WITH_GUROBI BOOL ${DASHBOARD_WITH_GUROBI})
 cache_append(WITH_MOSEK BOOL ${DASHBOARD_WITH_MOSEK})
 cache_append(WITH_ROBOTLOCOMOTION_SNOPT STRING ${DASHBOARD_WITH_ROBOTLOCOMOTION_SNOPT})
 cache_append(WITH_OPENMP BOOL ${DASHBOARD_WITH_OPENMP})
+cache_append(_DRAKE_CI_PACKAGING BOOL ${PACKAGE})
 
 file(COPY "${DASHBOARD_CI_DIR}/user.bazelrc"
   DESTINATION "${DASHBOARD_SOURCE_DIRECTORY}")
 
 file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
   "startup --output_user_root=${DASHBOARD_WORKSPACE}/_bazel_$ENV{USER}\n")
-
-if(PACKAGE)
-  file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
-    "build --config=packaging\n")
-endif()
 
 # Set up cache
 include(${DASHBOARD_DRIVER_DIR}/configurations/cache.cmake)
