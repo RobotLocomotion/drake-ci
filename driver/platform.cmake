@@ -78,7 +78,12 @@ if(PROVISION)
     set(ENV{HOMEBREW_CURL_RETRIES} 4)
     execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "update" "--force")
     execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "pin" "cmake")
-    execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "upgrade" "--force")
+    # Never upgrade temurin
+    execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "list"
+      COMMAND "grep" "--invert-match" "temurin@17"
+      OUTPUT_VARIABLE to_upgrade)
+    string(REPLACE "\n" ";" to_upgrade_list "${to_upgrade}")
+    execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "upgrade" ${to_upgrade_list} "--force")
     execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "unpin" "cmake")
     execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "cleanup" "-s")
     set(ENV{HOMEBREW_NO_INSTALL_CLEANUP} 1)
