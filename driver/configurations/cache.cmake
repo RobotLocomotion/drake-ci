@@ -52,6 +52,7 @@ if(REMOTE_CACHE)
   else()
     set(DASHBOARD_REMOTE_CACHE "http://172.31.18.175")
   endif()
+  message(STATUS "Using remote cache address: ${DASHBOARD_REMOTE_CACHE}")
 endif()
 
 if(REMOTE_CACHE AND NOT APPLE)
