@@ -41,11 +41,6 @@ set(DASHBOARD_PYTHON_CACHE_VERSION)
 set(DASHBOARD_REMOTE_CACHE_KEY)
 
 if(REMOTE_CACHE)
-  mktemp(DASHBOARD_FILE_DOWNLOAD_TEMP file_download_XXXXXXXX
-    "temporary download file"
-  )
-  list(APPEND DASHBOARD_TEMPORARY_FILES DASHBOARD_FILE_DOWNLOAD_TEMP)
-
   # NOTE: is there a new cache server being added (or an ip address changing)?
   # In addition to updating `DASHBOARD_REMOTE_CACHE` below, you must update:
   #
@@ -56,21 +51,6 @@ if(REMOTE_CACHE)
     set(DASHBOARD_REMOTE_CACHE "http://10.221.188.9")
   else()
     set(DASHBOARD_REMOTE_CACHE "http://172.31.18.175")
-  endif()
-  message(STATUS
-      "Testing download of remote cache server: '${DASHBOARD_REMOTE_CACHE}'")
-  file(DOWNLOAD "${DASHBOARD_REMOTE_CACHE}" "${DASHBOARD_FILE_DOWNLOAD_TEMP}"
-    STATUS DASHBOARD_DOWNLOAD_STATUS
-    LOG DASHBOARD_DOWNLOAD_LOG
-  )
-  list(GET DASHBOARD_DOWNLOAD_STATUS 0 DASHBOARD_DOWNLOAD_STATUS_0)
-
-  if(NOT DASHBOARD_DOWNLOAD_STATUS_0 EQUAL 0)
-    message(WARNING
-      "*** Disabling remote cache because could NOT contact remote cache server"
-      "\n${DASHBOARD_DOWNLOAD_LOG}"
-    )
-    set(REMOTE_CACHE OFF)
   endif()
 endif()
 
