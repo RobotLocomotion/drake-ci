@@ -71,5 +71,13 @@ fi
 AGENT=ssh-agent
 [[ "$SSH_PRIVATE_KEY_FILE" == '-' ]] && AGENT=
 
+# macOS: Enable multicast traffic on loopback interface for LCM.
+# sudo is needed to modify the routing table
+if [[ "$(uname -s)" == Darwin ]]; then
+    sudo route -nv delete 224.0.0.0/4
+    sudo route -nv add -net 224.0.0.0/4 -interface lo0
+    netstat -nr
+fi
+
 # Hand off to the CMake driver script.
 $AGENT ctest --extra-verbose --no-compress-output --script "${CI_ROOT}/ctest_driver_script.cmake"
