@@ -38,6 +38,9 @@ export PATH="/usr/local/bin:${PATH}"
 git clone --quiet --single-branch git@github.com:RobotLocomotion/RobotLocomotion.github.io.git "${workspace}/gh-pages"
 rsync --archive --delete \
       --exclude .buildinfo \
+      --exclude .git \
+      --exclude .github \
+      --exclude .gitignore \
       --exclude googleb54a1809ac854371.html \
       --exclude LICENSE \
       --exclude README.md \
