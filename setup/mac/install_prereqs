@@ -59,4 +59,4 @@ export HOMEBREW_NO_INSTALL_CLEANUP=1
 brew analytics off
 brew update || (sleep 15; brew update)
 trap 'brew cleanup && rm -rf "$(brew --cache)" "${HOME}/Library/Logs/Homebrew/*"' EXIT
-brew bundle --file="$(dirname ${(%):-%x})/Brewfile" --no-lock
+brew bundle --file="$(dirname ${(%):-%x})/Brewfile"
