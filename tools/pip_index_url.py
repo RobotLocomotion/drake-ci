@@ -112,12 +112,11 @@ def main() -> None:
         )
     )
     for wheel in wheels:
-        server = "drake-packages.csail.mit.edu"
         s3_key, sha512, py_minor = (wheel.s3_key, wheel.sha512, wheel.py_minor)
         assert sha512 is not None, f"No sha512 found for {s3_key}"
         html.write(
             bytes(
-                f'<a href="https://{server}/{s3_key}#sha512={sha512}" '
+                f'<a href="/{s3_key}#sha512={sha512}" '
                 f'data-requires-python="&gt;=3.{py_minor},&lt;3.{py_minor+1}">'
                 f"{Path(s3_key).name}</a><br/>\n",
                 "utf-8",
