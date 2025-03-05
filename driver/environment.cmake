@@ -88,7 +88,7 @@ endif()
 # TODO(20718): The next time we re-provision macOS Sonoma images, if the
 # underlying Curl and CMake have updated, we should be able to remove this
 # hack to get CDash job submissions to work.
-if(DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME STREQUAL "sonoma")
+if(APPLE)
   set(ENV{CURL_SSL_BACKEND} "SecureTransport")
 endif()
 
