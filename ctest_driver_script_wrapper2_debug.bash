@@ -11,4 +11,4 @@ trap "log show --predicate 'subsystem == \"com.apple.dyld\"' --info --last 1h" E
 
 readonly CI_ROOT="$(dirname "${BASH_SOURCE}")"
 
-cmake -P "${CI_ROOT}/file_download_debug.cmake"
+ctest --extra-verbose --no-compress-output --script "${CI_ROOT}/file_download_debug.cmake"
