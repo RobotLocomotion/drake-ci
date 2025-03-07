@@ -82,6 +82,21 @@ echo 'verbose = off' > /root/.wgetrc
 cp /root/.wgetrc /home/ubuntu/.wgetrc
 chown ubuntu:ubuntu /home/ubuntu/.wgetrc
 
+# TODO(tyler-yankee) When liblapack3 is back online on the EC2 mirror,
+# remove this special installation and the associated debtool.py script.
+if [[ "$(lsb_release -cs)" == "jammy" ]]; then
+  apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
+    libblas3 \
+    libgfortran5
+
+  liblapack3_file="/tmp/liblapack3_3.10.0-2ubuntu1_amd64.deb"
+  liblapack3_hash="86f7179d7f8550acae14efa2f5b82c8f2b83dc9c658580115c91d37d20a43a72"
+  wget -nv -t 4 -O ${liblapack3_file} \
+    http://us.archive.ubuntu.com/ubuntu/pool/main/l/lapack/liblapack3_3.10.0-2ubuntu1_amd64.deb
+  echo "${liblapack3_hash} ${liblapack3_file}" | sha256sum -c -
+  dpkg -i "${liblapack3_file}"
+fi
+
 # Downgrade mesa per https://github.com/RobotLocomotion/drake/issues/18726.
 if [[ "$(lsb_release -cs)" == "jammy" ]]; then
   # 1. Install the pinned versions we know work.
