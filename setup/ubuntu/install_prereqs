@@ -82,6 +82,14 @@ echo 'verbose = off' > /root/.wgetrc
 cp /root/.wgetrc /home/ubuntu/.wgetrc
 chown ubuntu:ubuntu /home/ubuntu/.wgetrc
 
+# TODO(tyler-yankee) When liblapack3 is back online on the EC2 mirror,
+# remove this special installation and the associated debtool.py script.
+if [[ "$(lsb_release -cs)" == "jammy" ]]; then
+  readonly INSTALL_ROOT="$(dirname "${BASH_SOURCE}")"
+  "${INSTALL_ROOT}/debtool.py" --install \
+    'http://us.archive.ubuntu.com/ubuntu/pool/main/l/lapack/liblapack3_3.10.0-2ubuntu1_amd64.deb' '86f7179d7f8550acae14efa2f5b82c8f2b83dc9c658580115c91d37d20a43a72'
+fi
+
 # Downgrade mesa per https://github.com/RobotLocomotion/drake/issues/18726.
 if [[ "$(lsb_release -cs)" == "jammy" ]]; then
   # 1. Install the pinned versions we know work.
