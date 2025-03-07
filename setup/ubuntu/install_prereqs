@@ -97,6 +97,19 @@ if [[ "$(lsb_release -cs)" == "jammy" ]]; then
   dpkg -i "${liblapack3_file}"
 fi
 
+# TODO(tyler-yankee) Likewise for above, but for nasm on Noble. (sigh.)
+if [[ "$(lsb_release -cs)" == "noble" ]]; then
+  apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
+    libc6
+
+  libnasm_file="/tmp/nasm_2.16.01-1build1_amd64.deb"
+  libnasm_hash="22eede0f2dd62343b0298182f62f7485704fe02f166395b02c92a8883377e0b3"
+  wget -nv -t 4 -O ${libnasm_file} \
+    http://us.archive.ubuntu.com/ubuntu/pool/universe/n/nasm/nasm_2.16.01-1build1_amd64.deb
+  echo "${libnasm_hash} ${libnasm_file}" | sha256sum -c -
+  dpkg -i "${libnasm_file}"
+fi
+
 # Downgrade mesa per https://github.com/RobotLocomotion/drake/issues/18726.
 if [[ "$(lsb_release -cs)" == "jammy" ]]; then
   # 1. Install the pinned versions we know work.
