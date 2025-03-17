@@ -79,5 +79,13 @@ if [[ "$(uname -s)" == Darwin ]]; then
     netstat -nr
 fi
 
+# macOS: Turn on some debugging for dyld.
+if [[ "$(uname)" == "Darwin" ]]; then
+    export DYLD_PRINT_FRAMEWORKS=1
+    export DYLD_PRINT_LIBRARIES=1
+    export DYLD_PRINT_SEGMENTS=1
+    export DYLD_PRINT_SEARCHING=1
+fi
+
 # Hand off to the CMake driver script.
-$AGENT sh "${CI_ROOT}/ctest_driver_script_wrapper2_debug.bash"
+$AGENT ctest --extra-verbose --no-compress-output --script "${CI_ROOT}/ctest_driver_script.cmake"

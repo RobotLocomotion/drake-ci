@@ -123,6 +123,17 @@ set(CTEST_CONFIGURATION_TYPE "${DASHBOARD_CONFIGURATION_TYPE}")
 
 # Report disk usage before build
 execute_step(common report-disk-usage)
+# macOS debug: report system info before build
+execute_process(COMMAND bash "-c" "echo $(top -l 1 | grep -E '^CPU|^Phys')"
+  OUTPUT_VARIABLE dashboard_cpu_mem_usage
+  ERROR_QUIET
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
+notice("CPU and memory usage:\n ${dashboard_cpu_mem_usage}")
+execute_process(COMMAND bash "-c" "echo $(sha256sum $(which ssh-agent) $(which cmake) $(which ctest))"
+  OUTPUT_VARIABLE dashboard_bin_hashes
+  ERROR_QUIET
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
+notice("Binary hashes:\n ${dashboard_bin_hashes}")
 
 # Invoke the appropriate build driver for the selected configuration
 if(GENERATOR STREQUAL "bazel")
