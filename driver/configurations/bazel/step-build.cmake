@@ -116,6 +116,11 @@ if(DASHBOARD_SUBMIT)
     message(STATUS "Submitted to CDash with build id ${DASHBOARD_CDASH_BUILD_ID}")
   endif()
 
+  # Upload all image test results as uploaded files
+  file(GLOB_RECURSE TEST_OUTPUT_FILES FOLLOW_SYMLINKS "${DASHBOARD_SOURCE_DIRECTORY}/bazel-testlogs/*")
+  list(FILTER TEST_OUTPUT_FILES INCLUDE REGEX "test\\.outputs\\/")
+  ctest_upload(FILES ${TEST_OUTPUT_FILES} QUIET)
+
   ctest_submit(PARTS Upload
     RETRY_COUNT 4
     RETRY_DELAY 15
