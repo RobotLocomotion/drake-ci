@@ -45,7 +45,7 @@ if [[ "$(uname -s)" == Darwin && "$(uname -p)" != "arm" ]]; then
     fi
 fi
 
-export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
+export PATH="/opt/homebrew/bin:/usr/local/bin:/Applications/CMake.app/Contents/bin:${PATH}"
 
 # Provision image, if required.
 if [[ "${JOB_NAME}" =~ unprovisioned ]]; then
