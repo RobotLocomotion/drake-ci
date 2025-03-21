@@ -79,5 +79,12 @@ if [[ "$(uname -s)" == Darwin ]]; then
     netstat -nr
 fi
 
+# macOS AWS: Since we're running back-to-back on the same instance,
+# clear the Bazel build cache.
+# See https://bazel.build/remote/output-directories.
+if [[ "${JOB_NAME}" =~ aws ]]; then
+  sudo rm -rf /private/var/tmp/_bazel_ec2-user
+fi
+
 # Hand off to the CMake driver script.
 $AGENT ctest --extra-verbose --no-compress-output --script "${CI_ROOT}/ctest_driver_script.cmake"
