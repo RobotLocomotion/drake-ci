@@ -138,7 +138,8 @@ endif()
 
 set(REMOTE_CACHE ON)
 
-if(DASHBOARD_JOB_NAME MATCHES "(health-check|unprovisioned)")
+if(DASHBOARD_JOB_NAME MATCHES "(health-check|unprovisioned)" OR
+  (APPLE AND DASHBOARD_JOB_NAME MATCHES "packaging"))
   set(REMOTE_CACHE OFF)
 endif()
 
