@@ -138,7 +138,7 @@ endif()
 
 set(REMOTE_CACHE ON)
 
-if(DASHBOARD_JOB_NAME MATCHES "(health-check|unprovisioned|packaging)")
+if(DASHBOARD_JOB_NAME MATCHES "(health-check|unprovisioned|packaging|aws)")
   set(REMOTE_CACHE OFF)
 endif()
 
