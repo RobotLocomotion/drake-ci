@@ -34,6 +34,9 @@
 
 if(DASHBOARD_FAILURE OR DASHBOARD_UNSTABLE)
   notice("CTest Status: NOT UPLOADING PACKAGE ARCHIVE BECAUSE CMAKE BUILD WAS NOT SUCCESSFUL")
+elseif(DASHBOARD_JOB_NAME MATCHES "(nightly-packaging-aws|staging-packaging-aws)")
+  # TODO(tyler.yankee): Remove this case when Mac on AWS is no longer experimental.
+  notice("CTest Status: NOT UPLOADING PACKAGE ARCHIVE BECAUSE MACOS PACKAGING ON AWS IS EXPERIMENTAL")
 else()
   notice("CTest Status: UPLOADING PACKAGE ARCHIVE")
   aws_upload("${DASHBOARD_WORKSPACE}/${DASHBOARD_PACKAGE_ARCHIVE_NAME}"

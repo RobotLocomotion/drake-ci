@@ -138,7 +138,9 @@ endif()
 
 set(REMOTE_CACHE ON)
 
-if(DASHBOARD_JOB_NAME MATCHES "(health-check|unprovisioned|packaging)")
+# TODO(tyler.yankee): When Mac on AWS is no longer experimental,
+# the "aws" case here should be changed to "mac".
+if(DASHBOARD_JOB_NAME MATCHES "(health-check|unprovisioned|packaging|aws)")
   set(REMOTE_CACHE OFF)
 endif()
 
