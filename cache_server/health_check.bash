@@ -4,11 +4,11 @@
 doc='This script is expected to be launched by a production jenkins job so that
 buildcops will receive failure notifications.  It runs on the distribution
 associated with the cache server being checked (an AWS linux instance to check
-the AWS cache server, a macos-arm64 instance to check the macOS cache server).
+the AWS cache server).
 
 Arguments:
     server_name:
-        The name of the server to health check.  Must be `linux` or `mac-arm64`.
+        The name of the server to health check.  Must be `linux`.
         Internally the script will determine the server_ip based on the provided
         name.
 
@@ -23,8 +23,6 @@ The script performs, in order:
 To develop locally, you will need to have the AWS CLI configured to be able to
 `aws s3 cp ...` (make sure `~/.aws` is configured for drake).  To test:
 
-- The mac-arm64 cache server: connect to the TRI VPN.  You can run this test
-  from a linux machine.
 - The linux cache server: you must spin up a test instance on EC2 with the
   groups `default`, `ping`, `ssh`, and `node` as well as set the IAM role to
   `aws-ec2-role-for-s3`.'
@@ -53,29 +51,11 @@ case "${server_name}" in
         readonly server_ip="172.31.18.175"
         ;;
 
-    mac-arm64)
-        readonly server_ip="10.221.188.9"
-        ;;
-
     *)
-        message="Invalid server_name='${server_name}'.  Must be one of 'linux' \
-or 'mac-arm64'."
+        message="Invalid server_name='${server_name}'.  Must be 'linux'."
         usage "${message}"
         ;;
 esac
-
-# On m1 mac, detect if we can re-run the script under arm64, since Jenkins'
-# login initially runs in an emulated x86_64 (Rosetta 2) environment.
-if [[ "$(uname -s)" == Darwin ]]; then
-    if [[ "$(uname -p)" != "arm" ]]; then
-        if arch -arch arm64 true &>/dev/null; then
-            exec arch -arch arm64 "$0" "$@"
-        fi
-    fi
-    export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
-    # For `timeout` command.
-    HOMEBREW_NO_AUTO_UPDATE=1 brew install coreutils
-fi
 
 set -exo pipefail
 
