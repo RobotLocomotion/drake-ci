@@ -11,9 +11,6 @@
 For instructions on logging into or creating a new cache server, see the drake
 continuous integration details document.
 
-- mac-arm64:
-    - Hosted on-site at MacStadium.  Requires TRI VPN to access.
-    - 1TB SAN storage.
 - linux:
     - Hosted on AWS.  Requires Kitware or TRI VPN to access.
     - 1TB EBS volume.
@@ -253,8 +250,7 @@ All of the configuration options should be executed as `root`.
 
     Typically, the right job to select would be
     "default compiler, bazel, release", e.g.,
-    `linux-${codename}-gcc-bazel-experimental-release` or
-    `mac-arm-${codename}-clang-bazel-experimental-release`.  If choosing a
+    `linux-${codename}-gcc-bazel-experimental-release`.  If choosing a
     different job to test with, make sure that previous build logs reveal that
     job is actually cached!
 
@@ -317,8 +313,6 @@ manually with new arguments for the window of time to consider.
 
 - Logging into the linux cache server: connect to the Kitware VPN and `ssh`
   into the `drake-webdav` EC2 instance (right click => connect).
-- Logging into the mac-arm64 cache server: connect to the TRI VPN and `ssh` in
-  using the `administrator` login and password (see the drake CI document).
 
 Once on the server, become the `root` user (`sudo -iu root`) and run a handful
 of different time windows using the `-n` (dry run) flag:
