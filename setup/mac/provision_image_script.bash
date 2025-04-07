@@ -43,7 +43,7 @@ git clone --depth 1 https://github.com/RobotLocomotion/drake.git
 
 
 brew cleanup --prune=all
-# NOTE: eventually drake will use a later version of pip
-pip3.12 cache purge
+# Update this version of pip as Drake updates its supported Python versions.
+pip3.13 cache purge
 
 rm -rf drake drake-ci
