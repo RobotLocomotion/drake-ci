@@ -50,28 +50,32 @@ if(NOT DASHBOARD_TEMP_DIR STREQUAL "/tmp")
   notice("Disk usage for /tmp:\n ${tmp_usage}")
 endif()
 
-# CPU and memory usage (overall and by process)
+# Overall memory usage
 
+# macOS doesn't have free...
 if(APPLE)
-  execute_process(COMMAND top -l 1 -s 0 | grep PhysMem
-    OUTPUT_VARIABLE dashboard_mem_usage
-    ERROR_QUIET
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
+  set(MEM_CMD "top -l 1 -s 0 | grep PhysMem")
 else()
-  # macOS doesn't have free...
-  execute_process(COMMAND free -m
-    OUTPUT_VARIABLE dashboard_mem_usage
-    ERROR_QUIET
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
+  set(MEM_CMD "free -m")
 endif()
 
-# This command has been carefully constructed to contain only options
-# supported on both Ubuntu and macOS.
-# `ps` differs slightly on the two systems for historical reasons.
-execute_process(COMMAND ps -o pid,user,%cpu,%mem,comm -ax | sort -b -k4 -r | head -11
-  OUTPUT_VARIABLE dashboard_mem_proc
+execute_process(COMMAND bash -c "${MEM_CMD}"
+  OUTPUT_VARIABLE dashboard_mem_usage
   ERROR_QUIET
   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 notice("Memory usage:\n ${dashboard_mem_usage}")
+
+# CPU and memory usage by process
+
+# This command has been carefully constructed to contain only options
+# supported on both Ubuntu and macOS.
+# `ps` differs slightly on the two systems for historical reasons.
+set(PS_CMD "ps -o pid,user,%cpu,%mem,comm -ax | sort -b -k4 -r | head -11")
+
+execute_process(COMMAND bash -c "${PS_CMD}"
+  OUTPUT_VARIABLE dashboard_mem_proc
+  ERROR_QUIET
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
+
 notice("Processes using most memory:\n ${dashboard_mem_proc}")
