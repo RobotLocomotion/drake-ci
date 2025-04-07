@@ -32,6 +32,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+# Disk usage
 
 execute_process(COMMAND df -h "${DASHBOARD_TEMP_DIR}"
   OUTPUT_VARIABLE dashboard_temp_dir_usage
@@ -48,3 +49,29 @@ if(NOT DASHBOARD_TEMP_DIR STREQUAL "/tmp")
 
   notice("Disk usage for /tmp:\n ${tmp_usage}")
 endif()
+
+# CPU and memory usage (overall and by process)
+
+if(APPLE)
+  execute_process(COMMAND top -l 1 -s 0 | grep PhysMem
+    OUTPUT_VARIABLE dashboard_mem_usage
+    ERROR_QUIET
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+else()
+  # macOS doesn't have free...
+  execute_process(COMMAND free -m
+    OUTPUT_VARIABLE dashboard_mem_usage
+    ERROR_QUIET
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+endif()
+
+# This command has been carefully constructed to contain only options
+# supported on both Ubuntu and macOS.
+# `ps` differs slightly on the two systems for historical reasons.
+execute_process(COMMAND ps -o pid,user,%cpu,%mem,comm -ax | sort -b -k4 -r | head -11
+  OUTPUT_VARIABLE dashboard_mem_proc
+  ERROR_QUIET
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+notice("Memory usage:\n ${dashboard_mem_usage}")
+notice("Processes using most memory:\n ${dashboard_mem_proc}")
