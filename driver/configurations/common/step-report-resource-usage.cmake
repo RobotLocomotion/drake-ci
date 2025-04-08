@@ -71,7 +71,12 @@ notice("Memory usage:\n ${dashboard_mem_usage}")
 # This command has been carefully constructed to contain only options
 # supported on both Ubuntu and macOS.
 # `ps` differs slightly on the two systems for historical reasons.
-set(PS_CMD "ps -o pid,user,%cpu,%mem,comm -ax | sort -b -k4 -r | head -11")
+# * get process ID, user, cpu+mem usage, and command
+# * print the header before (reverse-)sorting by memory
+# * print the top 10 processes (plus the header)
+set(PS_CMD "ps -o pid,user,%cpu,%mem,comm -ax |\
+            (read -r; printf \"%s\\n\" \"$REPLY\"; sort -brk 4) |\
+            head -n 11")
 
 execute_process(COMMAND bash -c "${PS_CMD}"
   OUTPUT_VARIABLE dashboard_mem_proc
