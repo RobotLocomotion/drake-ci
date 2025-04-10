@@ -45,13 +45,9 @@ if(REMOTE_CACHE)
   # In addition to updating `DASHBOARD_REMOTE_CACHE` below, you must update:
   #
   # 1. drake-ci/cache_server/README.md heading section enumerating the servers.
-  # 2. drake-ci/cache_server/health_check.bash section enumerating Linux vs
-  #    Darwin ip addresses.
-  if(APPLE)
-    set(DASHBOARD_REMOTE_CACHE "http://10.221.188.9")
-  else()
-    set(DASHBOARD_REMOTE_CACHE "http://172.31.18.175")
-  endif()
+  # 2. drake-ci/cache_server/health_check.bash section enumerating the
+  #    Linux ip addresses.
+  set(DASHBOARD_REMOTE_CACHE "http://172.31.18.175")
   message(STATUS "Using remote cache address: ${DASHBOARD_REMOTE_CACHE}")
 endif()
 
@@ -322,6 +318,8 @@ if(REMOTE_CACHE AND Java_JAVA_EXECUTABLE)
 endif()
 
 
+# NOTE: As of 4/10/25, the remote cache is disabled on all macOS jobs,
+# but this logic will be left here for if/when it is set up again for AWS.
 if(APPLE)
   if(REMOTE_CACHE)
     set(DASHBOARD_OS_CACHE_NAME "macos")

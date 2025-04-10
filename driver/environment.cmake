@@ -138,9 +138,9 @@ endif()
 
 set(REMOTE_CACHE ON)
 
-# TODO(tyler.yankee): When Mac on AWS is no longer experimental,
-# the "aws" case here should be changed to "mac".
-if(DASHBOARD_JOB_NAME MATCHES "(health-check|unprovisioned|packaging|aws)")
+# NOTE: As of 4/10/25, the remote cache is disabled on all macOS jobs
+# as they're hosted in AWS.
+if(DASHBOARD_JOB_NAME MATCHES "(health-check|unprovisioned|packaging)" OR APPLE)
   set(REMOTE_CACHE OFF)
 endif()
 
