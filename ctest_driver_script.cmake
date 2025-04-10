@@ -121,8 +121,8 @@ set(DASHBOARD_CDASH_URL "")
 set(ENV{CMAKE_CONFIG_TYPE} "${DASHBOARD_CONFIGURATION_TYPE}")
 set(CTEST_CONFIGURATION_TYPE "${DASHBOARD_CONFIGURATION_TYPE}")
 
-# Report disk usage before build
-execute_step(common report-disk-usage)
+# Report resource usage before build
+execute_step(common report-resource-usage)
 
 # Invoke the appropriate build driver for the selected configuration
 if(GENERATOR STREQUAL "bazel")
@@ -135,8 +135,8 @@ else()
   fatal("generator is invalid")
 endif()
 
-# Report disk usage after build
-execute_step(common report-disk-usage)
+# Report resource usage after build
+execute_step(common report-resource-usage)
 
 # Report uploads (if any)
 execute_step(common report-uploads)
