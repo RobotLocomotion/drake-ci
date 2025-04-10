@@ -82,7 +82,7 @@ fi
 # macOS: Since we're running back-to-back on the same AWS instance,
 # clear the Bazel build cache.
 # See https://bazel.build/remote/output-directories.
-if [[ "${JOB_NAME}" =~ mac ]]; then
+if [[ "$(uname -s)" == Darwin ]]; then
   sudo rm -rf /private/var/tmp/_bazel_ec2-user
 fi
 
