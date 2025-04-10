@@ -138,7 +138,9 @@ endif()
 
 set(REMOTE_CACHE ON)
 
-if(DASHBOARD_JOB_NAME MATCHES "(health-check|unprovisioned|packaging|mac)")
+# NOTE: As of 4/10/25, the remote cache is disabled on all macOS jobs
+# as they're hosted in AWS.
+if(DASHBOARD_JOB_NAME MATCHES "(health-check|unprovisioned|packaging)" OR APPLE)
   set(REMOTE_CACHE OFF)
 endif()
 
