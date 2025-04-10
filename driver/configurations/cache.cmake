@@ -45,8 +45,8 @@ if(REMOTE_CACHE)
   # In addition to updating `DASHBOARD_REMOTE_CACHE` below, you must update:
   #
   # 1. drake-ci/cache_server/README.md heading section enumerating the servers.
-  # 2. drake-ci/cache_server/health_check.bash section enumerating Linux vs
-  #    Darwin ip addresses.
+  # 2. drake-ci/cache_server/health_check.bash section enumerating the
+  #    Linux ip addresses.
   set(DASHBOARD_REMOTE_CACHE "http://172.31.18.175")
   message(STATUS "Using remote cache address: ${DASHBOARD_REMOTE_CACHE}")
 endif()
