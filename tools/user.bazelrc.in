@@ -30,6 +30,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 startup --output_user_root=@DASHBOARD_OUTPUT_USER_ROOT@
+startup --max_idle_secs=99
 
 build --announce_rc=yes
 build --build_event_json_file=@DASHBOARD_BUILD_EVENT_JSON_FILE@
