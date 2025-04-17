@@ -85,13 +85,6 @@ if(NOT DISTRIBUTION STREQUAL DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME)
   fatal("incorrect operating system code name in job name")
 endif()
 
-# TODO(20718): The next time we re-provision macOS Sonoma images, if the
-# underlying Curl and CMake have updated, we should be able to remove this
-# hack to get CDash job submissions to work.
-if(DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME STREQUAL "sonoma")
-  set(ENV{CURL_SSL_BACKEND} "SecureTransport")
-endif()
-
 if(DASHBOARD_JOB_NAME MATCHES "(clang|gcc)")
   set(COMPILER "${CMAKE_MATCH_0}")
 else()
