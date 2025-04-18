@@ -38,6 +38,8 @@ unset(ENV{JAVA_HOME})
 
 set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}")
 set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/_bazel_$ENV{USER}")
+set(DASHBOARD_INSTALL_PREFIX "${CTEST_BINARY_DIRECTORY}/install")
+set(DASHBOARD_DOCUMENTATION_DIRECTORY "${DASHBOARD_INSTALL_PREFIX}/share/doc/drake")
 
 # Set bazel options
 set(DASHBOARD_BAZEL_STARTUP_OPTIONS)
@@ -298,4 +300,3 @@ endif()
 
 # Report Bazel command without CI-specific options
 execute_step(bazel report-bazel-command)
-
