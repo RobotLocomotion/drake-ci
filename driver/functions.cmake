@@ -282,6 +282,22 @@ function(chmod PATH PERMISSIONS MESSAGE)
 endfunction()
 
 #------------------------------------------------------------------------------
+# Change ownership of a directory to current user
+#------------------------------------------------------------------------------
+function(chown PATH)
+  execute_process(
+    COMMAND whoami
+    OUTPUT_VARIABLE _current_user
+    OUTPUT_STRIP_TRAILING_NEWLINE)
+  execute_process(
+    COMMAND sudo chown ${current_user} "${PATH}"
+    RESULT_VARIABLE _chown_result)
+  if(NOT _chown_result EQUAL 0)
+    fatal("Could not change ownership of ${PATH}")
+  endif()
+endfunction()
+
+#------------------------------------------------------------------------------
 # Create a directory with specified permissions
 #------------------------------------------------------------------------------
 function(mkdir PATH PERMISSIONS MESSAGE)
@@ -293,6 +309,7 @@ function(mkdir PATH PERMISSIONS MESSAGE)
     fatal("creation of ${MESSAGE} was not successful")
   endif()
   chmod("${PATH}" "${PERMISSIONS}" "${MESSAGE}")
+  chown("${PATH}")
 endfunction()
 
 #------------------------------------------------------------------------------
