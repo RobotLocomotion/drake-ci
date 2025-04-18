@@ -286,10 +286,8 @@ endfunction()
 #------------------------------------------------------------------------------
 function(mkdir PATH PERMISSIONS MESSAGE)
   message(STATUS "Creating ${MESSAGE}...")
-  execute_process(
-    COMMAND sudo "${CMAKE_COMMAND}" -E make_directory "${PATH}"
-    RESULT_VARIABLE _mkdir_result)
-  if(NOT _mkdir_result EQUAL 0)
+  file(MAKE_DIRECTORY "${PATH}")
+  if(NOT EXISTS "${PATH}")
     fatal("creation of ${MESSAGE} was not successful")
   endif()
   chmod("${PATH}" "${PERMISSIONS}" "${MESSAGE}")
