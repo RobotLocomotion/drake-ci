@@ -120,8 +120,7 @@ include(${DASHBOARD_DRIVER_DIR}/configurations/cache.cmake)
 if(REMOTE_CACHE)
   file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
     "build --experimental_guard_against_concurrent_changes=yes\n"
-    "build --remote_download_outputs=minimal\n"
-    "build --experimental_remote_cache_lease_extension=yes\n"
+    "build --remote_download_outputs=all\n"
     "build --remote_cache=${DASHBOARD_REMOTE_CACHE}\n"
     "build --remote_local_fallback=yes\n"
     "build --remote_max_connections=64\n"
