@@ -72,7 +72,7 @@ apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
   git \
   gnupg \
   lsb-release \
-  openjdk-17-jre-headless \
+  openjdk-21-jre-headless \
   python3-venv \
   wget \
   xvfb

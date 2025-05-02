@@ -80,7 +80,7 @@ if(PROVISION)
     execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "pin" "cmake")
     # Never upgrade temurin
     execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "list"
-      COMMAND "grep" "--invert-match" "temurin@17"
+      COMMAND "grep" "--invert-match" "temurin@21"
       OUTPUT_VARIABLE to_upgrade)
     string(REPLACE "\n" ";" to_upgrade_list "${to_upgrade}")
     execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "upgrade" ${to_upgrade_list} "--force")
