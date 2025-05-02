@@ -69,10 +69,8 @@ fi
 apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
   ca-certificates \
   cmake \
-  git \
   gnupg \
   lsb-release \
-  openjdk-21-jre-headless \
   python3-venv \
   wget \
   xvfb
