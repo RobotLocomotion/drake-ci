@@ -38,10 +38,9 @@ to simply setting the `bazel` cache server entries to different subdirectories.
       at ip address `x.y.z`.  The computation in [`cache.cmake`][cache_cmake]
       will result in setting `--remote_cache=x.y.z/${version}/${salt}`.
 
-2. The cache server must **always** support being able to `GET /`, the
-   [`cache.cmake`][cache_cmake] performs this step at the beginning to confirm
-   the remote cache can be communicated with.  The remote cache is disabled if
-   `GET /` fails for any reason.  In the `nginx` configuration, we solve this by
+2. The cache server must **always** support being able to `GET /`. If `GET /`
+   fails for any reason, CI jobs will fail so that buildcops are notified and
+   the issue can be resolved. In the `nginx` configuration, we solve this by
    setting `autoindex on;` which allows us to query directory contents
    (including viewing `/`).
 
