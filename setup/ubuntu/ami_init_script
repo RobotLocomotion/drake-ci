@@ -37,6 +37,12 @@
 
 systemctl --quiet disable apt-daily-upgrade.timer apt-daily.timer
 
+# TODO(betsymcphail): Workaround needed for Jammy only.
+# Remove if/when new Jammy unprovisioned base is created
+if [[ "$(lsb_release -cs)" == "jammy" ]]; then
+  apt-mark hold shim-signed
+fi
+
 apt-get update -o APT::Acquire::Retries=4 -qq \
   || (sleep 15; apt-get update -o APT::Acquire::Retries=4 -qq)
 trap 'set +x; rm -rf /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin /var/lib/apt/lists/* /var/log/apt/*; set -x' EXIT
