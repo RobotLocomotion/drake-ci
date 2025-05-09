@@ -185,7 +185,10 @@ class CacheDirectory:
                 except Exception as e:
                     self.invalid_files.append((f_path, str(e)))
 
-    def get_time(self, f_stat: os.stat_result, time_metric: TimeMetric | None = None):
+    def get_time(
+        self,
+        f_stat: os.stat_result,
+        time_metric: TimeMetric | None = None) -> datetime:
         """Return the access / modification time of the given file
         converted from unix time to datetime."""
         if time_metric is None:
@@ -231,9 +234,15 @@ class CacheDirectory:
                 for time_metric in TimeMetric:
                     # We know this path is valid, because it would have been caught
                     # in __init__().
-                    f_time_metrics[time_metric] = self.get_time(f_path.stat(), time_metric)
-                log_message(f"  {f_path}, {bytes_to_human_string(size_bytes)}, "
-                            f"{', '.join(f'{metric}: {time}' for metric, time in f_time_metrics.items())}")
+                    f_time_metrics[time_metric] = self.get_time(
+                        f_path.stat(),
+                        time_metric
+                    )
+                tms_msg = [ f'{metric}: {time}'
+                          for metric, time in f_time_metrics.items()]
+                log_message(f"  {f_path}, "
+                            f"{bytes_to_human_string(size_bytes)}, "
+                            f"{', '.join(tms_msg)}")
             log_message("--- END FILES TO BE REMOVED")
 
     def log_all_statistics(self) -> None:
