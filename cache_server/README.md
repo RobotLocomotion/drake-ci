@@ -342,3 +342,13 @@ Depending on your findings, likely you will want to choose one or more of:
 - Change the disk percent usage threshold in the `cron` job`.
 - Increase the storage attached to the cache server.
 - Reduce the number of jenkins jobs that add to this cache server.
+
+## Debugging Cache Cleaning
+
+File removal with [`remove_old_files.py`](./remove_old_files.py) has a
+`-v` (verbose) flag to log additional information on the files being removed.
+Only use this as necessary --- especially if updating the `cron` job --- as
+it will increase the size of the log file and slows down the removal process
+proportional to how many files are being removed.
+You may need to modify [`logrotate_cache.conf`](./logrotate_cache.conf) if the
+`remove_old_files.log` is becoming too large.

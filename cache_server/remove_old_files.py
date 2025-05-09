@@ -66,6 +66,17 @@ class TimeMetric(Enum):
     MODIFIED_TIME = "modified"
     """Query ``st_mtime`` (time of last modification)."""
 
+    def __str__(self):
+        return self.value
+
+    def __repr__(self):
+        if self.value == self.ACCESS_TIME.value:
+            return "st_atime"
+        elif self.value == self.MODIFIED_TIME.value:
+            return "st_mtime"
+        else:
+            # This should be unreachable.
+            return ""
 
 @unique
 class Mode(Enum):
@@ -103,6 +114,9 @@ class CacheDirectory:
     dry_run: bool
         If true, no files will be deleted, only metrics printed.
 
+    verbose: bool
+        If true, information on every file being removed will be logged.
+
     start_time: datetime
         The time at which scanning began for access time comparison to delta_max.
 
@@ -135,10 +149,12 @@ class CacheDirectory:
         root: Path,
         time_metric: TimeMetric,
         dry_run: bool,
+        verbose: bool
     ) -> None:
         self.root = root
         self.time_metric = time_metric
         self.dry_run = dry_run
+        self.verbose = verbose
         self.start_time = datetime.now()
         self.files: list[tuple[Path, int, datetime]] = []
         self.files_to_remove: list[tuple[Path, int, datetime]] = []
@@ -146,11 +162,6 @@ class CacheDirectory:
         self.files_scanned = 0
         self.size_bytes = 0
         self.bytes_to_remove = 0
-
-        if self.time_metric == TimeMetric.ACCESS_TIME:
-            time_attr = "st_atime"
-        elif self.time_metric == TimeMetric.MODIFIED_TIME:
-            time_attr = "st_mtime"
 
         # Gather all files that can be potentially removed, storing their time metric.
         for directory_root, _, file_names in os.walk(self.root):
@@ -162,10 +173,9 @@ class CacheDirectory:
                     # NOTE: Path.stat() can raise on e.g., broken symlinks.
                     f_stat = f_path.stat()
 
-                    # Convert the access / modification time from unix time to datetime.
+                    time_query = self.get_time(f_stat)
                     # Skip if the file is newer than the start_time (this script may run
                     # while the cache is being populated, ignore newer files).
-                    time_query = datetime.fromtimestamp(getattr(f_stat, time_attr))
                     if time_query >= self.start_time:
                         continue
 
@@ -175,8 +185,15 @@ class CacheDirectory:
                 except Exception as e:
                     self.invalid_files.append((f_path, str(e)))
 
+    def get_time(self, f_stat: os.stat_result, time_metric: TimeMetric | None = None):
+        """Return the access / modification time of the given file
+        converted from unix time to datetime."""
+        if time_metric is None:
+            time_metric = self.time_metric
+        return datetime.fromtimestamp(getattr(f_stat, time_metric.__repr__()))
+
     def gather_files_for_removal(self, delta_max: timedelta):
-        """Returns total number of bytes that will be deleted by delta_max.
+        """Return total number of bytes that will be deleted by delta_max.
 
         All files able to be deleted will be added to self.files_to_remove."""
         self.bytes_to_remove = 0
@@ -206,6 +223,18 @@ class CacheDirectory:
             f"       {bytes_to_human_string(self.bytes_to_remove)} disk space "
             "eligible for removal."
         )
+        if self.verbose and len(self.files_to_remove) > 0:
+            log_message("--- FILES TO BE REMOVED:")
+            for (f_path, size_bytes, _) in self.files_to_remove:
+                # Log all time metrics on the file for debugging.
+                f_time_metrics = dict()
+                for time_metric in TimeMetric:
+                    # We know this path is valid, because it would have been caught
+                    # in __init__().
+                    f_time_metrics[time_metric] = self.get_time(f_path.stat(), time_metric)
+                log_message(f"  {f_path}, {bytes_to_human_string(size_bytes)}, "
+                            f"{', '.join(f'{metric}: {time}' for metric, time in f_time_metrics.items())}")
+            log_message("--- END FILES TO BE REMOVED")
 
     def log_all_statistics(self) -> None:
         """Log all statistics about the files and storage found."""
@@ -221,19 +250,10 @@ class CacheDirectory:
     def maybe_remove_files(self) -> None:
         """Print relevant data to the console and perform the pruning (if
         ``self.dry_run=False``)."""
-        if not self.dry_run:
-            # Because pruning can take a little while, it may give the
-            # appearance that the script is stuck.  Print out incremental
-            # progress so the user knows it is still running.  Do not use
-            # anything fancy such as carriage returns or a progress meter, the
-            # logfile will be very disorganized.
-            n_files = len(self.files_to_remove)
-            n_format = len(str(n_files))  # to align [ x / {n_files} ]
-            one_tenth = int(n_files // 10) + 1
+        if not self.dry_run and len(self.files_to_remove) > 0:
+            log_message("Removing files. This may take a while.")
             errors: list[tuple[Path, str]] = []  # (path, error message)
             for i, (f_path, _, _) in enumerate(self.files_to_remove):
-                if i == 0 or (i % one_tenth) == 0:
-                    log_message(f"Removing file [{i+1: >{n_format}} / {n_files}] ...")
                 try:
                     f_path.unlink()
                 except Exception as e:
@@ -263,11 +283,18 @@ def main() -> None:
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
     parser.add_argument(
+        "-v",
+        "--verbose",
+        dest="verbose",
+        action="store_true",
+        help="Verbose logging for file removal"
+    )
+    parser.add_argument(
         "-m",
         "--metric",
-        type=str,
-        choices=[tm.value for tm in TimeMetric],
-        default=TimeMetric.ACCESS_TIME.value,
+        type=TimeMetric,
+        choices=list(TimeMetric),
+        default=TimeMetric.ACCESS_TIME,
         help="Which time metric of the file to consider (default: %(default)s).",
     )
     parser.add_argument(
@@ -346,15 +373,6 @@ def main() -> None:
     if os.geteuid() != 0:
         parser.error("this script must be run as root!")
 
-    # Create the enum value rather than a `str` (argparse has issues with Enum).
-    if args.metric == TimeMetric.ACCESS_TIME.value:
-        time_metric = TimeMetric.ACCESS_TIME
-    elif args.metric == TimeMetric.MODIFIED_TIME.value:
-        time_metric = TimeMetric.MODIFIED_TIME
-    else:
-        # This should be unreachable given how the argument is added with `choices`.
-        parser.error(f"unknown time metric {args.metric}.")
-
     # Subparser specific validation.
     delta_max = DEFAULT_DELTA_MAX
     if mode == Mode.AUTO:
@@ -386,15 +404,16 @@ def main() -> None:
 
     # Set up logging configurations.
     cache_logging_basic_setup()
-    log_message(f"Age strategy:   {time_metric}")
+    log_message(f"Age strategy:   {args.metric}")
     log_message(f"Time delta max: {delta_max}")
     if args.dry_run:
-        log_message("NOTE: dry run, (no files will be removed).")
+        log_message("NOTE: dry run (no files will be removed).")
 
     cache_dir = CacheDirectory(
         root=args.cache_dir,
-        time_metric=time_metric,
+        time_metric=args.metric,
         dry_run=args.dry_run,
+        verbose=args.verbose
     )
     if mode == Mode.AUTO:
         try:
