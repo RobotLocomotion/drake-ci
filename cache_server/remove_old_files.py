@@ -76,7 +76,8 @@ class TimeMetric(Enum):
             return "st_mtime"
         else:
             # This should be unreachable.
-            return ""
+            assert False, "unknown time metric"
+
 
 @unique
 class Mode(Enum):
@@ -149,7 +150,7 @@ class CacheDirectory:
         root: Path,
         time_metric: TimeMetric,
         dry_run: bool,
-        verbose: bool
+        verbose: bool,
     ) -> None:
         self.root = root
         self.time_metric = time_metric
@@ -189,11 +190,11 @@ class CacheDirectory:
         self,
         f_stat: os.stat_result,
         time_metric: TimeMetric | None = None) -> datetime:
-        """Return the access / modification time of the given file
+        """Return the requested time metric of the given file
         converted from unix time to datetime."""
         if time_metric is None:
             time_metric = self.time_metric
-        return datetime.fromtimestamp(getattr(f_stat, time_metric.__repr__()))
+        return datetime.fromtimestamp(getattr(f_stat, repr(time_metric)))
 
     def gather_files_for_removal(self, delta_max: timedelta):
         """Return total number of bytes that will be deleted by delta_max.
@@ -226,7 +227,7 @@ class CacheDirectory:
             f"       {bytes_to_human_string(self.bytes_to_remove)} disk space "
             "eligible for removal."
         )
-        if self.verbose and len(self.files_to_remove) > 0:
+        if self.verbose and self.files_to_remove:
             log_message("--- FILES TO BE REMOVED:")
             for (f_path, size_bytes, _) in self.files_to_remove:
                 # Log all time metrics on the file for debugging.
@@ -236,7 +237,7 @@ class CacheDirectory:
                     # in __init__().
                     f_time_metrics[time_metric] = self.get_time(
                         f_path.stat(),
-                        time_metric
+                        time_metric,
                     )
                 tms_msg = [ f'{metric}: {time}'
                           for metric, time in f_time_metrics.items()]
@@ -259,7 +260,7 @@ class CacheDirectory:
     def maybe_remove_files(self) -> None:
         """Print relevant data to the console and perform the pruning (if
         ``self.dry_run=False``)."""
-        if not self.dry_run and len(self.files_to_remove) > 0:
+        if not self.dry_run and self.files_to_remove:
             log_message("Removing files. This may take a while.")
             errors: list[tuple[Path, str]] = []  # (path, error message)
             for i, (f_path, _, _) in enumerate(self.files_to_remove):
@@ -296,7 +297,7 @@ def main() -> None:
         "--verbose",
         dest="verbose",
         action="store_true",
-        help="Verbose logging for file removal"
+        help="Verbose logging for file removal",
     )
     parser.add_argument(
         "-m",
@@ -422,7 +423,7 @@ def main() -> None:
         root=args.cache_dir,
         time_metric=args.metric,
         dry_run=args.dry_run,
-        verbose=args.verbose
+        verbose=args.verbose,
     )
     if mode == Mode.AUTO:
         try:
