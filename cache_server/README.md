@@ -246,7 +246,7 @@ All of the configuration options should be executed as `root`.
     have a terminal open and logged into the cache server in question.  Launch
     your experimental jenkins job parameterized with the appropriate `drake-ci`
     PR, and in the terminal on the cache server observe
-    `tail -f /cache/log/nginx/access.log`.
+    `tail -f /opt/cache_server/log/nginx/access.log`.
 
     Typically, the right job to select would be
     "default compiler, bazel, release", e.g.,
@@ -290,7 +290,7 @@ continuous) will be littered with HTTP "500 Internal Server Error"s.  `bazel`
 tried to do an HTTP `PUT`, but the server did not have the ability to store it.
 While the `bazel build` will continue without error, this means that our cache
 is getting out of sync and pruning should happen quickly.  After pruning, it may
-be worth checking the logs in `/cache/log/` for more data on when the cache
+be worth checking the logs in `/opt/cache_server/log/` for more data on when the cache
 server disk utilization started growing too quickly.  Perhaps the nightly
 pruning routine should be more aggressive.
 
@@ -339,7 +339,7 @@ Depending on your findings, likely you will want to choose one or more of:
 
 - Update the time interval for the `cron` job running
   [`remove_old_files.py`](./remove_old_files.py).
-- Change the disk percent usage threshold in the `cron` job`.
+- Change the disk percent usage threshold in the `cron` job.
 - Increase the storage attached to the cache server.
 - Reduce the number of jenkins jobs that add to this cache server.
 
