@@ -98,7 +98,9 @@ if [[ "$(lsb_release -cs)" == "jammy" ]]; then
     libgbm1 \
     libgl1-mesa-dri \
     libglapi-mesa \
-    libglx-mesa0
+    libglx-mesa0 \
+    grub-efi-amd64-bin \
+    grub-efi-amd64-signed
 fi
 
 cat << EOF > /lib/systemd/system/xvfb.service
