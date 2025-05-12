@@ -50,6 +50,16 @@ echo 'APT::Acquire::Retries "4";' > /etc/apt/apt.conf.d/80-acquire-retries
 export DEBIAN_FRONTEND=noninteractive
 export PYTHONWARNINGS=ignore::SyntaxWarning
 
+# Prevent updates for boot- and AWS-related packages.
+if [[ "$(lsb_release -cs)" == "jammy" ]]; then
+  apt-mark hold \
+    grub-efi-amd64-bin \
+    grub-efi-amd64-signed \
+    linux-aws \
+    linux-headers-aws \
+    linux-image-aws
+fi
+
 apt-get update -qq || (sleep 15; apt-get update -qq)
 trap 'set +x; rm -rf /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin /var/lib/apt/lists/* /var/log/apt/*; set -x' EXIT
 
