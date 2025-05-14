@@ -32,12 +32,15 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# Set build locations and ensure there are no leftover artifacts
+# Set build locations and ensure there are no leftover artifacts.
 set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}")
 set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/_cmake_$ENV{USER}")
+set(DASHBOARD_INSTALL_PREFIX /opt/drake)
 
 file(REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
 file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
+
+file(REMOVE_RECURSE "${DASHBOARD_INSTALL_PREFIX}")
 
 # Jenkins passes down an incorrect value of JAVA_HOME from controller to agent
 # for some inexplicable reason.

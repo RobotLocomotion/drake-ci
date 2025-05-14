@@ -36,8 +36,15 @@
 # for some inexplicable reason.
 unset(ENV{JAVA_HOME})
 
+# Set build locations and ensure there are no leftover artifacts.
 set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}")
 set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/_wheel_$ENV{USER}")
+
+file(REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
+file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
+
+file(REMOVE_RECURSE "$ENV{HOME}/.drake-wheel-build")
+file(MAKE_DIRECTORY "$ENV{HOME}/.drake-wheel-build")
 
 set(DASHBOARD_BUILD_EVENT_JSON_FILE "${CTEST_BINARY_DIRECTORY}/BUILD.JSON")
 
@@ -90,14 +97,9 @@ report_configuration("
 if(DEFINED ENV{WHEEL_OUTPUT_DIRECTORY})
   set(DASHBOARD_WHEEL_OUTPUT_DIRECTORY "$ENV{WHEEL_OUTPUT_DIRECTORY}")
 else()
-  set(DASHBOARD_WHEEL_OUTPUT_DIRECTORY "/opt/drake-wheel")
+  set(DASHBOARD_WHEEL_OUTPUT_DIRECTORY "$ENV{HOME}/.drake-wheel-build/wheels")
   mkdir("${DASHBOARD_WHEEL_OUTPUT_DIRECTORY}" 1777 "wheel output directory")
   list(APPEND DASHBOARD_TEMPORARY_FILES DASHBOARD_WHEEL_OUTPUT_DIRECTORY)
-endif()
-
-if(APPLE)
-  # Ensure the build can write to /opt
-  chmod(/opt 1777 /opt)
 endif()
 
 set(BUILD_ARGS
@@ -105,14 +107,14 @@ set(BUILD_ARGS
   --output-dir "${DASHBOARD_WHEEL_OUTPUT_DIRECTORY}" "${DASHBOARD_DRAKE_VERSION}")
 
 if(APPLE)
-    # Run the build, including tests (includes provisioning)
-    execute_step(wheel build-and-test)
+  # Run the build, including tests (includes provisioning)
+  execute_step(wheel build-and-test)
 else()
-    # Prepare build host
-    execute_step(wheel provision)
+  # Prepare build host
+  execute_step(wheel provision)
 
-    # Run the build, including tests
-    execute_step(wheel build-and-test)
+  # Run the build, including tests
+  execute_step(wheel build-and-test)
 endif()
 
 execute_step(wheel upload-wheel)
