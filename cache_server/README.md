@@ -218,7 +218,7 @@ All of the configuration options should be executed as `root`.
     #
     # Additionally monitor disk usage of the root volume.  This is where the
     # logging data is stored.
-    40 * * * *   /opt/cache_server/drake-ci/cache_server/disk_usage.py / -t 70 >>/opt/cache_server/log/disk_usage_root.log 2>&1
+    40 * * * *   /opt/cache_server/drake-ci/cache_server/disk_usage.py / -t 80 >>/opt/cache_server/log/disk_usage_root.log 2>&1
     #
     # Rotate cache logs.  See the script for more information, this must be run
     # frequently since the nginx access.log can grow quite quickly.  Run it when
