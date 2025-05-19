@@ -13,7 +13,7 @@ continuous integration details document.
 
 - linux:
     - Hosted on AWS.  Requires Kitware or TRI VPN to access.
-    - 1TB EBS volume.
+    - 2TB EBS volume.
 
 ## Cache Server Overview
 
