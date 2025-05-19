@@ -318,8 +318,6 @@ if(REMOTE_CACHE AND Java_JAVA_EXECUTABLE)
 endif()
 
 
-# NOTE: As of 4/10/25, the remote cache is disabled on all macOS jobs,
-# but this logic will be left here for if/when it is set up again for AWS.
 if(APPLE)
   if(REMOTE_CACHE)
     set(DASHBOARD_OS_CACHE_NAME "macos")
