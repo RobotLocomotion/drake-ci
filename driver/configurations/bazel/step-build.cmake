@@ -37,7 +37,7 @@
 notice("CTest Status: RUNNING BAZEL")
 
 begin_stage(
-  PROJECT_NAME "Drake"
+  PROJECT_NAME "drake"
   BUILD_NAME "${DASHBOARD_JOB_NAME}")
 
 ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}"
