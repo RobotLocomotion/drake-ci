@@ -33,13 +33,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # Set site
-if(APPLE)
-  string(REGEX REPLACE "(.*)_(.*)" "\\1"
-    DASHBOARD_NODE_NAME "${DASHBOARD_NODE_NAME}")
-else()
-  string(REGEX REPLACE "(.*) - (.*) (.*)" "\\2"
-    DASHBOARD_NODE_NAME "${DASHBOARD_NODE_NAME}")
-endif()
+string(REGEX REPLACE "(.*) - (.*) (.*)" "\\2"
+  DASHBOARD_NODE_NAME "${DASHBOARD_NODE_NAME}")
 set(CTEST_SITE "${DASHBOARD_NODE_NAME}")
 
 # set model and track for submission
