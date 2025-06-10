@@ -1,23 +1,18 @@
 # Drake CI Cache Server Infrastructure
 
-- [Available Cache Servers](#available-cache-servers)
 - [Cache Server Overview](#cache-server-overview)
 - [Configuring a New Cache Server](#configuring-a-new-cache-server)
 - [Cache Server Automated Monitoring](#cache-server-automated-monitoring)
 - [Manually Cleaning the Cache](#manually-cleaning-the-cache)
 
-## Available Cache Servers
-
-For instructions on logging into or creating a new cache server, see the drake
-continuous integration details document.
-
-- linux:
-    - Hosted on AWS.  Requires Kitware or TRI VPN to access.
-    - 2TB EBS volume.
-
 ## Cache Server Overview
 
-Each cache server is running an `nginx` server as the backend.  For more
+For instructions on logging into or creating a new cache server, see the drake
+continuous integration details document. The current cache server used by Linux
+and macOS jobs is hosted on AWS with a 2TB TBS volume, and requires Kitware or
+TRI VPN to access.
+
+The cache server is running an `nginx` server as the backend.  For more
 information on the cache server choice, see [drake issue 18286][drake_18286].
 Each different build flavor for the server is "salted" to avoid issues with
 `bazel` "over-caching" results, and when using the `nginx` server this amounts
@@ -73,9 +68,10 @@ By convention:
 - The logs for `nginx`, file removal, and disk monitoring are are stored in
   `/opt/cache_server/log`.
 - The build cache is written to `/cache/data`.  The [`cache.cmake`][cache_cmake]
-  configuration sets as an example `DASHBOARD_REMOTE_CACHE_KEY_VERSION=v2`, so
+  configuration sets as an example `DASHBOARD_REMOTE_CACHE_KEY_VERSION=v7`, so
   the action cache (ac) and content addressed storage (cas) will be stored at
-  `/cache/data/v2/ac` and `/cache/data/cas`.
+  `/cache/data/v7/${salt}/ac` and `/cache/data/v7/${salt}/cas` (see
+  [Cache Server Overview](#cache-server-overview) for description of "salt").
     - If the cache needs to get purged, incrementing the cache key version is
       the easiest way to do so.
 
@@ -307,14 +303,13 @@ fails, buildcops will receive an email via Jenkins.
 In the event that the `cron` job running
 [`remove_old_files.py`](./remove_old_files.py) is not removing enough disk
 space, the monitoring jobs in the previous section will start notifying the
-buildcops.  You must log in to the cache server in question and run the script
-manually with new arguments for the window of time to consider.
+buildcops.  You must log in to the cache server and run the script manually
+with new arguments for the window of time to consider.
 
-- Logging into the linux cache server: connect to the Kitware VPN and `ssh`
-  into the `drake-webdav` EC2 instance (right click => connect).
-
-Once on the server, become the `root` user (`sudo -iu root`) and run a handful
-of different time windows using the `-n` (dry run) flag:
+Connect to the Kitware VPN and `ssh` into the `drake-webdav` EC2 instance
+(right click => connect). Once on the server, become the `root` user
+(`sudo -iu root`) and run a handful of different time windows using the `-n`
+(dry run) flag:
 
 ```console
 /opt/cache_server/drake-ci/cache_server/remove_old_files.py -n auto -t 60 /cache/data/
@@ -340,7 +335,7 @@ Depending on your findings, likely you will want to choose one or more of:
   [`remove_old_files.py`](./remove_old_files.py).
 - Change the disk percent usage threshold in the `cron` job.
 - Increase the storage attached to the cache server.
-- Reduce the number of jenkins jobs that add to this cache server.
+- Reduce the number of jenkins jobs that add to the cache server.
 
 ## Debugging Cache Cleaning
 

@@ -2,15 +2,7 @@
 
 # shellcheck disable=SC2016
 doc='This script is expected to be launched by a production jenkins job so that
-buildcops will receive failure notifications.  It runs on the distribution
-associated with the cache server being checked (an AWS linux instance to check
-the AWS cache server).
-
-Arguments:
-    server_name:
-        The name of the server to health check.  Must be `linux`.
-        Internally the script will determine the server_ip based on the provided
-        name.
+buildcops will receive failure notifications.
 
 The script performs, in order:
 
@@ -21,41 +13,11 @@ The script performs, in order:
    space.
 
 To develop locally, you will need to have the AWS CLI configured to be able to
-`aws s3 cp ...` (make sure `~/.aws` is configured for drake).  To test:
+`aws s3 cp ...` (make sure `~/.aws` is configured for drake).  To test, you
+must spin up a test instance on EC2 with the groups `default`, `ping`, `ssh`,
+and `node` as well as set the IAM role to `aws-ec2-role-for-s3`.'
 
-- The linux cache server: you must spin up a test instance on EC2 with the
-  groups `default`, `ping`, `ssh`, and `node` as well as set the IAM role to
-  `aws-ec2-role-for-s3`.'
-
-function usage() {
-    echo -e "Usage:\n    $0 <server_name>\n\n${doc}" >&2
-    # If an additional error message was provided, log it last so it stands out.
-    if [[ -n "$1" ]]; then
-        echo -e "\n[X] $1" >&2
-    fi
-    exit 1
-}
-
-# Determine the cache server ip address to health check based on the provided
-# name.  This is set up this way so that we do not have to edit the
-# drake-jenkins-jobs yaml in addition to drake-ci whenever a cache server ip
-# address changes.  Instead, we hard-code the values here and in
-# driver/configurations/cache.cmake in order to be able to update them once.
-# Co-modifying drake-ci and drake-jenkins-jobs is an unnecessary maintenance
-# burden.
-[[ $# != 1 ]] && usage "Exactly one argument (server_name) must be provided."
-
-readonly server_name="$1"
-case "${server_name}" in
-    linux)
-        readonly server_ip="172.31.18.175"
-        ;;
-
-    *)
-        message="Invalid server_name='${server_name}'.  Must be 'linux'."
-        usage "${message}"
-        ;;
-esac
+readonly server_ip="172.31.18.175"
 
 set -exo pipefail
 
