@@ -238,14 +238,14 @@ if(PACKAGE)
     # The default Ubuntu version for Docker should be the newest base OS.
     # If this value changes, the Docker documentation in the drake repository
     # (drake/doc/_pages/docker.md) also needs to be updated.
-    set(DEFAULT_DOCKER_DISTRIBUTION "jammy")
+    set(DEFAULT_DOCKER_DISTRIBUTION "noble")
 
     execute_step(cmake build-docker-image)
     if(DOCKER STREQUAL "publish")
       execute_step(cmake push-docker-image)
     endif()
   endif()
-  if(DISTRIBUTION STREQUAL "jammy" AND DASHBOARD_TRACK STREQUAL "Nightly")
+  if(DISTRIBUTION STREQUAL "noble" AND DASHBOARD_TRACK STREQUAL "Nightly")
     execute_step(cmake push-nightly-release-branch)
   endif()
 endif()
