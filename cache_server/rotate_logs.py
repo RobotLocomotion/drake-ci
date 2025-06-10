@@ -46,7 +46,7 @@ def log_stdout_stderr(proc: subprocess.CompletedProcess):
 
 
 def main():
-    # Our cache servers are all linux and the commands below all assume this.
+    # Our cache server is Linux and the commands below all assume this.
     if platform.system() != "Linux":
         error("This script only runs on linux.")
 
