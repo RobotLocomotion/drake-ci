@@ -29,7 +29,6 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-build --experimental_guard_against_concurrent_changes=yes
 build --remote_download_outputs=all
 build --experimental_remote_cache_lease_extension=yes
 build --remote_accept_cached=@DASHBOARD_REMOTE_ACCEPT_CACHED@
