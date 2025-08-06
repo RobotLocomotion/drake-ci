@@ -60,7 +60,6 @@ report_configuration(".38
   CTEST_TEST_TIMEOUT
   CTEST_UPDATE_COMMAND
   CTEST_UPDATE_VERSION_ONLY
-  CTEST_UPDATE_VERSION_OVERRIDE
   CTEST_USE_LAUNCHERS
   ====================================
   ")

@@ -178,7 +178,6 @@ report_configuration("
   CTEST_TEST_TIMEOUT
   CTEST_UPDATE_COMMAND
   CTEST_UPDATE_VERSION_ONLY
-  CTEST_UPDATE_VERSION_OVERRIDE
   CTEST_USE_LAUNCHERS
   ====================================
   PACKAGE
@@ -189,7 +188,6 @@ report_configuration("
   WITH_OPENMP
   ==================================== >DASHBOARD_
   GIT_COMMIT
-  ACTUAL_GIT_COMMIT
   ==================================== >DASHBOARD_
   ${COMPILER_UPPER}_CACHE_VERSION(CC_CACHE_VERSION)
   GFORTRAN_CACHE_VERSION

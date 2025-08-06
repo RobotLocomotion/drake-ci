@@ -83,10 +83,8 @@ report_configuration("
   CTEST_SOURCE_DIRECTORY
   CTEST_UPDATE_COMMAND
   CTEST_UPDATE_VERSION_ONLY
-  CTEST_UPDATE_VERSION_OVERRIDE
   ==================================== >DASHBOARD_
   GIT_COMMIT
-  ACTUAL_GIT_COMMIT
   DRAKE_VERSION
   ==================================== >DASHBOARD_
   REMOTE_CACHE_KEY_VERSION
