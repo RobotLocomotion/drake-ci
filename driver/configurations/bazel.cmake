@@ -260,7 +260,6 @@ report_configuration("
   CTEST_SOURCE_DIRECTORY
   CTEST_UPDATE_COMMAND
   CTEST_UPDATE_VERSION_ONLY
-  CTEST_UPDATE_VERSION_OVERRIDE
   ==================================== >DASHBOARD_
   BAZEL_COMMAND
   BAZEL_VERSION
@@ -269,7 +268,6 @@ report_configuration("
   BAZEL_TEST_OPTIONS
   ==================================== >DASHBOARD_
   GIT_COMMIT
-  ACTUAL_GIT_COMMIT
   ==================================== >DASHBOARD_
   ${COMPILER_UPPER}_CACHE_VERSION(CC_CACHE_VERSION)
   GFORTRAN_CACHE_VERSION
