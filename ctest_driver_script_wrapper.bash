@@ -47,12 +47,9 @@ fi
 
 export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
 
-# Provision image, if required.
-if [[ "${JOB_NAME}" =~ unprovisioned ]]; then
-    case "$(uname -s)" in
-        (Darwin) "${CI_ROOT}/setup/mac/install_prereqs";;
-        (Linux) sudo --preserve-env "${CI_ROOT}/setup/ubuntu/install_prereqs";;
-    esac
+# Provision image, if required (Linux only).
+if [[ "$(uname -s)" == "Linux" && "${JOB_NAME}" =~ unprovisioned ]]; then
+    sudo --preserve-env "${CI_ROOT}/setup/ubuntu/install_prereqs"
 fi
 
 # Synchronize the system clock (so log timestamps will be accurate).
