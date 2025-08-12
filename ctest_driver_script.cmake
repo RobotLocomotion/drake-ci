@@ -100,6 +100,7 @@ endif()
 
 set(DASHBOARD_INSTALL ON)
 set(DASHBOARD_TEST ON)
+set(DASHBOARD_SUBMIT ON)
 
 # Set up the site and build information
 include(${DASHBOARD_DRIVER_DIR}/site.cmake)

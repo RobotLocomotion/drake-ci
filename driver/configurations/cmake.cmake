@@ -42,6 +42,12 @@ file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
 
 file(REMOVE_RECURSE "${DASHBOARD_INSTALL_PREFIX}")
 
+# Exclude packaging jobs from CDash uploads, since uploads for steps after
+# CMake install are not set up (so actual failures show as successes).
+if (PACKAGE)
+  set(DASHBOARD_SUBMIT OFF)
+endif()
+
 # Jenkins passes down an incorrect value of JAVA_HOME from controller to agent
 # for some inexplicable reason.
 unset(ENV{JAVA_HOME})
