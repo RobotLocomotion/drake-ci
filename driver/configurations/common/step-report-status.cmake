@@ -44,10 +44,10 @@ else()
 endif()
 
 # Report build result and CDash links
-if (DASHBOARD_CDASH_URL)
+set(end_status_message "CTest Result: ${DASHBOARD_MESSAGE}")
+if (DASHBOARD_CDASH_URL AND DASHBOARD_SUBMIT)
   file(WRITE "${DASHBOARD_WORKSPACE}/CDASH" "${DASHBOARD_CDASH_URL}")
+  list(APPEND end_status_message
+    "CDash URL: ${DASHBOARD_CDASH_URL}")
 endif()
-notice(
-  "CTest Result: ${DASHBOARD_MESSAGE}"
-  "CDash URL: ${DASHBOARD_CDASH_URL}"
-)
+notice(${end_status_message})
