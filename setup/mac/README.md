@@ -18,3 +18,10 @@ uses `sudo` internally for some steps, so password prompts may appear.
 It accepts a single argument, the `MAJOR.MINOR` version of the Xcode to install.
 It will install it to `/Applications/Xcode-MAJOR.MINOR.app` to avoid collisions
 between Xcode versions on the same machine.
+
+### `ami_init_script`
+
+A script to perform initial system configuration. It uses `sudo` internally for
+some steps, so password prompts may appear.
+
+It accepts no arguments.
