@@ -2,11 +2,13 @@
 
 ### `xcode_hashes.csv`
 
-This file contains 3 columns:
+This file contains 4 columns:
 
 - The `MAJOR.MINOR` version of Xcode.
 - The actual version present in the installer's filename (e.g., `14.0.1` is
   sometimes the official release).
+- The SHA256 of the Xcode installer.
+- The SHA256 of the Xcode Command Line Tools.
 
 ### `init_xcode`
 
