@@ -12,7 +12,10 @@ die () {
   echo >&2 "$@"
 }
 
-pull_xcode () {
+pull_xcode_or_clt () {
+  local file="$1"
+  shift
+
   local full_version="$1"
   shift
 
@@ -22,9 +25,8 @@ pull_xcode () {
   local destination="$1"
   shift
 
-  # Only pull if not already present.
   if ! [ -f "$destination" ]; then
-    echo "TODO: pull the installer file"
+    die "Please place the $file at $destination before running this script"
   fi
 
   local destdir
@@ -35,9 +37,9 @@ pull_xcode () {
   destfile="$( basename "$destination" )"
   readonly destfile
 
-  feedback "Verifying the installer..."
-  echo "$hash_expect  $destfile" > "$destdir/xcode-$full_version.sha256sum"
-  shasum -a 1 --check "$destdir/xcode-$full_version.sha256sum"
+  feedback "Verifying the $file..."
+  echo "$hash_expect  $destfile" > "$destination.sha256sum"
+  shasum -a 1 --check "$destination.sha256sum"
 }
 
 # Succeeds if the first argument is vercmp-greater-or-equal-to the second
@@ -80,6 +82,9 @@ xcode_hash_expect="$(
   grep --fixed-strings "$version," "$xcode_hashes" | \
     cut -d, -f3 )"
 readonly xcode_hash_expect
+readonly clt_hash_except="$(
+  grep --fixed-strings "$version," "$xcode_hashes" | \
+    cut -d, -f4 )"
 
 feedback "Verifying the metadata is present..."
 if [ -z "$xcode_full_version" ]; then
@@ -88,14 +93,30 @@ fi
 if [ -z "$xcode_hash_expect" ]; then
   die "Unknown installer hash for version '$version'"
 fi
+if [ -z "$clt_hash_expect" ]; then
+  die "Unknown command line tools hash for version '$version'"
+fi
 
 feedback "Checking if Xcode is already installed..."
 readonly xcode_root="/Applications/Xcode-$version.app"
 if ! [ -d "$xcode_root/Contents/Developer" ]; then
   readonly installer_loc="Xcode_$version.xip"
+  readonly clt_loc="Command_Line_Tools_for_Xcode_$version.dmg"
 
-  feedback "Fetching the installer..."
-  pull_xcode "$xcode_full_version" "$xcode_hash_expect" "$installer_loc"
+  feedback "Fetching the installer and command line tools..."
+  pull_xcode_or_clt "Xcode installer" \
+    "$xcode_full_version" "$xcode_hash_expect" "$installer_loc"
+  pull_xcode_or_clt "Command Line Tools" \
+    "$xcode_full_version" "$clt_hash_expect" "$clt_loc"
+
+  feedback "Installing command line tools..."
+  hdiutil attach "$clt_loc"
+  readonly clt_volume="/Volumes/Command\ Line\ Developer\ Tools"
+  sudo installer -package \
+    "$clt_volume/Command\ Line\ Tools.pkg" \
+    -target /
+  hdiutil detach "$clt_volume"
+
   feedback "Extracting the installer..."
   xip -x "$installer_loc"
 
@@ -103,9 +124,8 @@ if ! [ -d "$xcode_root/Contents/Developer" ]; then
     die "Failed to extract the Xcode application"
   fi
 
-  # Delete the installer (it is big).
-  feedback "Removing the installer..."
-  rm "$installer_loc"
+  feedback "Removing the installer and command line tools..."
+  rm "$installer_loc" "$clt_loc"
 
   # Move the installer to "/Applications".
   feedback "Moving Xcode application..."
