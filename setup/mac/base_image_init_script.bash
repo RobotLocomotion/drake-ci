@@ -1,0 +1,40 @@
+#!/bin/bash
+
+set -euxo pipefail
+
+feedback () {
+  echo -n $'\033[32m'
+  echo "$0"
+  echo -n $'\033[00m'
+}
+
+die () {
+  echo >&2 "$@"
+}
+
+feedback "Installing Homebrew..."
+if ! command -v brew &>/dev/null; then
+  /bin/bash -c \
+    "$(/usr/bin/curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+
+feedback "Disabling automatic update downloads..."
+defaults write /Library/Preferences/com.apple.SoftwareUpdate \
+  AutomaticDownload -boolean false
+
+feedback "Disabling Spotlight indexing and filesystem logs..."
+mdutil -a -i off
+readonly data_dir="/System/Volumes/Data/"
+rm -rf "$data_dir/.Spotlight*"
+readonly never_index="$data_dir/.metadata_never_index"
+touch $never_index
+chmod 444 $never_index
+readonly fseventsd_dir="$data_dir/.fseventsd"
+rm -rf $fseventsd_dir
+mkdir $fseventsd_dir
+touch "$fseventsd_dir/no_log"
+chmod 444 "$fseventsd_dir/no_log"
+
+readonly restart_time="U 00:00:00"
+feedback "Configuring regular restarts at $restart_time..."
+sudo pmset repeat restart $restart_time
