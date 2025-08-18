@@ -34,6 +34,14 @@
 # This script is expected to only be used in the creation of provisioned images
 # NOT during normal CI setup
 
+# Update Homebrew packages.
+brew update
+brew upgrade
+
+# Install Java, to be used for Jenkins. The version must be the same as the one
+# used by Jenkins.
+brew install --cask temurin@21
+
 # Install the tools that drake-ci does.
 git clone --depth 1 https://github.com/RobotLocomotion/drake-ci.git
 # WORKSPACE=setup is a bypass that allows the script to run (which requires
@@ -42,7 +50,7 @@ WORKSPACE=setup ./drake-ci/setup/mac/install_prereqs
 
 # Install the tools that drake does.
 git clone --depth 1 https://github.com/RobotLocomotion/drake.git
-./drake/setup/mac/install_prereqs.sh
+./drake/setup/mac/install_prereqs.sh --developer
 
 # Clean up.
 brew cleanup --prune=all
