@@ -25,3 +25,10 @@ A script to perform initial system configuration. It uses `sudo` internally for
 some steps, so password prompts may appear.
 
 It accepts no arguments.
+
+### `provision_image`
+
+A script to perform image provisioning. It installs prerequisite packages for
+drake-ci and drake.
+
+It accepts no arguments.

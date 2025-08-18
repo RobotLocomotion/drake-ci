@@ -34,16 +34,18 @@
 # This script is expected to only be used in the creation of provisioned images
 # NOT during normal CI setup
 
+# Install the tools that drake-ci does.
 git clone --depth 1 https://github.com/RobotLocomotion/drake-ci.git
+# WORKSPACE=setup is a bypass that allows the script to run (which requires
+# that it be defined, as Jenkins always does).
 WORKSPACE=setup ./drake-ci/setup/mac/install_prereqs
 
-
+# Install the tools that drake does.
 git clone --depth 1 https://github.com/RobotLocomotion/drake.git
 ./drake/setup/mac/install_prereqs.sh
 
-
+# Clean up.
 brew cleanup --prune=all
 # Update this version of pip as Drake updates its supported Python versions.
 pip3.13 cache purge
-
 rm -rf drake drake-ci
