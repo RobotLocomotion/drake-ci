@@ -60,3 +60,9 @@ brew analytics off
 brew update || (sleep 15; brew update)
 trap 'brew cleanup && rm -rf "$(brew --cache)" "${HOME}/Library/Logs/Homebrew/*"' EXIT
 brew bundle --file="$(dirname ${(%):-%x})/Brewfile"
+
+curl --retry 4 -o /tmp/gurobi10.0.2_macos_universal2.pkg \
+  https://packages.gurobi.com/10.0/gurobi10.0.2_macos_universal2.pkg
+echo '955BB1CFA9A72B09C23AF6413A10E95F8E05A189539619495F123FF0F3C258C8  /tmp/gurobi10.0.2_macos_universal2.pkg' \
+  | sha256sum -c -
+sudo installer -pkg /tmp/gurobi10.0.2_macos_universal2.pkg -target /
