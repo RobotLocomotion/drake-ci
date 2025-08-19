@@ -39,7 +39,7 @@ pull_xcode_or_clt () {
 
   feedback "Verifying the $file..."
   echo "$hash_expect  $destfile" > "$destination.sha256sum"
-  shasum -a 1 --check "$destination.sha256sum"
+  sha256sum --check "$destination.sha256sum"
 }
 
 # Succeeds if the first argument is vercmp-greater-or-equal-to the second
@@ -82,9 +82,10 @@ xcode_hash_expect="$(
   grep --fixed-strings "$version," "$xcode_hashes" | \
     cut -d, -f3 )"
 readonly xcode_hash_expect
-readonly clt_hash_except="$(
+clt_hash_expect="$(
   grep --fixed-strings "$version," "$xcode_hashes" | \
     cut -d, -f4 )"
+readonly clt_hash_expect
 
 feedback "Verifying the metadata is present..."
 if [ -z "$xcode_full_version" ]; then
@@ -113,15 +114,14 @@ if ! [ -d "$xcode_root/Contents/Developer" ]; then
   # Finish any pending filesystem operations before `hdiutil`.
   sync
   hdiutil attach "$clt_loc"
-  readonly clt_volume="/Volumes/Command\ Line\ Developer\ Tools"
-  sudo installer -package \
-    "$clt_volume/Command\ Line\ Tools.pkg" \
-    -target /
+  readonly clt_volume="/Volumes/Command Line Developer Tools"
+  readonly clt_pkg="$clt_volume/Command Line Tools.pkg"
+  sudo installer -package "$clt_pkg" -target /
   sync
   hdiutil detach "$clt_volume"
 
   feedback "Extracting the installer..."
-  xip -x "$installer_loc"
+  sudo xip -x "$installer_loc"
 
   if ! [ -d "Xcode.app" ]; then
     die "Failed to extract the Xcode application"
@@ -130,9 +130,11 @@ if ! [ -d "$xcode_root/Contents/Developer" ]; then
   feedback "Removing the installer and command line tools..."
   rm "$installer_loc" "$clt_loc"
 
-  # Move the installer to "/Applications".
   feedback "Moving Xcode application..."
-  sudo mv --no-target-directory --verbose "Xcode.app" "$xcode_root"
+  sudo mv -v "Xcode.app" "$xcode_root"
+
+  feedback "Selecting the installed Xcode..."
+  sudo xcode-select --switch "$xcode_root"
 fi
 
 feedback "Performing first-run tasks..."

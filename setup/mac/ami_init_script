@@ -19,21 +19,21 @@ if ! command -v brew &>/dev/null; then
 fi
 
 feedback "Disabling automatic update downloads..."
-defaults write /Library/Preferences/com.apple.SoftwareUpdate \
+sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate \
   AutomaticDownload -boolean false
 
 feedback "Disabling Spotlight indexing and filesystem logs..."
-mdutil -a -i off
+sudo mdutil -a -i off
 readonly data_dir="/System/Volumes/Data/"
-rm -rf "$data_dir/.Spotlight*"
+sudo rm -rf "$data_dir/.Spotlight*"
 readonly never_index="$data_dir/.metadata_never_index"
-touch $never_index
-chmod 444 $never_index
+sudo touch $never_index
+sudo chmod 444 $never_index
 readonly fseventsd_dir="$data_dir/.fseventsd"
-rm -rf $fseventsd_dir
-mkdir $fseventsd_dir
-touch "$fseventsd_dir/no_log"
-chmod 444 "$fseventsd_dir/no_log"
+sudo rm -rf $fseventsd_dir
+sudo mkdir $fseventsd_dir
+sudo touch "$fseventsd_dir/no_log"
+sudo chmod 444 "$fseventsd_dir/no_log"
 
 readonly restart_time="U 00:00:00"
 feedback "Configuring regular restarts at $restart_time..."
