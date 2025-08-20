@@ -116,7 +116,11 @@ readonly xcode_hash_expect
 clt_hash_expect="$(
   grep --fixed-strings "$version," "$xcode_hashes" | \
     cut -d, -f4 )"
-readonly clt_hash_expect
+readonly os_version_default
+os_version_default="$(
+  grep --fixed-strings "$version," "$xcode_hashes" | \
+    cut -d, -f5 )"
+readonly os_version_default
 
 feedback "Verifying the metadata is present..."
 if [ -z "$xcode_full_version" ]; then
@@ -166,6 +170,13 @@ if ! [ -d "$xcode_root/Contents/Developer" ]; then
 
   feedback "Selecting the installed Xcode..."
   sudo xcode-select --switch "$xcode_root"
+
+  mac_major_version="$(sw_vers -productVersion | awk -F '.' '{print $1}')"
+  readonly mac_major_version
+  if [ "$mac_major_version" -eq "$os_version_default" ]; then
+    feedback "Linking the installed Xcode to the default /Applications/Xcode.app..."
+    ln -sf "$xcode_root" /Applications/Xcode.app
+  fi
 fi
 
 feedback "Performing first-run tasks..."
