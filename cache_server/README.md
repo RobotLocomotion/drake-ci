@@ -219,7 +219,7 @@ All of the configuration options should be executed as `root`.
     # Rotate cache logs.  See the script for more information, this must be run
     # frequently since the nginx access.log can grow quite quickly.  Run it when
     # the other two jobs above are unlikely to also be running (and logging).
-    10-59/15 * * * *   /opt/cache_server/drake-ci/cache_server/rotate_logs.py >>/opt/cache_server/log/rotate_logs.log 2>&1
+    5-59/10 * * * * *   /opt/cache_server/drake-ci/cache_server/rotate_logs.py >>/opt/cache_server/log/rotate_logs.log 2>&1
     ```
 
     You should be able to save and `cat /var/spool/cron/crontabs/root` to
