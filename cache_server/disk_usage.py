@@ -102,7 +102,7 @@ def main() -> None:
             take up to 5 minutes to complete. Please wait until the automated
             file removal routine is complete and re-launch this job.
 
-            If it fails again, please start a thread in the #buildcop slack
+            If it fails again, please start a thread in the #ci Slack
             channel delegating to Kitware:
 
                 https://drakedevelopers.slack.com/archives/C270MN28G
