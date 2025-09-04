@@ -65,8 +65,8 @@ By convention:
   production (e.g., cannot `git pull` new files) or get new logging information.
     - **NOTE**: this directory path is also used by
       [`health_check.bash`](./health_check.bash).
-- The logs for `nginx`, file removal, and disk monitoring are are stored in
-  `/opt/cache_server/log`.
+- The logs for `nginx`, file removal, and disk monitoring are stored in
+  `/cache/log`.
 - The build cache is written to `/cache/data`.  The [`cache.cmake`][cache_cmake]
   configuration sets as an example `DASHBOARD_REMOTE_CACHE_KEY_VERSION=v7`, so
   the action cache (ac) and content addressed storage (cas) will be stored at
@@ -96,9 +96,9 @@ All of the configuration options should be executed as `root`.
     (
         mkdir -p \
             /cache/data \
-            /opt/cache_server \
-            /opt/cache_server/log/nginx;
-        chown -R www-data:www-data /cache/data /opt/cache_server/log/nginx;
+            /cache/log/nginx;
+            /opt/cache_server;
+        chown -R www-data:www-data /cache/data /cache/log/nginx;
     )
     ```
 
@@ -203,23 +203,23 @@ All of the configuration options should be executed as `root`.
     #
     # This cache server's date / time are in America/New_York!
     # Cache pruning (https://crontab.guru/#*/15_*_*_*_*): every 15th minute.
-    */15 * * * *   /opt/cache_server/drake-ci/cache_server/remove_old_files.py auto /cache/data >>/opt/cache_server/log/remove_old_files.log 2>&1
+    */15 * * * *   /opt/cache_server/drake-ci/cache_server/remove_old_files.py auto /cache/data >>/cache/log/drake-ci/remove_old_files.log 2>&1
     #
     # Disk usage monitoring: on minute 40 (the file removal above runs on minute
     # 30, allow it to complete before checking).  Note that there is a continuous
     # cache server health check job that runs on a completely unrelated
     # schedule.  This log primarily exists as a backup for us to consult if we
     # desire to monitor how much is deleted when.
-    40 * * * *   /opt/cache_server/drake-ci/cache_server/disk_usage.py /cache/data >>/opt/cache_server/log/disk_usage_cache_data.log 2>&1
+    40 * * * *   /opt/cache_server/drake-ci/cache_server/disk_usage.py /cache/data >>/cache/log/drake-ci/disk_usage_cache_data.log 2>&1
     #
     # Additionally monitor disk usage of the root volume.  This is where the
     # logging data is stored.
-    40 * * * *   /opt/cache_server/drake-ci/cache_server/disk_usage.py / -t 80 >>/opt/cache_server/log/disk_usage_root.log 2>&1
+    40 * * * *   /opt/cache_server/drake-ci/cache_server/disk_usage.py / -t 80 >>/cache/log/drake-ci/disk_usage_root.log 2>&1
     #
     # Rotate cache logs.  See the script for more information, this must be run
     # frequently since the nginx access.log can grow quite quickly.  Run it when
     # the other two jobs above are unlikely to also be running (and logging).
-    5-59/10 * * * *   /opt/cache_server/drake-ci/cache_server/rotate_logs.py >>/opt/cache_server/log/rotate_logs.log 2>&1
+    5-59/10 * * * *   /opt/cache_server/drake-ci/cache_server/rotate_logs.py >>/cache/log/drake-ci/rotate_logs.log 2>&1
     ```
 
     You should be able to save and `cat /var/spool/cron/crontabs/root` to
@@ -241,7 +241,7 @@ All of the configuration options should be executed as `root`.
     have a terminal open and logged into the cache server in question.  Launch
     your experimental jenkins job parameterized with the appropriate `drake-ci`
     PR, and in the terminal on the cache server observe
-    `tail -f /opt/cache_server/log/nginx/access.log`.
+    `tail -f /cache/log/nginx/access.log`.
 
     Typically, the right job to select would be
     "default compiler, bazel, release", e.g.,
