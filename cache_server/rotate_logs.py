@@ -6,7 +6,7 @@ This script is expected to run by cron. See the associated
 directories and rules for log files being rotated.
 
 After ``logrotate`` runs, however, the log files
-``/opt/cache_server/nginx/{access,error}.log`` may have been removed.  Running
+``/cache/log/nginx/{access,error}.log`` may have been removed.  Running
 ``nginx -s reload`` will close the file handles ``nginx`` had open to the previous
 (now possibly rotated to a new filename) log files, and open new ones.  Without
 reloading, all nginx logging for logs that have been rotated will stop.
@@ -59,18 +59,17 @@ def main():
     if logrotate is None:
         error("Could not find the `logrotate` command.  Is it installed?")
 
-    # Logs are stored in /opt/cache_server/log/.  Send the logging output of the
-    # ``logrotate`` command to /opt/cache_server/logrotate.log, and then re-log that to
-    # stdout (this script should run under cron and redirect to
-    # /opt/cache_server/log/rotate_logs.log).
+    # Logs are stored in /cache/log/.  Send the logging output of the
+    # ``logrotate`` command to /cache/log/logrotate.log, and then re-log that to
+    # stdout (which should be redirected to a log file when run under cron).
     this_file_dir = Path(__file__).parent.absolute()
     logrotate_conf_path = this_file_dir / "logrotate_cache.conf"
     if not logrotate_conf_path.is_file():
         error(f"'{logrotate_conf_path}' is not a file.")
 
     # ``logrotate`` setup.
-    opt_cache_server = Path("/opt") / "cache_server"
-    logrotate_log_path = opt_cache_server / "logrotate.log"
+    cache_log = Path("/cache") / "log"
+    logrotate_log_path = cache_log / "drake-ci" / "logrotate.log"
     logrotate_log_path.unlink(missing_ok=True)
     logrotate_args = [
         logrotate,
@@ -118,7 +117,7 @@ def main():
     )
     log_stdout_stderr(systemctl_proc)
 
-    nginx_log_dir = opt_cache_server / "log" / "nginx"
+    nginx_log_dir = cache_log / "nginx"
     access_log = nginx_log_dir / "access.log"
     error_log = nginx_log_dir / "error.log"
     nginx_log_files = [access_log, error_log]

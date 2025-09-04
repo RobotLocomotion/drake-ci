@@ -49,17 +49,17 @@ eval "$(ssh-agent -s)"
 # The disk_usage.py script must be run as `root` to access `/cache/data`.  Using
 # `-o StrictHostKeyChecking=no` tells ssh to accept new fingerprints
 # (~/.ssh/known_hosts does not know the cache server when this runs in CI).
-# Check disk usage for /cache/data (the real cache) ...
+# Check disk usage for `/cache/`, which stores data in `data/` and logs in `logs/`.
 timeout 120 \
     ssh \
         -o IdentitiesOnly=yes \
         -o StrictHostKeyChecking=no \
         -i "${cache_server_id_rsa_path}" \
         "root@${server_ip}" \
-        '/opt/cache_server/drake-ci/cache_server/disk_usage.py /cache/data'
-# ... and / (which stores log files in /opt/cache_server/logs).
-# Also, be more sensitive about the disk usage threshold for this one,
-# as the drive is much smaller than /cache.
+        '/opt/cache_server/drake-ci/cache_server/disk_usage.py /cache/'
+# Also check disk usage for `/`. Theoretically, nothing is stored here besides
+# the drake-ci clone, but it's a very small disk, and it holds the root
+# filesystem, so if anything is unexpected we should know immediately.
 timeout 120 \
     ssh \
         -o IdentitiesOnly=yes \
