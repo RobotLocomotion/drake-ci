@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Rotate log files using ``logrotate`` and restart ``nginx``.
 
-This script is expected to run by cron on an hourly schedule, see the associated
-``logrotate_cache.conf`` for the ``logrotate`` command which specifies the directories
-and rules for log files being rotated.
+This script is expected to run by cron. See the associated
+``logrotate_cache.conf`` for the ``logrotate`` command which specifies the
+directories and rules for log files being rotated.
 
 After ``logrotate`` runs, however, the log files
 ``/opt/cache_server/nginx/{access,error}.log`` may have been removed.  Running

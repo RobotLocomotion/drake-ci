@@ -96,9 +96,11 @@ def main() -> None:
             {percent_used:.2f}% usage exceeds provided threshold of {args.threshold}%
 
             The `remove_old_files.py` cron job runs every 15 minutes (e.g., at
-            12:00, 12:15, 12:30, and 12:45).  It can take up to 5 minutes to
-            complete, please wait until the automated file removal routine is
-            complete and re-launch this cache server health check job.
+            12:00, 12:15, 12:30, and 12:45) to clean out the cache files, and
+            the `rotate_logs.py` cron job runs every 10 minutes (e.g., at 12:05,
+            12:15, 12:25, etc.) to clean out the log files. These jobs can
+            take up to 5 minutes to complete. Please wait until the automated
+            file removal routine is complete and re-launch this job.
 
             If it fails again, please start a thread in the #buildcop slack
             channel delegating to Kitware:
