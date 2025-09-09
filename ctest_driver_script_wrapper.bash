@@ -47,6 +47,14 @@ fi
 
 export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
 
+# Ensure the Jenkins workspace is cleared from previous runs.
+readonly GLOBAL_WORKSPACE="$(realpath ${WORKSPACE}/..)"
+if [[ "${GLOBAL_WORKSPACE}" == *workspace ]]; then
+    sudo find "${GLOBAL_WORKSPACE}" -mindepth 1 -maxdepth 1 \
+        -not -path "${WORKSPACE}" -not -path "${WORKSPACE}@tmp" \
+        -exec rm -rf {} +
+fi
+
 # Provision image, if required (Linux only).
 if [[ "$(uname -s)" == "Linux" && "${JOB_NAME}" =~ unprovisioned ]]; then
     sudo --preserve-env "${CI_ROOT}/setup/ubuntu/install_prereqs"
