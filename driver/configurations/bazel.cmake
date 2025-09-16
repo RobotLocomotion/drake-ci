@@ -288,11 +288,15 @@ if(NOT DASHBOARD_FAILURE AND NOT DASHBOARD_UNSTABLE)
   set(DASHBOARD_MESSAGE "SUCCESS")
 endif()
 
-# Build and publish documentation, if requested, and if build succeeded.
+# Build, publish, and upload documentation, if requested, and if build
+# succeeded.
 if(DOCUMENTATION)
   execute_step(bazel build-documentation)
   if(DOCUMENTATION STREQUAL "publish")
     execute_step(bazel publish-documentation)
+  else()
+    execute_step(bazel create-documentation-archive)
+    execute_step(bazel upload-documentation)
   endif()
 endif()
 
