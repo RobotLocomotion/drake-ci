@@ -116,7 +116,8 @@ readonly xcode_hash_expect
 clt_hash_expect="$(
   grep --fixed-strings "$version," "$xcode_hashes" | \
     cut -d, -f4 )"
-readonly os_version_default
+# TODO(tyler-yankee): Add parsing for multiple default OS versions for a
+# given Xcode version.
 os_version_default="$(
   grep --fixed-strings "$version," "$xcode_hashes" | \
     cut -d, -f5 )"
