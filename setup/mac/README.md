@@ -30,7 +30,8 @@ It accepts no arguments.
 
 ### `provision_image`
 
-A script to perform image provisioning. It installs prerequisite packages for
-drake-ci and drake.
+A script to perform image provisioning. It is meant to be copied into an image
+and run by hand. It performs some setup before cloning drake-ci and drake to
+install their prerequisite packages, and then performs some cleanup.
 
 It accepts no arguments.
