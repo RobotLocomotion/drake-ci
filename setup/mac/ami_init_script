@@ -49,6 +49,11 @@ if ! command -v brew &>/dev/null; then
     "$(/usr/bin/curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
+# TODO(tyler-yankee): Gurobi 10.0 and older requires Rosetta 2 to run on ARM.
+# When we upgrade to Gurobi 11, remove this installation.
+feedback "Installing Rosetta 2..."
+sudo softwareupdate --install-rosetta
+
 feedback "Disabling automatic update downloads..."
 sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate \
   AutomaticDownload -boolean false
