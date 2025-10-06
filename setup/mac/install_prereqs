@@ -61,8 +61,19 @@ brew update || (sleep 15; brew update)
 trap 'brew cleanup && rm -rf "$(brew --cache)" "${HOME}/Library/Logs/Homebrew/*"' EXIT
 brew bundle --file="$(dirname ${(%):-%x})/Brewfile"
 
-curl --retry 4 -o /tmp/gurobi10.0.2_macos_universal2.pkg \
-  https://packages.gurobi.com/10.0/gurobi10.0.2_macos_universal2.pkg
-echo '955BB1CFA9A72B09C23AF6413A10E95F8E05A189539619495F123FF0F3C258C8  /tmp/gurobi10.0.2_macos_universal2.pkg' \
+# Install both Gurobi 10.0.2, which Drake currently uses, and Gurobi 12.0.3,
+# which Drake is working towards. The former will be removed once the switch
+# is ready.
+readonly gurobi_1002_pkg='/tmp/gurobi10.0.2_macos_universal2.pkg'
+curl --retry 4 -o $gurobi_1002_pkg \
+  https://packages.gurobi.com/10.0/$(basename $gurobi_1002_pkg)
+echo "955BB1CFA9A72B09C23AF6413A10E95F8E05A189539619495F123FF0F3C258C8  $gurobi_1002_pkg" \
   | sha256sum -c -
-sudo installer -pkg /tmp/gurobi10.0.2_macos_universal2.pkg -target /
+sudo /usr/sbin/installer -pkg $gurobi_1002_pkg -target /
+
+readonly gurobi_1203_pkg='/tmp/gurobi12.0.3_macos_universal2.pkg'
+curl --retry 4 -o $gurobi_1203_pkg \
+  https://packages.gurobi.com/12.0/$(basename $gurobi_1203_pkg)
+echo "955BB1CFA9A72B09C23AF6413A10E95F8E05A189539619495F123FF0F3C258C8  $gurobi_1203_pkg" \
+  | sha256sum -c -
+sudo /usr/sbin/installer -pkg $gurobi_1203_pkg -target /
