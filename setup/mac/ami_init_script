@@ -49,6 +49,12 @@ if ! command -v brew &>/dev/null; then
     "$(/usr/bin/curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
+if [ -z "$(brew --prefix)" ]; then
+  die "Empty Homebrew prefix; check your installation and re-run this script"
+fi
+feedback "Fixing Homebrew permissions..."
+sudo chown -R $(whoami) $(brew --prefix)
+
 # N.B. Gurobi requires Rosetta 2 to run on ARM (despite providing a "universal2"
 # pkg file). We should investigate whether this can be removed with future
 # versions of Gurobi.
