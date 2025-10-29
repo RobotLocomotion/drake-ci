@@ -46,7 +46,16 @@ apt-get install --no-install-recommends -o APT::Acquire::Retries=4 -o Dpkg::Use-
   openjdk-21-jre-headless \
   openssh-client
 
-update-java-alternatives --jre-headless -s java-1.21.0-openjdk-amd64
+jdk=java-1.21.0-openjdk
+if [[ "$(uname -m)" == "x86_64" ]]; then
+  jdk="$jdk-amd64"
+elif [[ "$(uname -m)" == "aarch64" ]]; then
+  jdk="$jdk-arm64"
+else
+  echo "Unsupported architecture: $(uname -m)"
+  exit 1
+fi
+update-java-alternatives --jre-headless -s $jdk
 
 groupadd docker
 usermod -a -G docker ubuntu
