@@ -34,6 +34,19 @@
 
 notice("CTest Status: INSTALL DOCKER PREREQUISITES")
 
+# Docker uses `/var/lib/docker` for local storage of its containers, which is
+# generally very large on most systems. On the current CI images, though, the
+# root fs is tiny compared to the `/media/ephemeral0/...` partition, so we
+# need to ensure we use the latter as to not run out of disk.
+set(DOCKER_DIR "/var/lib/docker")
+file(CREATE_LINK
+  "${DASHBOARD_TEMP_DIR}/docker" "${DOCKER_DIR}"
+  RESULT DOCKER_SYMLINK_RESULT
+  SYMBOLIC)
+if(NOT DOCKER_SYMLINK_RESULT EQUAL 0)
+  fatal("Failed to link ${DOCKER_DIR} -> ${DASHBOARD_TEMP_DIR}/docker")
+endif()
+
 execute_process(COMMAND "docker" "run" "hello-world"
   RESULT_VARIABLE DOCKER_RESULT_VARIABLE)
 if(DOCKER_RESULT_VARIABLE EQUAL 0)
