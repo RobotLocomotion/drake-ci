@@ -50,20 +50,5 @@ apt-get update -o APT::Acquire::Retries=4 -qq \
 trap 'set +x; rm -rf /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin /var/lib/apt/lists/* /var/log/apt/*; set -x' EXIT
 
 apt-get install --no-install-recommends -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 -qy \
-  ca-certificates \
-  gnupg \
-  lsb-release
-
-export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1
-
-apt-key adv --fetch-keys https://download.docker.com/linux/ubuntu/gpg
-echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
-  > /etc/apt/sources.list.d/docker.list
-
-# TODO(tyler-yankee): Fix the wheel builds with Docker >= 5.29, and remove this
-# version pin.
-DOCKER_VERSION=5:28.5.2-1~ubuntu.24.04~noble
-apt-get update -o APT::Acquire::Retries=4 -qq \
-  || (sleep 15; apt-get update -o APT::Acquire::Retries=4 -qq)
-apt-get install --no-install-recommends -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 -qy \
-  docker-ce=$DOCKER_VERSION docker-ce-cli=$DOCKER_VERSION docker-buildx-plugin
+  docker.io \
+  docker-buildx
