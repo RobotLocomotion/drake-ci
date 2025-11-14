@@ -432,6 +432,93 @@ macro(execute_step CONFIG NAME)
 endmacro()
 
 #------------------------------------------------------------------------------
+# Set DASHBOARD_(CC|CXX)_COMMAND based on the COMPILER from the job name by
+# invoking tooling within Drake. This is used conditionally in compiler.cmake
+# to select the compiler for the current build.
+#------------------------------------------------------------------------------
+function(determine_compiler)
+  # Query what compiler is specified by `--config=${COMPILER}`.
+  set(COMPILER_CONFIG_ARGS
+    run --config=${COMPILER}
+    //tools/cc_toolchain:print_compiler_config)
+
+  execute_process(COMMAND ${DASHBOARD_BAZEL_COMMAND} ${COMPILER_CONFIG_ARGS}
+    WORKING_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}"
+    OUTPUT_VARIABLE COMPILER_CONFIG_OUTPUT
+    RESULT_VARIABLE COMPILER_CONFIG_RETURN_VALUE)
+
+  if(NOT COMPILER_CONFIG_RETURN_VALUE EQUAL 0)
+    fatal("compiler configuration could not be obtained")
+  endif()
+
+  # Clean up the Bazel environment; otherwise, if we try to run Bazel again
+  # with different arguments (`--output_user_root` in particular?), things go
+  # horribly sideways.
+  execute_process(COMMAND ${DASHBOARD_BAZEL_COMMAND} clean
+    WORKING_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}")
+
+  # Extract the compiler (CC, CXX) names.
+  STRING(REPLACE "\n" ";" COMPILER_CONFIG_OUTPUT "${COMPILER_CONFIG_OUTPUT}")
+  foreach(COMPILER_CONFIG_ENTRY IN LISTS COMPILER_CONFIG_OUTPUT)
+    if("${COMPILER_CONFIG_ENTRY}" MATCHES "^([A-Z]+)=(.*)$")
+      set(DASHBOARD_${CMAKE_MATCH_1}_COMMAND "${CMAKE_MATCH_2}")
+    endif()
+  endforeach()
+
+  # Fail if the above extraction didn't work.
+  if("${DASHBOARD_CC_COMMAND}" STREQUAL "")
+    fatal("compiler configuration (CC) could not be obtained")
+  endif()
+  if("${DASHBOARD_CXX_COMMAND}" STREQUAL "")
+    fatal("compiler configuration (CXX) could not be obtained")
+  endif()
+
+  set(DASHBOARD_CC_COMMAND "${DASHBOARD_CC_COMMAND}" PARENT_SCOPE)
+  set(DASHBOARD_CXX_COMMAND "${DASHBOARD_CXX_COMMAND}" PARENT_SCOPE)
+endfunction()
+
+#------------------------------------------------------------------------------
+# Verify that (cc|c++) and (gcc|g++) exist and that they resolve to the same
+# path as each other, respectively. Store the output paths to cc and c++ in the
+# respective output variables. This is used conditionally under some build
+# configurations when we do not want to provide a compiler explicitly, to
+# provide additional CI coverage of Drake's compiler identification logic.
+#------------------------------------------------------------------------------
+function(verify_cc_is_gcc OUTPUT_CC_VARIABLE OUTPUT_CXX_VARIABLE)
+  find_program(CC_COMMAND NAMES "cc")
+  if(NOT CC_COMMAND)
+    fatal("cc was not found")
+  endif()
+  find_program(CPP_COMMAND NAMES "c++")
+  if(NOT CPP_COMMAND)
+    fatal("c++ was not found")
+  endif()
+  find_program(GCC_COMMAND NAMES "gcc")
+  if(NOT GCC_COMMAND)
+    fatal("gcc was not found")
+  endif()
+  find_program(GPP_COMMAND NAMES "g++")
+  if(NOT GPP_COMMAND)
+    fatal("g++ was not found")
+  endif()
+
+  file(REAL_PATH "${CC_COMMAND}" CC_REALPATH)
+  file(REAL_PATH "${GCC_COMMAND}" GCC_REALPATH)
+  if(NOT CC_REALPATH STREQUAL GCC_REALPATH)
+    fatal("cc and gcc are not the same" CC_REALPATH GCC_REALPATH)
+  endif()
+
+  file(REAL_PATH "${CPP_COMMAND}" CPP_REALPATH)
+  file(REAL_PATH "${GPP_COMMAND}" GPP_REALPATH)
+  if(NOT CPP_REALPATH STREQUAL GPP_REALPATH)
+    fatal("cc and gcc are not the same" CPP_REALPATH GPP_REALPATH)
+  endif()
+
+  set(${OUTPUT_CC_VARIABLE} "${CC_COMMAND}" PARENT_SCOPE)
+  set(${OUTPUT_CXX_VARIABLE} "${CPP_COMMAND}" PARENT_SCOPE)
+endfunction()
+
+#------------------------------------------------------------------------------
 # Execute `${COMPILER} --version` and store the first line of the result in
 # `OUTPUT_VARIABLE`.  This function is used in compiler.cmake only to be able
 # to log the compiler version in Jenkins, we do not care about detecting exact
