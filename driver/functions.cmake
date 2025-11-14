@@ -432,6 +432,67 @@ macro(execute_step CONFIG NAME)
 endmacro()
 
 #------------------------------------------------------------------------------
+# Set DASHBOARD_{CC|CXX}_COMMAND based on the COMPILER from the job name by
+# invoking tooling within Drake. This is used conditionally in compiler.cmake
+# to select the compiler for the current build.
+#------------------------------------------------------------------------------
+function(determine_compiler)
+  # Query what compiler is specified by `--config=${COMPILER}`.
+  set(COMPILER_CONFIG_ARGS
+    run --config=${COMPILER}
+    //tools/cc_toolchain:print_compiler_config)
+
+  execute_process(COMMAND ${DASHBOARD_BAZEL_COMMAND} ${COMPILER_CONFIG_ARGS}
+    WORKING_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}"
+    OUTPUT_VARIABLE COMPILER_CONFIG_OUTPUT
+    RESULT_VARIABLE COMPILER_CONFIG_RETURN_VALUE)
+
+  if(NOT COMPILER_CONFIG_RETURN_VALUE EQUAL 0)
+    fatal("compiler configuration could not be obtained")
+  endif()
+
+  # Clean up the Bazel environment; otherwise, if we try to run Bazel again with
+  # different arguments (`--output_user_root` in particular?), things go
+  # horribly sideways.
+  execute_process(COMMAND ${DASHBOARD_BAZEL_COMMAND} clean
+    WORKING_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}")
+
+  # Extract the compiler (CC, CXX) names.
+  STRING(REPLACE "\n" ";" COMPILER_CONFIG_OUTPUT "${COMPILER_CONFIG_OUTPUT}")
+  foreach(COMPILER_CONFIG_ENTRY IN LISTS COMPILER_CONFIG_OUTPUT)
+    if("${COMPILER_CONFIG_ENTRY}" MATCHES "^([A-Z]+)=(.*)$")
+      set(DASHBOARD_${CMAKE_MATCH_1}_COMMAND "${CMAKE_MATCH_2}" PARENT_SCOPE)
+    endif()
+  endforeach()
+
+  # Fail if the above extraction didn't work.
+  if("${DASHBOARD_CC_COMMAND}" STREQUAL "")
+    fatal("compiler configuration (CC) could not be obtained")
+  endif()
+  if("${DASHBOARD_CXX_COMMAND}" STREQUAL "")
+    fatal("compiler configuration (CXX) could not be obtained")
+  endif()
+endfunction()
+
+#------------------------------------------------------------------------------
+# Verify that /usr/bin/(cc|c++) exist and that they resolve to the same path as
+# /usr/bin/(gcc|g++). This is used conditionally under some build configurations
+# when we do not want to provide a compiler explicitly, to provide additional
+# CI coverage of Drake's compiler identification logic.
+#------------------------------------------------------------------------------
+function(verify_cc_gcc)
+  if(NOT EXISTS "/usr/bin/cc" OR NOT EXISTS "/usr/bin/c++")
+    # Something has gone terribly wrong.
+    fatal("failed to locate /usr/bin/cc and/or /usr/bin/c++")
+  endif()
+  file(REAL_PATH "/usr/bin/cc" CC_REALPATH)
+  file(REAL_PATH "/usr/bin/gcc" GCC_REALPATH)
+  if(NOT CC_REALPATH STREQUAL GCC_REALPATH)
+    fatal("expected cc and gcc to be the same, but got: cc -> ${CC_REALPATH}, gcc -> ${GCC_REALPATH}")
+  endif()
+endfunction()
+
+#------------------------------------------------------------------------------
 # Execute `${COMPILER} --version` and store the first line of the result in
 # `OUTPUT_VARIABLE`.  This function is used in compiler.cmake only to be able
 # to log the compiler version in Jenkins, we do not care about detecting exact
