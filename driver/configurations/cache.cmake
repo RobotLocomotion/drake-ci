@@ -66,7 +66,20 @@ if(REMOTE_CACHE AND NOT APPLE)
 endif()
 
 if(REMOTE_CACHE)
-  find_program(CC_EXECUTABLE NAMES "${DASHBOARD_CC_COMMAND}"
+  # N.B. In compiler.cmake, under some build configurations (but always Ubuntu)
+  # we explicitly blank DASHBOARD_(CC|CXX)_COMMAND. This *should* only be when
+  # `cc` is really `gcc`, so for the purposes of computing a remote cache key,
+  # we can consider them the same. This workaround must exist because `cc`
+  # isn't in dpkg, so `dpkg-query` below will fail.
+  if("${DASHBOARD_CC_COMMAND}" STREQUAL "")
+    find_program(CC_COMMAND_FOR_CACHE NAMES "gcc")
+    if(NOT CC_COMMAND_FOR_CACHE)
+      fatal("gcc was not found")
+    endif()
+  else()
+    set(CC_COMMAND_FOR_CACHE "${DASHBOARD_CC_COMMAND}")
+  endif()
+  find_program(CC_EXECUTABLE NAMES "${CC_COMMAND_FOR_CACHE}"
     NO_CMAKE_PATH
     NO_CMAKE_ENVIRONMENT_PATH
     NO_CMAKE_SYSTEM_PATH
