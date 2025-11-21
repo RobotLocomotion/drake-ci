@@ -98,12 +98,8 @@ version_is_at_least () {
 readonly version="$1"
 shift || die "'version' argument is required"
 
-curdir="$( dirname "$0" )"
-readonly curdir
-
-readonly xcode_hashes="$curdir/xcode_hashes.csv"
-
 feedback "Pulling metadata from the file..."
+readonly xcode_hashes="$( dirname "$0" )/xcode_hashes.csv"
 cat "$xcode_hashes"
 xcode_full_version="$(
   grep --fixed-strings "$version," "$xcode_hashes" | \
@@ -116,12 +112,11 @@ readonly xcode_hash_expect
 clt_hash_expect="$(
   grep --fixed-strings "$version," "$xcode_hashes" | \
     cut -d, -f4 )"
-# TODO(tyler-yankee): Add parsing for multiple default OS versions for a
-# given Xcode version.
-os_version_default="$(
+os_version_defaults="$(
   grep --fixed-strings "$version," "$xcode_hashes" | \
     cut -d, -f5 )"
-readonly os_version_default
+IFS=';' read -r -a os_version_defaults <<< "$os_version_defaults"
+readonly os_version_defaults
 
 feedback "Verifying the metadata is present..."
 if [ -z "$xcode_full_version" ]; then
@@ -174,7 +169,7 @@ if ! [ -d "$xcode_root/Contents/Developer" ]; then
 
   mac_major_version="$(sw_vers -productVersion | awk -F '.' '{print $1}')"
   readonly mac_major_version
-  if [ "$mac_major_version" -eq "$os_version_default" ]; then
+  if printf '%s\n' "${os_version_defaults[@]}" | grep -qx "$mac_major_version"; then
     feedback "Linking the installed Xcode to the default /Applications/Xcode.app..."
     ln -sf "$xcode_root" /Applications/Xcode.app
   fi
