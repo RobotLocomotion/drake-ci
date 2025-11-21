@@ -9,8 +9,9 @@ This file contains 5 columns:
   sometimes the official release).
 - The SHA256 of the Xcode installer.
 - The SHA256 of the Xcode Command Line Tools.
-- The `MAJOR` version of macOS for which this Xcode should be set as the
-  default (i.e., pointed to by `/Applications/Xcode.app`).
+- (Optional) The `MAJOR` version(s) of macOS for which this Xcode should be set
+  as the default (i.e., symlinked by `/Applications/Xcode.app`). This field can
+  take zero to many values; to provide multiple, use a semicolon-separated list.
 
 ### `init_xcode`
 

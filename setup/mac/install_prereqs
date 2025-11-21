@@ -59,7 +59,6 @@ export HOMEBREW_NO_INSTALL_CLEANUP=1
 brew analytics off
 brew update || (sleep 15; brew update)
 trap 'brew cleanup && rm -rf "$(brew --cache)" "${HOME}/Library/Logs/Homebrew/*"' EXIT
-brew bundle --file="$(dirname ${(%):-%x})/Brewfile"
 
 readonly gurobi_1203_pkg='/tmp/gurobi12.0.3_macos_universal2.pkg'
 curl --retry 4 -o $gurobi_1203_pkg \
