@@ -81,3 +81,7 @@ sudo chmod 444 "$fseventsd_dir/no_log"
 readonly restart_time="U 00:00:00"
 feedback "Configuring regular restarts at $restart_time..."
 sudo pmset repeat restart $restart_time
+
+feedback "Enabling multicast traffic on loopback interface for LCM..."
+sudo route -nv delete 224.0.0.0/4
+sudo route -nv add -net 224.0.0.0/4 -interface lo0
