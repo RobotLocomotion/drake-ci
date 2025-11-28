@@ -112,6 +112,7 @@ readonly xcode_hash_expect
 clt_hash_expect="$(
   grep --fixed-strings "$version," "$xcode_hashes" | \
     cut -d, -f4 )"
+readonly clt_hash_expect
 os_version_defaults="$(
   grep --fixed-strings "$version," "$xcode_hashes" | \
     cut -d, -f5 )"
@@ -132,7 +133,7 @@ fi
 feedback "Checking if Xcode is already installed..."
 readonly xcode_root="/Applications/Xcode-$version.app"
 if ! [ -d "$xcode_root/Contents/Developer" ]; then
-  readonly installer_loc="Xcode_$version.xip"
+  readonly installer_loc="Xcode_$xcode_full_version.xip"
   readonly clt_loc="Command_Line_Tools_for_Xcode_$version.dmg"
 
   feedback "Fetching the installer and command line tools..."
