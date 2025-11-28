@@ -34,6 +34,16 @@
 # This script is expected to only be used in the creation of provisioned images
 # NOT during normal CI setup
 
+# TODO(tyler-yankee): Update this workflow so that the maintainer creating
+# the provisioned image clones drake-ci and then calls this script (or
+# install_prereqs directly), rather than them copying this script which clones
+# drake-ci/main. The current workflow is an artifact of a prior state lacking
+# the automation we have today, and aside from just being awkward, it notably
+# doesn't allow checking out a branch of drake-ci to provision (without manually
+# modifying the file).
+# The modified script could clone drake to install its prereqs, defaulting to
+# master but allowing a branch name as argument.
+
 # Update Homebrew packages.
 brew update
 brew upgrade
