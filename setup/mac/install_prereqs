@@ -43,11 +43,6 @@ if [[ "${EUID}" -eq 0 ]]; then
   exit 2
 fi
 
-if ! command -v brew &>/dev/null; then
-  /bin/bash -c \
-    "$(/usr/bin/curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-fi
-
 [[ -z "${TERM-}" ]] || export HOMEBREW_COLOR=1
 
 export HOMEBREW_CASK_OPTS=--require-sha
