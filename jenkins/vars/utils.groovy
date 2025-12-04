@@ -1,4 +1,10 @@
 /**
+ * This script contains various utilities used by Jenkinsfile(s) in Drake.
+ * It is configured in Jenkins system settings at
+ * https://drake-jenkins.csail.mit.edu under Global Pipeline Libraries.
+ */
+
+/**
  * Performs the checkout step for drake (cloning into WORKSPACE/'src') and
  * drake-ci (cloning into WORKSPACE/'ci').
  *
