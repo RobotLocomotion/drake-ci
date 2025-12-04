@@ -1,4 +1,26 @@
 /**
+ * This script contains various utilities used by Jenkinsfile(s) in Drake.
+ * It is configured in Jenkins system settings at
+ * https://drake-jenkins.csail.mit.edu under Global Pipeline Libraries.
+ *
+ * The Jenkins configuration is mostly straightforward, with one notable
+ * modification to allow running drake-ci PRs against drake PRs with changes to
+ * this library under the same parameter syntax as used for the `checkout`
+ * function below. The custom git refspec for the library config must be
+ * slightly different than what the function uses, because the former uses some
+ * limited internal implementation on the backend while the latter uses the
+ * GitSCM plugin, which plays more nicely to expand the refspec.
+ *
+ * The refspec with which it's configured (as of writing) is:
+ * (new comment block for special characters)
+ */
+//   +refs/heads/*:refs/remotes/origin/* (for upstream branches)
+//   +refs/pull/*/merge:refs/pr/*/merge (for upstream PRs with a merge of main)
+//   +refs/pull/*/head:refs/pr/*/head (for upstream PRs at the HEAD of their
+//     branch)
+
+
+/**
  * Performs the checkout step for drake (cloning into WORKSPACE/'src') and
  * drake-ci (cloning into WORKSPACE/'ci').
  *
