@@ -88,7 +88,7 @@ fi
 # clear the Bazel build cache.
 # See https://bazel.build/remote/output-directories.
 if [[ "$(uname -s)" == Darwin ]]; then
-  sudo rm -rf /private/var/tmp/_bazel_ec2-user
+  sudo rm -rf $HOME/Library/Caches/bazel
 fi
 
 # Hand off to the CMake driver script.
