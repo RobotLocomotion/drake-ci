@@ -71,7 +71,7 @@ else()
 endif()
 
 if(APPLE)
-  set(DISTRIBUTION_REGEX "(sequoia)")
+  set(DISTRIBUTION_REGEX "(sequoia|tahoe)")
 else()
   set(DISTRIBUTION_REGEX "(jammy|noble)")
 endif()

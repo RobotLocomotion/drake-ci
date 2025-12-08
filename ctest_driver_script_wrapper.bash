@@ -76,14 +76,6 @@ fi
 AGENT=ssh-agent
 [[ "$SSH_PRIVATE_KEY_FILE" == '-' ]] && AGENT=
 
-# macOS: Enable multicast traffic on loopback interface for LCM.
-# sudo is needed to modify the routing table
-if [[ "$(uname -s)" == Darwin ]]; then
-    sudo route -nv delete 224.0.0.0/4
-    sudo route -nv add -net 224.0.0.0/4 -interface lo0
-    netstat -nr
-fi
-
 # macOS: Since we're running back-to-back on the same AWS instance,
 # clear the Bazel build cache.
 # See https://bazel.build/remote/output-directories.
