@@ -77,10 +77,13 @@ AGENT=ssh-agent
 [[ "$SSH_PRIVATE_KEY_FILE" == '-' ]] && AGENT=
 
 # macOS: Since we're running back-to-back on the same AWS instance,
-# clear the Bazel build cache.
+# clear the Bazel output root.
 # See https://bazel.build/remote/output-directories.
 if [[ "$(uname -s)" == Darwin ]]; then
-  sudo rm -rf /private/var/tmp/_bazel_ec2-user
+  # TODO(tyler-yankee): The former directory is the default location of the
+  # output root under Bazel <9, and can be removed once Drake switches to Bazel
+  # 9 on this platform.
+  sudo rm -rf /private/var/tmp/_bazel_$USER $HOME/Library/Caches/bazel
 fi
 
 # Hand off to the CMake driver script.
