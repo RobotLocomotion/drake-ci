@@ -4,6 +4,8 @@
  * https://drake-jenkins.csail.mit.edu under Global Pipeline Libraries.
  */
 
+import jenkins.model.Jenkins
+
 /**
  * Performs the checkout step for drake (cloning into WORKSPACE/'src') and
  * drake-ci (cloning into WORKSPACE/'ci').
@@ -177,4 +179,20 @@ def getNodeLabel() {
   else {
     return null
   }
+}
+
+/**
+ * Checks the Jenkins job queue to determine if there is a newer job queued
+ * for the same flavor than what's currently running.
+ *
+ * @return true if there is a newer job queued, false otherwise
+ */
+def isNewerBuildQueued() {
+  def jenkins = Jenkins.instance
+  def currentJob = jenkins.getItemByFullName(env.JOB_NAME)
+  // If any job of the same flavor is queued, it is newer than the currently
+  // running job by definition. Note that the currently running job has already
+  // exited the queue.
+  def newerQueued = jenkins.queue.items.find { qi -> qi.task == currentJob }
+  return newerQueued != null
 }
