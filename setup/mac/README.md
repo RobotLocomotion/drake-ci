@@ -1,5 +1,13 @@
 ## macOS provisioning scripts
 
+This directory contains scripts and supporting files to provision macOS images.
+macOS CI is currently hosted in AWS, and CI jobs run back-to-back on the same
+instance, unlike the workflow for Linux. As such, images are re-provisioned on
+a regular basis to keep up with latest system and upstream dependency changes.
+
+These scripts are intended for use by maintainers during re-provisioning
+cycles, **not** during regular CI workflows which run on every job.
+
 ### `xcode_hashes.csv`
 
 This file contains 5 columns:
@@ -22,6 +30,8 @@ It accepts a single argument, the `MAJOR.MINOR` version of the Xcode to install.
 It will install it to `/Applications/Xcode-MAJOR.MINOR.app` to avoid collisions
 between Xcode versions on the same machine.
 
+It is intended to be used each time a new Xcode base image is created.
+
 ### `ami_init_script`
 
 A script to perform initial system configuration. It uses `sudo` internally for
@@ -29,10 +39,14 @@ some steps, so password prompts may appear.
 
 It accepts no arguments.
 
+It is intended to be used each time a new Xcode base image is created.
+
 ### `provision_image`
 
-A script to perform image provisioning. It is meant to be copied into an image
-and run by hand. It performs some setup before cloning drake-ci and drake to
-install their prerequisite packages, and then performs some cleanup.
+A script to perform image provisioning. It is expected to be run from within a
+drake-ci checkout. After installing prerequisites for drake-ci, it creates a
+temporary clone of drake to install its prerequisites also.
 
 It accepts no arguments.
+
+It is intended to be used each time a new provisioned image is created.
