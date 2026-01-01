@@ -176,7 +176,7 @@ if ! [ -d "$xcode_root/Contents/Developer" ]; then
   readonly mac_major_version
   if printf '%s\n' "${os_version_defaults[@]}" | grep -qx "$mac_major_version"; then
     feedback "Linking the installed Xcode to the default /Applications/Xcode.app..."
-    ln -sf "$xcode_root" /Applications/Xcode.app
+    sudo ln -sf "$xcode_root" /Applications/Xcode.app
   fi
 fi
 
