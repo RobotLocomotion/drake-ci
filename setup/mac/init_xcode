@@ -69,8 +69,12 @@ pull_xcode_or_clt () {
   readonly destfile
 
   feedback "Verifying the $file..."
-  echo "$hash_expect  $destfile" > "$destination.sha256sum"
-  sha256sum --check "$destination.sha256sum"
+  local dest_shasum
+  dest_shasum=$destination.sha256sum
+  readonly dest_shasum
+  echo "$hash_expect  $destfile" > "$dest_shasum"
+  sha256sum --check "$dest_shasum"
+  rm -f "$dest_shasum"
 }
 
 # Succeeds if the first argument is vercmp-greater-or-equal-to the second
