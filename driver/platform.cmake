@@ -71,25 +71,7 @@ endif()
 # Execute provisioning script, if requested
 if(PROVISION)
   if(DASHBOARD_UNIX_DISTRIBUTION STREQUAL "Apple")
-    set(PROVISION_DIR "mac")
-    set(PROVISION_SUDO)
-
-    message(STATUS "Updating and upgrading Homebrew...")
-    set(ENV{HOMEBREW_CURL_RETRIES} 4)
-    execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "update" "--force")
-    execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "pin" "cmake")
-    # Never upgrade temurin
-    execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "list"
-      COMMAND "grep" "--invert-match" "temurin@21"
-      OUTPUT_VARIABLE to_upgrade)
-    string(REPLACE "\n" ";" to_upgrade_list "${to_upgrade}")
-    execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "upgrade" ${to_upgrade_list} "--force")
-    execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "unpin" "cmake")
-    execute_process(COMMAND "${DASHBOARD_BREW_COMMAND}" "cleanup" "-s")
-    set(ENV{HOMEBREW_NO_INSTALL_CLEANUP} 1)
-
-    message(STATUS "Removing pip cache directory...")
-    file(REMOVE_RECURSE "$ENV{HOME}/Library/Caches/pip")
+    fatal("provisioning is not supported on macOS")
   else()
     string(TOLOWER "${DASHBOARD_UNIX_DISTRIBUTION}" PROVISION_DIR)
     set(PROVISION_SUDO "sudo")
