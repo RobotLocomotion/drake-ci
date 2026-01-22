@@ -47,6 +47,9 @@ A script to perform image provisioning. It is expected to be run from within a
 drake-ci checkout. After installing prerequisites for drake-ci, it creates a
 temporary clone of drake to install its prerequisites also.
 
-It accepts no arguments.
+It accepts optional arguments representing a `git` SHA or pull request ID for
+drake. This can be useful when drake is undergoing prerequisite changes which
+have not yet been merged, but need to be propagated to the CI images. Run
+`provision_image --help` for details.
 
 It is intended to be used each time a new provisioned image is created.
