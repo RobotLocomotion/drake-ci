@@ -53,6 +53,21 @@ if [[ "${EUID}" -eq 0 ]]; then
   exit 2
 fi
 
+drake_sha=
+
+while [ "${1:-}" != "" ]; do
+  case "$1" in
+    --drake-sha)
+      shift
+      drake_sha="$1"
+      ;;
+    *)
+      echo 'Invalid command line argument' >&2
+      exit 1
+  esac
+  shift
+done
+
 readonly setup_mac_dir="$(dirname "${BASH_SOURCE}")"
 readonly drake_root="$(mktemp -d -t drake-ci-provisioning)"
 
@@ -83,7 +98,11 @@ brew install --cask temurin@21
 
 # Install Drake's prerequisites.
 git clone https://github.com/RobotLocomotion/drake.git \
-    --depth 1 "${drake_root}"
+  --depth 1 "${drake_root}"
+if [[ -n "${drake_sha}" ]]; then
+  git -C "${drake_root}" fetch origin "${drake_sha}" --depth 1
+  git -C "${drake_root}" checkout FETCH_HEAD
+fi
 readonly drake_setup_script="${drake_root}/setup/mac/install_prereqs.sh"
 if [[ ! -f "${drake_setup_script}" ]]; then
   echo "drake setup script not found; expected: ${drake_setup_script}" >&2
