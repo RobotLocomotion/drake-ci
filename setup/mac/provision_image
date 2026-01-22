@@ -35,8 +35,6 @@
 # images, not during regular CI workflows which run on every job. See README.md
 # for usage details.
 
-set -euxo pipefail
-
 cleanup () {
   rm -rf "${drake_root}"
 
@@ -52,6 +50,63 @@ if [[ "${EUID}" -eq 0 ]]; then
   echo 'ERROR: This script must NOT be run as root' >&2
   exit 2
 fi
+
+drake_sha=
+drake_pull=
+drake_pull_merge=0
+
+while [ "${1:-}" != "" ]; do
+  case "$1" in
+    --drake-sha)
+      shift
+      if [[ -z "$1" ]]; then
+        echo "ERROR: --drake-sha requires a SHA. Run $0 --help for details." >&2
+        exit 1
+      fi
+      drake_sha="$1"
+      ;;
+    --drake-pull)
+      shift
+      if [[ -z "$1" ]]; then
+        echo "ERROR: --drake-pull requires a PR ID. Run $0 --help for details." >&2
+        exit 1
+      fi
+      drake_pull="$1"
+      ;;
+    --merge)
+      shift
+      drake_pull_merge=1
+      ;;
+    -h|--help)
+      cat << EOF
+Usage: $0 [-h|--help] [{--drake-sha SHA|--drake-pull PR [--merge]}]
+
+Options:
+  --help              Display this message and exit
+  --drake-sha         A Drake git SHA to use for provisioning
+  --drake-pull PR     A Drake pull request ID to use for provisioning
+    --merge           If provided, merge the PR with master; by default, HEAD is used
+EOF
+      exit 1
+      ;;
+    *)
+      echo 'ERROR: Invalid command line argument' >&2
+      exit 1
+  esac
+  shift
+done
+
+if [[ -n "${drake_sha}" && -n "${drake_pull}" ]]; then
+  echo 'ERROR: At most one of --drake-sha or --drake-pull must be given' >&2
+  exit 1
+fi
+
+if [[ -z "${drake_pull}" && "${drake_pull_merge}" -eq 1 ]]; then
+  echo 'ERROR: --merge can only be given with --drake-pull' >&2
+  exit 1
+fi
+
+set -euxo pipefail
 
 readonly setup_mac_dir="$(dirname "${BASH_SOURCE}")"
 readonly drake_root="$(mktemp -d -t drake-ci-provisioning)"
@@ -81,9 +136,25 @@ sudo /usr/sbin/installer -pkg $gurobi_1203_pkg -target /
 # used by Jenkins.
 brew install --cask temurin@21
 
-# Install Drake's prerequisites.
+# Clone Drake, and optionally check out a particular branch.
 git clone https://github.com/RobotLocomotion/drake.git \
-    --depth 1 "${drake_root}"
+  --depth 1 "${drake_root}"
+drake_branch=
+if [[ -n "${drake_sha}" ]]; then
+  drake_branch="${drake_sha}"
+elif [[ -n "${drake_pull}" ]]; then
+  if [[ "${drake_pull_merge}" -eq 1 ]]; then
+    drake_branch="pull/${drake_pull}/merge"
+  else
+    drake_branch="pull/${drake_pull}/head"
+  fi
+fi
+if [[ -n "${drake_branch}" ]]; then
+  git -C "${drake_root}" fetch origin "${drake_branch}" --depth 1
+  git -C "${drake_root}" checkout FETCH_HEAD
+fi
+
+# Install Drake's prerequisites.
 readonly drake_setup_script="${drake_root}/setup/mac/install_prereqs.sh"
 if [[ ! -f "${drake_setup_script}" ]]; then
   echo "drake setup script not found; expected: ${drake_setup_script}" >&2
