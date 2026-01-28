@@ -70,11 +70,17 @@ rm -rf /etc/cron.daily/apt-compat /var/log/unattended-upgrades
 apt-get upgrade -o Dpkg::Options::=--force-confdef \
   -o Dpkg::Options::=--force-confnew -o Dpkg::Use-Pty=0 -qy
 
-# TODO(betsymcphail): If/when awscli is available via apt for Noble,
-# remove the installation from the AMI and this special case.
-if [[ "$(lsb_release -cs)" == "jammy" ]]; then
+# `awscli` is available on most Ubuntu versions, except Noble. By this point,
+# it should have already been installed on the Noble unprovisioned image. See
+# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+# for instructions on installing manually.
+if [[ "$(lsb_release -cs)" != "noble" ]]; then
   apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
     awscli
+fi
+if [[ -z "$(type -P aws)" ]]; then
+  echo "ERROR: Failed to locate a working installation of 'awscli'." >&2
+  exit 1
 fi
 
 apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
