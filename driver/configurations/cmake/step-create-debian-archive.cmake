@@ -50,7 +50,7 @@ else()
       "CMAKE DEBIAN ARCHIVE CREATION (ERROR CODE=${DEBIAN_RESULT_VARIABLE})"
       UNSTABLE)
   else()
-    set(repack_deb_output "drake-dev_${DASHBOARD_DRAKE_VERSION}-1_amd64.deb")
+    set(repack_deb_output "drake-dev_${DASHBOARD_DRAKE_VERSION}-1_${DASHBOARD_ARCHITECTURE}.deb")
     set(repack_deb_path "${DASHBOARD_WORKSPACE}/${repack_deb_output}")
     if(NOT EXISTS "${repack_deb_path}")
       append_step_status("CMAKE PACKAGE DEBIAN CREATION COULD NOT FIND ${repack_deb_output} in ${DASHBOARD_WORKSPACE}" UNSTABLE)
@@ -58,7 +58,7 @@ else()
       # For the uploaded package name, we want to structure it to include the
       # ubuntu codename (e.g. jammy).
       set(DASHBOARD_DEBIAN_ARCHIVE_NAME
-        "drake-dev_${DASHBOARD_DRAKE_VERSION}-1_amd64-${DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME}.deb")
+        "drake-dev_${DASHBOARD_DRAKE_VERSION}-1_${DASHBOARD_ARCHITECTURE}-${DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME}.deb")
       file(RENAME "${repack_deb_path}" "${DASHBOARD_WORKSPACE}/${DASHBOARD_DEBIAN_ARCHIVE_NAME}")
       if(NOT EXISTS "${DASHBOARD_WORKSPACE}/${DASHBOARD_DEBIAN_ARCHIVE_NAME}")
         append_step_status("CMAKE PACKAGE DEBIAN CREATION COULD NOT RENAME ${repack_deb_path} to ${DASHBOARD_DEBIAN_ARCHIVE_NAME} in ${DASHBOARD_WORKSPACE}" UNSTABLE)

@@ -81,7 +81,7 @@ chmod 0755 \
 
 cp "${SSH_PRIVATE_KEY_FILE:-}" /var/cache/pbuilder/bindmount/id_rsa
 
-export ARCH=amd64
+export ARCH=$(dpkg-architecture -qDEB_HOST_ARCH)
 export DIST=$(lsb_release -cs)
 export GIT_PBUILDER_OPTIONS="--bindmounts /var/cache/pbuilder/bindmount --components 'main restricted universe multiverse' --hookdir /var/cache/pbuilder/hook.d --use-network yes"
 
