@@ -109,7 +109,7 @@ else()
   set(DEBUG OFF)
 endif()
 
-if(DASHBOARD_JOB_NAME MATCHES "((address|leak|thread|undefined-behavior)-sanitizer|valgrind-(drd|helgrind|memcheck))")
+if(DASHBOARD_JOB_NAME MATCHES "((address|leak|thread|undefined-behavior)-sanitizer|valgrind-memcheck)")
   set(DEBUG ON)
   set(MEMCHECK "${CMAKE_MATCH_0}")
 else()
