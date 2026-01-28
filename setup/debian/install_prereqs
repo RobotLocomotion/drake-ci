@@ -62,28 +62,31 @@ if [[ -z "${SSH_PRIVATE_KEY_FILE:-}" ]]; then
   exit 2
 fi
 
-mkdir -p /var/cache/pbuilder/bindmount /var/cache/pbuilder/hook.d
+readonly bindmount_dir="/var/cache/pbuilder/bindmount"
+readonly hook_dir="/var/cache/pbuilder/hook.d"
+mkdir -p ${bindmount_dir} ${hook_dir}
 
 pushd "${BASH_SOURCE%/*}"
 
-cp .bazelrc bazel.list git_ssh /var/cache/pbuilder/bindmount
+cp bazel.list.$(dpkg-architecture -qDEB_HOST_ARCH) ${bindmount_dir}/bazel.list
+cp .bazelrc git_ssh ${bindmount_dir}
 cp .gbp.conf .pbuilderrc /home/ubuntu
-cp A10-git-ssh A20-locale B10-autopkgtest D10-apt /var/cache/pbuilder/hook.d
+cp A10-git-ssh A20-locale B10-autopkgtest D10-apt ${hook_dir}
 
 popd
 
 chown ubuntu:ubuntu /home/ubuntu/.gbp.conf /home/ubuntu/.pbuilderrc
 
 chmod 0755 \
-  /var/cache/pbuilder/hook.d/A10-git-ssh \
-  /var/cache/pbuilder/hook.d/A20-locale \
-  /var/cache/pbuilder/hook.d/B10-autopkgtest \
-  /var/cache/pbuilder/hook.d/D10-apt
+  ${hook_dir}/A10-git-ssh \
+  ${hook_dir}/A20-locale \
+  ${hook_dir}/B10-autopkgtest \
+  ${hook_dir}/D10-apt
 
-cp "${SSH_PRIVATE_KEY_FILE:-}" /var/cache/pbuilder/bindmount/id_rsa
+cp "${SSH_PRIVATE_KEY_FILE:-}" ${bindmount_dir}/id_rsa
 
-export ARCH=amd64
+export ARCH=$(dpkg-architecture -qDEB_HOST_ARCH)
 export DIST=$(lsb_release -cs)
-export GIT_PBUILDER_OPTIONS="--bindmounts /var/cache/pbuilder/bindmount --components 'main restricted universe multiverse' --hookdir /var/cache/pbuilder/hook.d --use-network yes"
+export GIT_PBUILDER_OPTIONS="--bindmounts ${bindmount_dir} --components 'main restricted universe multiverse' --hookdir ${hook_dir} --use-network yes"
 
 git-pbuilder create

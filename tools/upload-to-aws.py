@@ -184,8 +184,8 @@ def upload_artifacts(options):
         #   drake-<YYYYMMDD>-<codename>.tar.gz (nightly)
         #   drake-<YYYYMMDDHHMMSS>-<hash>-<codename>.tar.gz
         # Deb:
-        #   drake-dev_0.0.<YYYYMMDD>-1_amd64-<codename>.deb (nightly)
-        #   drake-dev_0.0.<YYYYMMDDHHMMSS>-<commit>-1_amd64-<codename>.deb
+        #   drake-dev_0.0.<YYYYMMDD>-1_{arch}-<codename>.deb (nightly)
+        #   drake-dev_0.0.<YYYYMMDDHHMMSS>-<commit>-1_{arch}-<codename>.deb
         # Wheel:
         #   drake-0.0.YYYY.M.D.h.m.s+git<commit>-cp39-cp39-<platform>.whl
         # Generally:

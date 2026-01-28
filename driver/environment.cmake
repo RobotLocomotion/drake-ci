@@ -85,6 +85,8 @@ if(NOT DISTRIBUTION STREQUAL DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME)
   fatal("incorrect operating system code name in job name")
 endif()
 
+include(${DASHBOARD_DRIVER_DIR}/architecture.cmake)
+
 if(DASHBOARD_JOB_NAME MATCHES "(clang|gcc)")
   set(COMPILER "${CMAKE_MATCH_0}")
 else()

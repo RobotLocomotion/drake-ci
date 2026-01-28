@@ -1,9 +1,10 @@
-#!/bin/bash
+# -*- mode: cmake; -*-
+# vi: set ft=cmake:
 
 # BSD 3-Clause License
 #
-# Copyright (c) 2024, Massachusetts Institute of Technology.
-# Copyright (c) 2024, Toyota Research Institute.
+# Copyright (c) 2026, Massachusetts Institute of Technology.
+# Copyright (c) 2026, Toyota Research Institute.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,23 +32,11 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
-# This script is intended to be run when setting up a new unprovisioned image.
-# It is *not* executed as part of the day-to-day CI setup process.
-
-systemctl --quiet disable apt-daily-upgrade.timer apt-daily.timer
-
-apt-get update -o APT::Acquire::Retries=4 -qq \
-  || (sleep 15; apt-get update -o APT::Acquire::Retries=4 -qq)
-trap 'set +x; rm -rf /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin /var/lib/apt/lists/* /var/log/apt/*; set -x' EXIT
-
-apt-get install --no-install-recommends -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 -qy \
-  git \
-  openjdk-21-jre-headless \
-  openssh-client
-
-update-java-alternatives --jre-headless -s \
-  java-1.21.0-openjdk-$(dpkg-architecture -qDEB_HOST_ARCH)
-
-groupadd docker
-usermod -a -G docker ubuntu
+if(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64")
+  set(DASHBOARD_ARCHITECTURE "amd64")
+elseif(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64" OR
+  CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "aarch64")
+  set(DASHBOARD_ARCHITECTURE "arm64")
+else()
+  fatal("Unable to determine architecture, or unsupported: ${CMAKE_HOST_SYSTEM_PROCESSOR}")
+endif()
