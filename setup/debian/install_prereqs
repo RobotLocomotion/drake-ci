@@ -66,9 +66,9 @@ mkdir -p /var/cache/pbuilder/bindmount /var/cache/pbuilder/hook.d
 
 pushd "${BASH_SOURCE%/*}"
 
-cp .bazelrc bazel.list git_ssh /var/cache/pbuilder/bindmount
+cp .bazelrc git_ssh /var/cache/pbuilder/bindmount
 cp .gbp.conf .pbuilderrc /home/ubuntu
-cp A10-git-ssh A20-locale B10-autopkgtest D10-apt /var/cache/pbuilder/hook.d
+cp A10-git-ssh A20-locale B10-autopkgtest /var/cache/pbuilder/hook.d
 
 popd
 
@@ -77,8 +77,7 @@ chown ubuntu:ubuntu /home/ubuntu/.gbp.conf /home/ubuntu/.pbuilderrc
 chmod 0755 \
   /var/cache/pbuilder/hook.d/A10-git-ssh \
   /var/cache/pbuilder/hook.d/A20-locale \
-  /var/cache/pbuilder/hook.d/B10-autopkgtest \
-  /var/cache/pbuilder/hook.d/D10-apt
+  /var/cache/pbuilder/hook.d/B10-autopkgtest
 
 cp "${SSH_PRIVATE_KEY_FILE:-}" /var/cache/pbuilder/bindmount/id_rsa
 

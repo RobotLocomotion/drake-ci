@@ -48,7 +48,6 @@ A20-locale       diff=bash eol=lf
 B10-autopkgtest  diff=bash eol=lf
 Brewfile         diff=ruby
 C10-bash         diff=bash eol=lf
-D10-apt          diff=bash eol=lf
 git_ssh          diff=bash eol=lf
 init_script      diff=bash eol=lf
 install_prereqs  diff=bash eol=lf
