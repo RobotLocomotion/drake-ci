@@ -35,8 +35,7 @@ def checkout(String ciSha = 'main', String drakeSha = null) {
         userRemoteConfigs: [[
           credentialsId: 'ad794d10-9bc8-4a7a-a2f3-998af802cab0',
           name: 'origin',
-          refspec: '+refs/heads/*:refs/remotes/origin/* ' +
-            '+refs/pull/*:refs/remotes/origin/pr/*',
+          refspec: '+refs/heads/*:refs/remotes/origin/* ',
           url: 'git@github.com:RobotLocomotion/drake.git']]])
     }
     else {
@@ -55,8 +54,7 @@ def checkout(String ciSha = 'main', String drakeSha = null) {
       userRemoteConfigs: [[
         credentialsId: 'ad794d10-9bc8-4a7a-a2f3-998af802cab0',
         name: 'origin',
-        refspec: '+refs/heads/*:refs/remotes/origin/* ' +
-          '+refs/pull/*:refs/remotes/origin/pr/*',
+        refspec: '+refs/heads/*:refs/remotes/origin/* ',
         url: 'git@github.com:RobotLocomotion/drake-ci.git']]])
   }
   return scmVars
