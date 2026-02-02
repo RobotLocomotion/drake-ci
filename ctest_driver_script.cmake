@@ -108,6 +108,7 @@ include(${DASHBOARD_DRIVER_DIR}/site.cmake)
 # Set up the compiler and build platform
 include(${DASHBOARD_DRIVER_DIR}/platform.cmake)
 include(${DASHBOARD_DRIVER_DIR}/compiler.cmake)
+include(${DASHBOARD_DRIVER_DIR}/architecture.cmake)
 
 # Set up status variables
 clear_status(FAILURE)

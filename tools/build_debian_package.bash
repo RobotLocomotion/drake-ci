@@ -60,7 +60,7 @@ git tag "upstream/${version}"
 git checkout "debian/${codename}"
 git merge --no-edit "upstream/${version}"
 
-sudo mk-build-deps --host-arch amd64 -irt 'apt-get --no-install-recommends -qy' \
+sudo mk-build-deps -irt 'apt-get --no-install-recommends -qy' \
   "${workspace}/debian-drake/debian/control"
 
 gbp buildpackage ---git-export=WC --git-no-pristine-tar -us -uc -nc

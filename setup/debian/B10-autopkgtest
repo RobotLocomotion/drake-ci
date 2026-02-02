@@ -41,4 +41,4 @@ apt-get install -o APT::Acquire::Retries=4 -y --no-install-recommends \
 
 export PYTHONWARNINGS=ignore::SyntaxWarning
 
-autopkgtest "${BUILDDIR}"/drake_*_amd64.changes -- null
+autopkgtest "${BUILDDIR}"/drake_*_$(dpkg-architecture -qDEB_HOST_ARCH).changes -- null
