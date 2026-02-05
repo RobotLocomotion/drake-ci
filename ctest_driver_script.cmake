@@ -63,6 +63,7 @@ set(DASHBOARD_TOOLS_DIR ${CMAKE_CURRENT_LIST_DIR}/tools)
 set(DASHBOARD_TEMPORARY_FILES "")
 
 include(${DASHBOARD_DRIVER_DIR}/functions.cmake)
+include(${DASHBOARD_DRIVER_DIR}/architecture.cmake)
 include(${DASHBOARD_DRIVER_DIR}/environment.cmake)
 
 # Set initial configuration
@@ -108,7 +109,6 @@ include(${DASHBOARD_DRIVER_DIR}/site.cmake)
 # Set up the compiler and build platform
 include(${DASHBOARD_DRIVER_DIR}/platform.cmake)
 include(${DASHBOARD_DRIVER_DIR}/compiler.cmake)
-include(${DASHBOARD_DRIVER_DIR}/architecture.cmake)
 
 # Set up status variables
 clear_status(FAILURE)
