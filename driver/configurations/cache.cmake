@@ -389,7 +389,7 @@ else()
       OUTPUT_STRIP_TRAILING_WHITESPACE
     )
     # NOTE: `lsb_release -ds` may report differing amounts of version numbers,
-    # e.g., `Ubuntu 20.04.4 LTS` or `Ubuntu 22.04 LTS`.
+    # e.g., `Ubuntu 22.04.4 LTS` or `Ubuntu 22.04 LTS`.
     if(DASHBOARD_LSB_RELEASE_DESCRIPTION_RESULT_VARIABLE EQUAL 0 AND
        DASHBOARD_LSB_RELEASE_DESCRIPTION_OUTPUT_VARIABLE MATCHES
        "^Ubuntu ([0-9]+([.][0-9]+)+) LTS$"
