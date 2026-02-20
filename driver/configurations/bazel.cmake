@@ -68,9 +68,8 @@ else()
 endif()
 
 if(DASHBOARD_PROCESSOR_COUNT GREATER 1)
-  # NOTE: linux clang address sanitizer builds experience spurious errors, see
-  # https://github.com/RobotLocomotion/drake/issues/17560
-  if(NOT APPLE AND COMPILER STREQUAL "clang" AND DASHBOARD_JOB_NAME MATCHES "address-sanitizer")
+  # For rationale, see https://github.com/RobotLocomotion/drake/issues/17560.
+  if(COMPILER STREQUAL "clang" AND DASHBOARD_JOB_NAME MATCHES "address-sanitizer")
     if(DASHBOARD_PROCESSOR_COUNT GREATER 2)
       math(EXPR DASHBOARD_JOBS "7 * ${DASHBOARD_PROCESSOR_COUNT} / 16")
     else()
@@ -211,10 +210,6 @@ set(DASHBOARD_BAZEL_TEST_OPTIONS)
 
 if(APPLE)
   set(DASHBOARD_BAZEL_TEST_OPTIONS "${DASHBOARD_BAZEL_TEST_OPTIONS} --test_timeout=300,1500,4500,-1")
-endif()
-
-if(DEBUG AND APPLE)
-  set(DASHBOARD_BAZEL_TEST_OPTIONS "${DASHBOARD_BAZEL_TEST_OPTIONS} --copt=-g0 --host_copt=-g0")
 endif()
 
 configure_file("${DASHBOARD_TOOLS_DIR}/user.bazelrc.in" "${CTEST_SOURCE_DIRECTORY}/user.bazelrc" @ONLY)
