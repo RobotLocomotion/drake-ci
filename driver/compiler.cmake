@@ -32,7 +32,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-if (NOT APPLE AND GENERATOR STREQUAL "cmake" AND COMPILER STREQUAL "gcc")
+if (GENERATOR STREQUAL "cmake" AND COMPILER STREQUAL "gcc")
   # Provide CI coverage of Drake's build logic for compiler identification by
   # explicitly not specifying the compiler.
   set(DASHBOARD_CC_COMMAND)
