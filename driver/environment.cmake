@@ -271,7 +271,7 @@ if(NOT PROVISION)
     fatal("bazel was not found")
   endif()
 
-  if(DASHBOARD_UNIX_DISTRIBUTION STREQUAL "Apple")
+  if(APPLE)
     set(USER_ENVIRONMENT_PROVISION_DIR "mac")
   else()
     string(TOLOWER "${DASHBOARD_UNIX_DISTRIBUTION}" USER_ENVIRONMENT_PROVISION_DIR)
