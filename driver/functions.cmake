@@ -187,7 +187,7 @@ endfunction()
 # Prepend entries to an environment path
 #------------------------------------------------------------------------------
 function(prepend_path VAR)
-  file(TO_CMAKE_PATH "$ENV{${VAR}}" _paths)
+  cmake_path(CONVERT "$ENV{$VAR}}" TO_CMAKE_PATH_LIST _paths)
   list(INSERT _paths 0 ${ARGN})
   string(REPLACE ";" ":" _newpath "${_paths}")
   set(ENV{${VAR}} "${_newpath}")
