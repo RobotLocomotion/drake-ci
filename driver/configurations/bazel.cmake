@@ -108,7 +108,7 @@ endif()
 set(DASHBOARD_BAZEL_BUILD_OPTIONS "--config=${COMPILER}")
 
 if(DEBUG)
-  string(APPEND DASHBOARD_BAZEL_BUILD_OPTIONS " --compilation_mode=dbg")
+  string(APPEND DASHBOARD_BAZEL_BUILD_OPTIONS " --config=debug")
 else()
   string(APPEND DASHBOARD_BAZEL_BUILD_OPTIONS " --compilation_mode=opt")
 endif()
