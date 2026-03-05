@@ -80,10 +80,7 @@ AGENT=ssh-agent
 # clear the Bazel output root.
 # See https://bazel.build/remote/output-directories.
 if [[ "$(uname -s)" == Darwin ]]; then
-  # TODO(tyler-yankee): The former directory is the default location of the
-  # output root under Bazel <9, and can be removed once Drake switches to Bazel
-  # 9 on this platform.
-  sudo rm -rf /private/var/tmp/_bazel_$USER $HOME/Library/Caches/bazel
+  sudo rm -rf $HOME/Library/Caches/bazel
 fi
 
 # macOS: Enable multicast traffic on loopback interface for LCM.
