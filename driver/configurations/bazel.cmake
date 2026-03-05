@@ -286,7 +286,7 @@ if(DOCUMENTATION)
   endif()
 endif()
 
-if(MIRROR_TO_S3 STREQUAL "publish")
+if(MIRROR_TO_S3)
   execute_step(bazel mirror-to-s3)
 endif()
 

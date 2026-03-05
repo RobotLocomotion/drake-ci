@@ -37,8 +37,11 @@ if(DASHBOARD_FAILURE OR DASHBOARD_UNSTABLE)
 else()
   notice("CTest Status: MIRRORING TO S3")
   set(MIRROR_TO_S3_CMD "bazel-bin/tools/workspace/mirror_to_s3")
+  if(NOT MIRROR_TO_S3 STREQUAL "publish")
+    list(APPEND MIRROR_TO_S3_CMD "--no-upload")
+  endif()
   notice("Mirror to S3 command: ${MIRROR_TO_S3_CMD}")
-  execute_process(COMMAND "${MIRROR_TO_S3_CMD}"
+  execute_process(COMMAND ${MIRROR_TO_S3_CMD}
     WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}"
     RESULT_VARIABLE MIRROR_TO_S3_RESULT_VARIABLE)
   if(NOT MIRROR_TO_S3_RESULT_VARIABLE EQUAL 0)
