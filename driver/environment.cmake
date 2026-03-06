@@ -73,7 +73,7 @@ endif()
 if(APPLE)
   set(DISTRIBUTION_REGEX "(sequoia|tahoe)")
 else()
-  set(DISTRIBUTION_REGEX "(jammy|noble)")
+  set(DISTRIBUTION_REGEX "(jammy|noble|resolute)")
 endif()
 if(DASHBOARD_JOB_NAME MATCHES "${DISTRIBUTION_REGEX}")
   set(DISTRIBUTION "${CMAKE_MATCH_0}")
@@ -223,7 +223,11 @@ if(DASHBOARD_JOB_NAME MATCHES "packaging")
     set(DOCKER OFF)
   else()
     set(PACKAGE "publish")
-    if (CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64")
+    # Drake's published Docker images are deprecated, and the aarch64 and
+    # Resolute builds are newer than the deprecation. Therefore, we will never
+    # add support for aarch64 or Resolute Docker images.
+    if ((CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64") AND
+      (DISTRIBUTION STREQUAL "noble"))
       if(TRACK MATCHES "(nightly|staging)")
         set(DOCKER "publish")
       else()
