@@ -37,14 +37,6 @@ readonly CI_ROOT="$(dirname "${BASH_SOURCE}")"
 
 [[ -z "${TERM}" ]] || export CLICOLOR_FORCE=1
 
-# On m1 mac, detect if we can re-run the script under arm64, since Jenkins'
-# login initially runs in an emulated x86_64 (Rosetta 2) environment.
-if [[ "$(uname -s)" == Darwin && "$(uname -p)" != "arm" ]]; then
-    if arch -arch arm64 true &>/dev/null; then
-        exec arch -arch arm64 "$0" "$@"
-    fi
-fi
-
 export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
 
 # Ensure the Jenkins workspace is cleared from previous runs.
