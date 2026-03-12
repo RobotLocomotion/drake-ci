@@ -33,10 +33,12 @@
 
 set -euxo pipefail
 
-if [[ "${EUID}" -ne 0 ]]; then
-  echo 'ERROR: This script must be run as root' >&2
+die () {
+  echo >&2 "$@"
   exit 1
-fi
+}
+
+[[ "${EUID}" -eq 0 ]] || die 'This script must be run as root'
 
 if [[ ! -d /media/ephemeral0/ubuntu ]]; then
   # NOTE: Historically, each distribution upgrade has resulted in changing the
