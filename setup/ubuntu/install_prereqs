@@ -33,15 +33,26 @@
 
 set -euxo pipefail
 
-if [[ -z "${WORKSPACE-}" ]]; then
-  echo 'ERROR: This script must be run on a Jenkins node' >&2
-  exit 1
-fi
+cleanup () {
+  set +x
+  rm -rf \
+    /var/cache/apt/archives/*.deb \
+    /var/cache/apt/archives/partial/*.deb \
+    /var/cache/apt/*.bin \
+    /var/lib/apt/lists/* \
+    /var/log/apt/*
+}
 
-if [[ "${EUID}" -ne 0 ]]; then
-  echo 'ERROR: This script must be run as root' >&2
-  exit 2
-fi
+die () {
+  echo >&2 "$@"
+  exit 1
+}
+
+[[ -n "${WORKSPACE-}" ]] || die 'This script must be run on a Jenkins node'
+
+[[ "${EUID}" -eq 0 ]] || die 'This script must be run as root'
+
+trap 'cleanup' EXIT
 
 systemctl --quiet disable apt-daily-upgrade.timer apt-daily.timer
 
@@ -51,7 +62,6 @@ export DEBIAN_FRONTEND=noninteractive
 export PYTHONWARNINGS=ignore::SyntaxWarning
 
 apt-get update -qq || (sleep 15; apt-get update -qq)
-trap 'set +x; rm -rf /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin /var/lib/apt/lists/* /var/log/apt/*; set -x' EXIT
 
 apt-get purge --autoremove -o Dpkg::Use-Pty=0 -qy cron unattended-upgrades
 rm -rf /etc/cron.daily/apt-compat /var/log/unattended-upgrades
@@ -68,21 +78,13 @@ if [[ "$(lsb_release -cs)" != "noble" ]]; then
     awscli
 fi
 if [[ -z "$(type -P aws)" ]]; then
-  echo "ERROR: Failed to locate a working installation of 'awscli'." >&2
-  exit 1
+  die 'ERROR: Failed to locate a working installation of awscli.'
 fi
 
-apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
-  ca-certificates \
-  cmake \
-  gnupg \
-  lsb-release \
-  python3-venv \
-  wget \
-  xvfb
+packages=$(cat "${BASH_SOURCE%/*}/packages-provisioned.txt")
+apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy ${packages}
 
 echo 'verbose = off' > /root/.wgetrc
-
 cp /root/.wgetrc /home/ubuntu/.wgetrc
 chown ubuntu:ubuntu /home/ubuntu/.wgetrc
 
@@ -96,11 +98,7 @@ ExecStart=/usr/bin/Xvfb :99 -screen 0 1280x1024x24 -ac +extension GLX +extension
 [Install]
 WantedBy=multi-user.target
 EOF
-
 systemctl --now --quiet enable /lib/systemd/system/xvfb.service
-
-apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
-  chrony
 
 systemctl enable chrony
 systemctl start  chrony

@@ -1,0 +1,8 @@
+ca-certificates
+chrony
+cmake
+gnupg
+lsb-release
+python3-venv
+wget
+xvfb
