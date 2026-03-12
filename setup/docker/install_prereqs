@@ -33,10 +33,23 @@
 
 set -euxo pipefail
 
-if [[ "${EUID}" -ne 0 ]]; then
-  echo 'ERROR: This script must be run as root' >&2
+cleanup () {
+  set +x
+  rm -rf \
+    /var/cache/apt/archives/*.deb \
+    /var/cache/apt/archives/partial/*.deb \
+    /var/cache/apt/*.bin \
+    /var/lib/apt/lists/* \
+    /var/log/apt/*
+  set -x
+}
+
+die () {
+  echo >&2 "$@"
   exit 1
-fi
+}
+
+[[ "${EUID}" -eq 0 ]] || die 'This script must be run as root'
 
 if [ -d /media/ephemeral0 ]; then
   mkdir /media/ephemeral0/docker
@@ -47,8 +60,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 apt-get update -o APT::Acquire::Retries=4 -qq \
   || (sleep 15; apt-get update -o APT::Acquire::Retries=4 -qq)
-trap 'set +x; rm -rf /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin /var/lib/apt/lists/* /var/log/apt/*; set -x' EXIT
+trap 'cleanup' EXIT
 
-apt-get install --no-install-recommends -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 -qy \
-  docker.io \
-  docker-buildx
+packages=$(cat "${BASH_SOURCE%/*}/packages.txt")
+apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy ${packages}
