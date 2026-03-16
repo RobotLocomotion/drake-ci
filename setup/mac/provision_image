@@ -71,6 +71,23 @@ invalid_argument () {
   exit 1
 }
 
+install_gurobi () {
+  local url="$1"
+  shift
+  readonly url
+
+  local pkg_sha256="$1"
+  shift
+  readonly pkg_sha256
+
+  local pkg_dest="/tmp/$(basename ${url})"
+  readonly pkg_dest
+
+  curl --retry 4 -o "${pkg_dest}" "${url}"
+  echo "${pkg_sha256}  ${pkg_dest}" | sha256sum -c -
+  sudo /usr/sbin/installer -pkg "${pkg_dest}" -target /
+}
+
 [[ "${EUID}" -ne 0 ]] || die 'This script must NOT be run as root.'
 
 drake_sha=
@@ -133,12 +150,17 @@ brew analytics off
 brew update || (sleep 15; brew update)
 brew upgrade
 
-readonly gurobi_1203_pkg='/tmp/gurobi12.0.3_macos_universal2.pkg'
-curl --retry 4 -o $gurobi_1203_pkg \
-  https://packages.gurobi.com/12.0/$(basename $gurobi_1203_pkg)
-echo "e1e771e9cf8aa7882b1cdc000be91c2b5fadd18f3fcdd00f2824dd207be09613  $gurobi_1203_pkg" \
-  | sha256sum -c -
-sudo /usr/sbin/installer -pkg $gurobi_1203_pkg -target /
+# TODO(#24227): Currently we install both Gurobi 12.0.3 and 13.0.1 to provide
+# compatibility during a transition period. Remove the former installation once
+# Drake has switched to the latter.
+
+install_gurobi \
+  'https://packages.gurobi.com/12.0/gurobi12.0.3_macos_universal2.pkg' \
+  'e1e771e9cf8aa7882b1cdc000be91c2b5fadd18f3fcdd00f2824dd207be09613'
+
+install_gurobi \
+  'https://packages.gurobi.com/13.0/gurobi13.0.1_macos_universal2.pkg' \
+  '7175c242af47bb248ef9adb4993f0d907e755ff2712a18f6902fa878edfa9b97'
 
 # Install Java, to be used for Jenkins. The version must be the same as the one
 # used by Jenkins.
