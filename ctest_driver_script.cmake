@@ -51,8 +51,6 @@
 
 cmake_minimum_required(VERSION 3.28)
 
-set(CTEST_RUN_CURRENT_SCRIPT OFF)  # HACK
-
 set(DASHBOARD_CDASH_SERVER "drake-cdash.csail.mit.edu")
 set(DASHBOARD_NIGHTLY_START_TIME "00:00:00 EST")
 
