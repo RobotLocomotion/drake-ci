@@ -60,10 +60,18 @@ Options:
 EOF
 }
 
-if [[ "${EUID}" -eq 0 ]]; then
-  echo 'ERROR: This script must NOT be run as root' >&2
-  exit 2
-fi
+die () {
+  echo >&2 "$@"
+  exit 1
+}
+
+invalid_argument () {
+  echo >&2 "Invalid command line argument: $@"
+  usage "$0" >&2
+  exit 1
+}
+
+[[ "${EUID}" -ne 0 ]] || die 'This script must NOT be run as root.'
 
 drake_sha=
 drake_pull=
@@ -73,19 +81,15 @@ while [ "${1:-}" != "" ]; do
   case "$1" in
     --drake-sha)
       shift
-      if [[ -z "$1" ]]; then
-        echo "ERROR: --drake-sha requires a SHA." >&2
-        usage "$0" >&2
-        exit 1
+      if [[ -z "${1:-}" ]]; then
+        invalid_argument '--drake-sha requires a SHA.'
       fi
       drake_sha="$1"
       ;;
     --drake-pull)
       shift
-      if [[ -z "$1" ]]; then
-        echo "ERROR: --drake-pull requires a PR ID." >&2
-        usage "$0" >&2
-        exit 1
+      if [[ -z "${1:-}" ]]; then
+        invalid_argument '--drake-pull requires a PR ID.'
       fi
       drake_pull="$1"
       ;;
@@ -97,23 +101,17 @@ while [ "${1:-}" != "" ]; do
       exit 0
       ;;
     *)
-      echo "ERROR: Invalid command line argument." >&2
-      usage "$0" >&2
-      exit 1
+      invalid_argument "$1"
   esac
   shift
 done
 
 if [[ -n "${drake_sha}" && -n "${drake_pull}" ]]; then
-  echo 'ERROR: At most one of --drake-sha or --drake-pull may be given' >&2
-  usage "$0" >&2
-  exit 1
+  invalid_argument 'At most one of --drake-sha or --drake-pull may be given.'
 fi
 
 if [[ -z "${drake_pull}" && "${drake_pull_merge}" -eq 1 ]]; then
-  echo 'ERROR: --merge can only be given with --drake-pull' >&2
-  usage "$0" >&2
-  exit 1
+  invalid_argument '--merge can only be given with --drake-pull.'
 fi
 
 set -x
@@ -167,8 +165,7 @@ fi
 # Install Drake's prerequisites.
 readonly drake_setup_script="${drake_root}/setup/mac/install_prereqs.sh"
 if [[ ! -f "${drake_setup_script}" ]]; then
-  echo "drake setup script not found; expected: ${drake_setup_script}" >&2
-  exit 1
+  die "drake setup script not found; expected: ${drake_setup_script}"
 fi
 # Use `--developer` to install the prereqs for building wheels.
 "${drake_setup_script}" --developer
