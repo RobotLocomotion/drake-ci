@@ -33,6 +33,36 @@
 
 set -euxo pipefail
 
+install_gurobi () {
+  local url="$1"
+  shift
+  readonly url
+
+  local install_dest="$1"
+  shift
+  readonly install_dest
+
+  local tarfile_sha256="$1"
+  shift
+  readonly tarfile_sha256
+
+  local gurobic_sha256="$1"
+  shift
+  readonly gurobic_sha256
+
+  local tarfile="$(basename ${url})"
+  readonly tarfile
+  local tarfile_dest="/tmp/${tarfile}"
+  readonly tarfile_dest
+
+  wget -nv -t 4 -O "${tarfile_dest}" --retry-connrefused "${url}"
+  echo "${tarfile_sha256}  ${tarfile_dest}" | sha256sum -c -
+  tar -C "$(dirname ${install_dest})" -xf "${tarfile_dest}"
+  echo "${gurobic_sha256}  ${install_dest}/linux64/include/gurobi_c.h" \
+    | sha256sum -c -
+  chown -R root:root "${install_dest}"
+}
+
 if [[ -z "${WORKSPACE-}" ]]; then
   echo 'ERROR: This script must be run on a Jenkins node' >&2
   exit 1
@@ -105,13 +135,18 @@ apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
 systemctl enable chrony
 systemctl start  chrony
 
-readonly gurobi_1203_tar='/tmp/gurobi12.0.3_linux64.tar.gz'
-readonly gurobi_1203_install_dest='/opt/gurobi1203'
-wget -nv -t 4 -O $gurobi_1203_tar --retry-connrefused \
-  https://packages.gurobi.com/12.0/$(basename $gurobi_1203_tar)
-echo "21bdabbaaf83ce2da42a4f13ecde7a1fd17b6eec4d74c97bad8a051887d11021  $gurobi_1203_tar" \
-  | sha256sum -c -
-tar -C $(dirname $gurobi_1203_install_dest) -xf $gurobi_1203_tar
-echo "2c25ece85943e7ad1ecdcd8f14f035ceb97b51d6080ccac6731647cedd020964  $gurobi_1203_install_dest/linux64/include/gurobi_c.h" \
-  | sha256sum -c -
-chown -R root:root $gurobi_1203_install_dest
+# TODO(#24227): Currently we install both Gurobi 12.0.3 and 13.0.1 to provide
+# compatibility during a transition period. Remove the former installation once
+# Drake has switched to the latter.
+
+install_gurobi \
+  'https://packages.gurobi.com/12.0/gurobi12.0.3_linux64.tar.gz' \
+  '/opt/gurobi1203' \
+  '21bdabbaaf83ce2da42a4f13ecde7a1fd17b6eec4d74c97bad8a051887d11021' \
+  '2c25ece85943e7ad1ecdcd8f14f035ceb97b51d6080ccac6731647cedd020964'
+
+install_gurobi \
+  'https://packages.gurobi.com/13.0/gurobi13.0.1_linux64.tar.gz' \
+  '/opt/gurobi1301' \
+  'ec623217ac5fa0657799a752ed7c02b2141fbb9c0ff34129d6e1f8c9a8fe4ed8' \
+  'c18d09d252e1287cdb421c6984de21811907e02cdbe9db7890598453e563ab7b'
