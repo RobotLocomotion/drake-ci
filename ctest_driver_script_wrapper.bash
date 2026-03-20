@@ -49,13 +49,14 @@ fi
 
 # Provision image, if required (Linux only).
 if [[ "$(uname -s)" == "Linux" && "${JOB_NAME}" =~ unprovisioned ]]; then
-    sudo --preserve-env "${CI_ROOT}/setup/ubuntu/install_prereqs"
+    sudo PATH="${PATH}" WORKSPACE="${WORKSPACE}" \
+        "${CI_ROOT}/setup/ubuntu/install_prereqs"
 fi
 
 # Synchronize the system clock (so log timestamps will be accurate).
 if [ -n "$(type -P chronyc)" ]; then
     # Synchronize using chrony.
-    sudo --preserve-env chronyc makestep
+    sudo PATH="${PATH}" chronyc makestep
     chronyc tracking
 elif [ "$(uname)" == "Darwin" ]; then
     : # Allow macOS to proceed without explicit synchronization.
