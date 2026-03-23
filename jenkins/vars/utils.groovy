@@ -92,6 +92,10 @@ def doMainBuild(Map scmVars, String stagingReleaseVersion = null) {
       credentials += file(credentialsId: '912dd413-d419-4760-b7ab-c132ab9e7c5e',
         variable: 'DOCKER_PASSWORD_FILE')
     }
+    if (env.JOB_NAME.contains("mirror-to-s3")) {
+      credentials += string(credentialsId: '8435bd26-174f-4eab-9f57-508a77e467ce',
+       variable: 'GITHUB_ACCESS_TOKEN')
+    }
     withCredentials(credentials) {
       def environment = ["GIT_COMMIT=${scmVars.GIT_COMMIT}"]
       if (stagingReleaseVersion) {
