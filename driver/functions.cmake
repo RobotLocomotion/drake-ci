@@ -33,14 +33,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #------------------------------------------------------------------------------
-# Sleep for an interval of time
-#------------------------------------------------------------------------------
-function(sleep SECONDS)
-  execute_process(COMMAND "sleep" "${SECONDS}"
-    COMMAND_ECHO STDERR)
-endfunction()
-
-#------------------------------------------------------------------------------
 # Pad a string with specified fill character
 #------------------------------------------------------------------------------
 function(fill VAR TEXT FILLER LENGTH)
