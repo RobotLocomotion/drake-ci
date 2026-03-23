@@ -36,8 +36,7 @@
 # Sleep for an interval of time
 #------------------------------------------------------------------------------
 function(sleep SECONDS)
-  execute_process(COMMAND "sleep" "${SECONDS}"
-    COMMAND_ECHO STDERR)
+  execute_process(COMMAND "sleep" "${SECONDS}")
 endfunction()
 
 #------------------------------------------------------------------------------

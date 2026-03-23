@@ -41,7 +41,6 @@ else()
     "run" "//tools/release_engineering:repack_deb" "--" "--tgz"
     "${DASHBOARD_WORKSPACE}/${DASHBOARD_PACKAGE_ARCHIVE_NAME}"
     "--output-dir" "${DASHBOARD_WORKSPACE}")
-  notice("Debian archive command: bazel ${DEBIAN_ARGS}")
   execute_process(COMMAND ${DASHBOARD_BAZEL_COMMAND} ${DEBIAN_ARGS}
     WORKING_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}"
     RESULT_VARIABLE DEBIAN_RESULT_VARIABLE)

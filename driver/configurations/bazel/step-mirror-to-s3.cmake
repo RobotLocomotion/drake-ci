@@ -40,7 +40,6 @@ else()
   if(NOT MIRROR_TO_S3 STREQUAL "publish")
     list(APPEND MIRROR_TO_S3_CMD "--no-upload")
   endif()
-  notice("Mirror to S3 command: ${MIRROR_TO_S3_CMD}")
   execute_process(COMMAND ${MIRROR_TO_S3_CMD}
     WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}"
     RESULT_VARIABLE MIRROR_TO_S3_RESULT_VARIABLE)
