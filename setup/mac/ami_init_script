@@ -47,6 +47,15 @@ die () {
   echo >&2 "$@"
 }
 
+if sudo -n true &>/dev/null; then
+  feedback "sudo password prompt already disabled."
+else
+  feedback "Disabling sudo password prompt..."
+  readonly sudoers_file="/private/etc/sudoers.d/$(whoami)-no-sudo"
+  echo "$(whoami) ALL=(ALL) NOPASSWD: ALL" | sudo tee "${sudoers_file}" \
+    && sudo chmod 440 "${sudoers_file}"
+fi
+
 feedback "Installing Homebrew..."
 if ! command -v brew &>/dev/null; then
   /bin/bash -c \
