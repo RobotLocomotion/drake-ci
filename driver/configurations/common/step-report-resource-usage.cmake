@@ -36,6 +36,7 @@
 
 execute_process(COMMAND df -h "${DASHBOARD_TEMP_DIR}"
   OUTPUT_VARIABLE dashboard_temp_dir_usage
+  COMMAND_ECHO NONE
   ERROR_QUIET
   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
@@ -44,6 +45,7 @@ notice("Disk usage for ${DASHBOARD_TEMP_DIR}:\n ${dashboard_temp_dir_usage}")
 if(NOT DASHBOARD_TEMP_DIR STREQUAL "/tmp")
   execute_process(COMMAND df -h "/tmp"
     OUTPUT_VARIABLE tmp_usage
+    COMMAND_ECHO NONE
     ERROR_QUIET
     OUTPUT_STRIP_TRAILING_WHITESPACE)
 
@@ -61,6 +63,7 @@ endif()
 
 execute_process(COMMAND bash -c "${MEM_CMD}"
   OUTPUT_VARIABLE dashboard_mem_usage
+  COMMAND_ECHO NONE
   ERROR_QUIET
   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
@@ -80,6 +83,7 @@ set(PS_CMD "ps -o pid,user,%cpu,%mem,comm -ax |\
 
 execute_process(COMMAND bash -c "${PS_CMD}"
   OUTPUT_VARIABLE dashboard_mem_proc
+  COMMAND_ECHO NONE
   ERROR_QUIET
   OUTPUT_STRIP_TRAILING_WHITESPACE)
 

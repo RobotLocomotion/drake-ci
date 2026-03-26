@@ -42,12 +42,11 @@ macro(docker_push TAG)
       execute_process(
         COMMAND "sudo" "${DASHBOARD_DOCKER_COMMAND}"
                 ${DOCKER_PUSH_IMAGE_ARGS_LIST}
-        RESULT_VARIABLE DOCKER_PUSH_IMAGE_RESULT_VARIABLE
-        COMMAND_ECHO STDERR)
+        RESULT_VARIABLE DOCKER_PUSH_IMAGE_RESULT_VARIABLE)
       if(DOCKER_PUSH_IMAGE_RESULT_VARIABLE EQUAL 0)
         break()
       endif()
-      sleep(15)
+      execute_process(COMMAND "sleep" "15")
     endforeach()
     if(NOT DOCKER_PUSH_IMAGE_RESULT_VARIABLE EQUAL 0)
       append_step_status(
@@ -66,8 +65,7 @@ else()
     separate_arguments(DOCKER_LOGIN_ARGS_LIST UNIX_COMMAND "${DOCKER_LOGIN_ARGS}")
     execute_process(COMMAND "sudo" "${DASHBOARD_DOCKER_COMMAND}" ${DOCKER_LOGIN_ARGS_LIST}
       RESULT_VARIABLE DOCKER_LOGIN_RESULT_VARIABLE
-      INPUT_FILE "$ENV{DOCKER_PASSWORD_FILE}"
-      COMMAND_ECHO STDERR)
+      INPUT_FILE "$ENV{DOCKER_PASSWORD_FILE}")
     if(NOT DOCKER_LOGIN_RESULT_VARIABLE EQUAL 0)
       append_step_status("CMAKE PUSHING DOCKER IMAGE (DOCKER LOGIN)" UNSTABLE)
     endif()

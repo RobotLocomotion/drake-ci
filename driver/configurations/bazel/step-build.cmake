@@ -153,7 +153,6 @@ if(COVERAGE)
   set(KCOV_TOOL "${DASHBOARD_SOURCE_DIRECTORY}/tools/dynamic_analysis/kcov_tool")
   execute_process(
     COMMAND "${KCOV_TOOL}" ci_merge
-    COMMAND_ECHO STDERR
     RESULT_VARIABLE KCOV_MERGE_RESULT_VARIABLE
     )
   if(NOT KCOV_MERGE_RESULT_VARIABLE EQUAL 0)
@@ -162,7 +161,6 @@ if(COVERAGE)
     set(KCOV_MERGED "${DASHBOARD_SOURCE_DIRECTORY}/bazel-kcov/kcov-merged")
     execute_process(
       COMMAND "${CMAKE_COMMAND}" -E copy "${KCOV_MERGED}/cobertura.xml" "${KCOV_MERGED}/coverage.xml"
-      COMMAND_ECHO STDERR
       RESULT_VARIABLE KCOV_COPY_RESULT_VARIABLE)
     if(NOT KCOV_COPY_RESULT_VARIABLE EQUAL 0)
       append_step_status("COVERAGE" UNSTABLE)

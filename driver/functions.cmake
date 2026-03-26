@@ -33,14 +33,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #------------------------------------------------------------------------------
-# Sleep for an interval of time
-#------------------------------------------------------------------------------
-function(sleep SECONDS)
-  execute_process(COMMAND "sleep" "${SECONDS}"
-    COMMAND_ECHO STDERR)
-endfunction()
-
-#------------------------------------------------------------------------------
 # Pad a string with specified fill character
 #------------------------------------------------------------------------------
 function(fill VAR TEXT FILLER LENGTH)
@@ -338,7 +330,8 @@ macro(aws_report)
     message(STATUS "Artifacts uploaded to AWS:")
     execute_process(
       COMMAND grep -vE "[.]sha[0-9]*\$"
-        "${CTEST_BINARY_DIRECTORY}/aws_artifacts.log")
+        "${CTEST_BINARY_DIRECTORY}/aws_artifacts.log"
+      COMMAND_ECHO NONE)
   endif()
 endmacro()
 

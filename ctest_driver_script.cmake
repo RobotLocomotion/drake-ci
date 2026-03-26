@@ -60,6 +60,9 @@ set(DASHBOARD_SETUP_DIR ${CMAKE_CURRENT_LIST_DIR}/setup)
 set(DASHBOARD_TOOLS_DIR ${CMAKE_CURRENT_LIST_DIR}/tools)
 set(DASHBOARD_TEMPORARY_FILES "")
 
+# Always log commands from `execute_process` in CI.
+set(CMAKE_EXECUTE_PROCESS_COMMAND_ECHO STDERR)
+
 include(${DASHBOARD_DRIVER_DIR}/functions.cmake)
 include(${DASHBOARD_DRIVER_DIR}/architecture.cmake)
 include(${DASHBOARD_DRIVER_DIR}/environment.cmake)

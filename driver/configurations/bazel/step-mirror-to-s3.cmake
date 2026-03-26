@@ -40,7 +40,6 @@ else()
   if(NOT MIRROR_TO_S3 STREQUAL "publish")
     list(APPEND MIRROR_TO_S3_WORKSPACE_CMD "--no-upload")
   endif()
-  notice("Mirror to S3 workspace command: ${MIRROR_TO_S3_WORKSPACE_CMD}")
   execute_process(COMMAND ${MIRROR_TO_S3_WORKSPACE_CMD}
     WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}"
     RESULT_VARIABLE MIRROR_TO_S3_WORKSPACE_RESULT_VARIABLE)
@@ -59,7 +58,6 @@ else()
   if(NOT MIRROR_TO_S3 STREQUAL "publish")
     list(APPEND MIRROR_TO_S3_RELEASE_CMD "--dry-run")
   endif()
-  notice("Mirror to S3 release command: ${MIRROR_TO_S3_RELEASE_CMD}")
   execute_process(COMMAND ${MIRROR_TO_S3_RELEASE_CMD}
     WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}"
     RESULT_VARIABLE MIRROR_TO_S3_RELASE_RESULT_VARIABLE)
