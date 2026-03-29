@@ -61,11 +61,7 @@ else()
   set(DASHBOARD_COPT)
 endif()
 
-if(APPLE)
-  set(DASHBOARD_EXPERIMENTAL_SCALE_TIMEOUTS 2.0)
-else()
-  set(DASHBOARD_EXPERIMENTAL_SCALE_TIMEOUTS 1.0)
-endif()
+set(DASHBOARD_EXPERIMENTAL_SCALE_TIMEOUTS 2.0)
 
 if(DASHBOARD_PROCESSOR_COUNT GREATER 1)
   # For rationale, see https://github.com/RobotLocomotion/drake/issues/17560.
