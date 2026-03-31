@@ -60,29 +60,28 @@ if(APPLE)
   endif()
   set(DASHBOARD_UNIX_DISTRIBUTION_VERSION "${DASHBOARD_UNIX_DISTRIBUTION_MAJOR_VERSION}")
 else()
-  find_program(DASHBOARD_LSB_RELEASE_COMMAND NAMES "lsb_release")
-  if(NOT DASHBOARD_LSB_RELEASE_COMMAND)
-    fatal("lsb_release was not found")
-  endif()
-  execute_process(COMMAND "${DASHBOARD_LSB_RELEASE_COMMAND}" "--id" "--short"
-    RESULT_VARIABLE LSB_RELEASE_RESULT_VARIABLE
+  execute_process(
+    COMMAND "bash" "-c" ". /etc/os-release && echo \${NAME}"
+    RESULT_VARIABLE OS_RELEASE_NAME_RESULT
     OUTPUT_VARIABLE DASHBOARD_UNIX_DISTRIBUTION
     OUTPUT_STRIP_TRAILING_WHITESPACE)
-  if(NOT LSB_RELEASE_RESULT_VARIABLE EQUAL 0)
+  if(NOT OS_RELEASE_NAME_RESULT EQUAL 0)
     fatal("unable to determine distribution name")
   endif()
-  execute_process(COMMAND "${DASHBOARD_LSB_RELEASE_COMMAND}" "--release" "--short"
-    RESULT_VARIABLE LSB_RELEASE_RESULT_VARIABLE
+  execute_process(
+    COMMAND "bash" "-c" ". /etc/os-release && echo \${VERSION_ID}"
+    RESULT_VARIABLE OS_RELEASE_VERSION_RESULT
     OUTPUT_VARIABLE DASHBOARD_UNIX_DISTRIBUTION_VERSION
     OUTPUT_STRIP_TRAILING_WHITESPACE)
-  if(NOT LSB_RELEASE_RESULT_VARIABLE EQUAL 0)
+  if(NOT OS_RELEASE_VERSION_RESULT EQUAL 0)
     fatal("unable to determine distribution release version")
   endif()
-  execute_process(COMMAND "${DASHBOARD_LSB_RELEASE_COMMAND}" "--codename" "--short"
-    RESULT_VARIABLE LSB_RELEASE_RESULT_VARIABLE
+  execute_process(
+    COMMAND "bash" "-c" ". /etc/os-release && echo \${VERSION_CODENAME}"
+    RESULT_VARIABLE OS_RELEASE_CODENAME_RESULT
     OUTPUT_VARIABLE DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME
     OUTPUT_STRIP_TRAILING_WHITESPACE)
-  if(NOT LSB_RELEASE_RESULT_VARIABLE EQUAL 0)
+  if(NOT OS_RELEASE_CODENAME_RESULT EQUAL 0)
     fatal("unable to determine distribution code name")
   endif()
 endif()

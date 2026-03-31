@@ -103,7 +103,7 @@ apt-get upgrade -o Dpkg::Options::=--force-confdef \
 # it should have already been installed on the Noble unprovisioned image. See
 # https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 # for instructions on installing manually.
-if [[ "$(lsb_release -cs)" != "noble" ]]; then
+if [[ "$(. /etc/os-release && echo ${VERSION_CODENAME})" != "noble" ]]; then
   apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
     awscli
 fi
