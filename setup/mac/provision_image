@@ -150,14 +150,6 @@ brew analytics off
 brew update || (sleep 15; brew update)
 brew upgrade
 
-# TODO(#24227): Currently we install both Gurobi 12.0.3 and 13.0.1 to provide
-# compatibility during a transition period. Remove the former installation once
-# Drake has switched to the latter.
-
-install_gurobi \
-  'https://packages.gurobi.com/12.0/gurobi12.0.3_macos_universal2.pkg' \
-  'e1e771e9cf8aa7882b1cdc000be91c2b5fadd18f3fcdd00f2824dd207be09613'
-
 install_gurobi \
   'https://packages.gurobi.com/13.0/gurobi13.0.1_macos_universal2.pkg' \
   '7175c242af47bb248ef9adb4993f0d907e755ff2712a18f6902fa878edfa9b97'
