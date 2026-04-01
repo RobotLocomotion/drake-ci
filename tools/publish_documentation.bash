@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash
 
 # BSD 3-Clause License
 #
@@ -31,12 +31,31 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-workspace="$1"
-doc="$2"
+set -euxo pipefail
 
-export PATH="/usr/local/bin:${PATH}"
-git clone --quiet --single-branch git@github.com:RobotLocomotion/RobotLocomotion.github.io.git "${workspace}/gh-pages"
-rsync --archive --delete \
+notice () {
+  echo "*** $1"
+}
+
+die () {
+  echo >&2 "$@"
+  exit 1
+}
+
+readonly workspace="$1"
+readonly doc="$2"
+
+if [[ -z "${workspace}" || -z "${doc}" ]]; then
+  die "Missing argument; Usage: $0 <workspace> <doc>"
+fi
+
+# Clone the GH pages repository.
+git clone --quiet --single-branch \
+  git@github.com:RobotLocomotion/RobotLocomotion.github.io.git \
+  "${workspace}/gh-pages"
+
+# Dump the generated documentation into the local checkout.
+rsync --archive --delete --quiet \
       --exclude .buildinfo \
       --exclude .git \
       --exclude .github \
@@ -44,14 +63,51 @@ rsync --archive --delete \
       --exclude googleb54a1809ac854371.html \
       --exclude LICENSE \
       --exclude README.md \
-      --quiet "${doc}/" "${workspace}/gh-pages/"
+       "${doc}/" "${workspace}/gh-pages/"
 cd "${workspace}/gh-pages"
+
+# Commit our most recent changes, if any.
 git config user.name drake-jenkins-bot
 git config user.email drake.jenkins.bot@gmail.com
 git add --all
 if git diff-index --quiet HEAD; then
-  echo "*** Documentation is unchanged"
-else
-  git commit --message="Documentation: RobotLocomotion/drake@$GIT_COMMIT" --quiet
-  git push --quiet origin master
+  notice "Documentation is unchanged."
+  exit 0
 fi
+git commit --quiet -m "Documentation: RobotLocomotion/drake@$GIT_COMMIT"
+
+# Determine if we need to prune the history. Allow up to `commit_max`, at which
+# point the oldest commits are squashed and history is re-rooted to contain
+# only the `commit_min` most recent commits.
+readonly commit_min=30
+readonly commit_max=100
+maybe_force_push=
+if [ "$(git rev-list --count HEAD)" -lt "${commit_max}" ]; then
+  notice "No pruning to be done."
+else
+  notice "Commit limit reached (${commit_max})."
+  notice "Pruning to the most recent ${commit_min} commits..."
+  readonly offset=$((commit_min - 1))
+
+  # Assemble our commit message.
+  readonly last_sha=$(git rev-parse --short HEAD~${commit_min})
+  readonly last_message=$(git show -s --pretty=reference HEAD~${commit_min})
+  readonly commit_message=$(cat <<EOF
+Reset history as of commit ${last_sha}
+
+See $(printf '%s\n' "${last_message}" | fold -s -w 72)
+EOF
+)
+
+  # Reset history.
+  git checkout --quiet --orphan temp HEAD~${offset}
+  git commit --quiet -m "${commit_message}"
+  git checkout --quiet master
+  git rebase --quiet --onto temp HEAD~${offset}
+  git branch --quiet -D temp
+
+  maybe_force_push=--force
+fi
+
+notice "Pushing changes..."
+git push --quiet origin master ${maybe_force_push}
