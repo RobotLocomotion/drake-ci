@@ -40,11 +40,15 @@ unset(ENV{JAVA_HOME})
 set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}")
 set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/_wheel_$ENV{USER}")
 
-file(REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
-file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
-
-file(REMOVE_RECURSE "$ENV{HOME}/.drake-wheel-build")
-file(MAKE_DIRECTORY "$ENV{HOME}/.drake-wheel-build")
+set(WHEEL_BUILD_PATHS
+  "${CTEST_BINARY_DIRECTORY}"
+  # The paths below should match those used by Drake during the wheel build.
+  "$ENV{HOME}/.drake-wheel-build"
+  "$ENV{HOME}/.cache/drake-wheel-build")
+foreach(_wheel_path IN LISTS WHEEL_BUILD_PATHS)
+  file(REMOVE_RECURSE "${_wheel_path}")
+  file(MAKE_DIRECTORY "${_wheel_path}")
+endforeach()
 
 set(DASHBOARD_BUILD_EVENT_JSON_FILE "${CTEST_BINARY_DIRECTORY}/BUILD.JSON")
 
