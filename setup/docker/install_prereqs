@@ -52,11 +52,6 @@ die () {
 
 trap 'cleanup' EXIT
 
-if [ -d /media/ephemeral0 ]; then
-  mkdir /media/ephemeral0/docker
-  ln -s /media/ephemeral0/docker /var/lib/docker
-fi
-
 export DEBIAN_FRONTEND=noninteractive
 
 apt-get update -o APT::Acquire::Retries=4 -qq \
@@ -66,3 +61,23 @@ packages=$(cat "${BASH_SOURCE%/*}/packages.txt")
 apt-get install --no-install-recommends \
   -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 -qy \
   ${packages}
+
+# Since v29, docker delegates container storage to containerd; ensure they both
+# point to `/media/ephemeral0/...` so we don't overrun our small `/`.
+readonly docker_data_root="/media/ephemeral0/docker"
+readonly containerd_root="/media/ephemeral0/containerd"
+mkdir -p ${docker_data_root} ${containerd_root}
+
+systemctl stop docker.socket docker containerd || true
+rm -rf /var/lib/containerd
+ln -s ${containerd_root} /var/lib/containerd
+
+tee /etc/docker/daemon.json <<EOF
+{
+  "data-root": "${docker_data_root}"
+}
+EOF
+
+systemctl daemon-reload
+systemctl start containerd docker
+docker info | grep "Docker Root Dir"
