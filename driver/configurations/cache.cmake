@@ -365,39 +365,11 @@ if(APPLE)
 else()
   if(REMOTE_CACHE)
     set(DASHBOARD_OS_CACHE_NAME "ubuntu")
-    find_program(LSB_RELEASE_EXECUTABLE NAMES "lsb_release"
-      NO_CMAKE_PATH
-      NO_CMAKE_ENVIRONMENT_PATH
-      NO_CMAKE_SYSTEM_PATH
-    )
-    if(NOT LSB_RELEASE_EXECUTABLE)
+    cmake_host_system_information(
+      RESULT DASHBOARD_OS_CACHE_VERSION QUERY DISTRIB_PRETTY_NAME)
+    if(NOT DASHBOARD_OS_CACHE_VERSION)
       message(WARNING
-        "*** Disabling remote cache because could NOT find lsb_release when computing remote cache key"
-      )
-      set(REMOTE_CACHE OFF)
-    endif()
-  endif()
-
-  if(REMOTE_CACHE AND LSB_RELEASE_EXECUTABLE)
-    separate_arguments(DASHBOARD_LSB_RELEASE_DESCRIPTION_ARGS_LIST
-      UNIX_COMMAND "-ds"
-    )
-    execute_process(
-      COMMAND ${LSB_RELEASE_EXECUTABLE} ${DASHBOARD_LSB_RELEASE_DESCRIPTION_ARGS_LIST}
-      RESULT_VARIABLE DASHBOARD_LSB_RELEASE_DESCRIPTION_RESULT_VARIABLE
-      OUTPUT_VARIABLE DASHBOARD_LSB_RELEASE_DESCRIPTION_OUTPUT_VARIABLE
-      OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-    # NOTE: `lsb_release -ds` may report differing amounts of version numbers,
-    # e.g., `Ubuntu 22.04 LTS` or `Ubuntu 24.04.4 LTS`.
-    if(DASHBOARD_LSB_RELEASE_DESCRIPTION_RESULT_VARIABLE EQUAL 0 AND
-       DASHBOARD_LSB_RELEASE_DESCRIPTION_OUTPUT_VARIABLE MATCHES
-       "^Ubuntu ([0-9]+([.][0-9]+)+) LTS$"
-    )
-      set(DASHBOARD_OS_CACHE_VERSION "${CMAKE_MATCH_1}")
-    else()
-      message(WARNING
-        "*** Disabling remote cache because could NOT determine Ubuntu version using lsb_release when computing remote cache key"
+        "*** Disabling remote cache because could NOT determine Ubuntu version using /etc/os-release when computing remote cache key"
       )
       set(REMOTE_CACHE OFF)
     endif()
