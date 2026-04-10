@@ -40,5 +40,5 @@ prepend_path(PATH
   /opt/homebrew/sbin
   /usr/local/sbin
   /usr/sbin
-  /sbin)
-
+  /sbin
+)
