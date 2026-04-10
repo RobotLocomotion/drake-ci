@@ -77,24 +77,6 @@ include(${DASHBOARD_DRIVER_DIR}/configurations/gurobi.cmake)
 include(${DASHBOARD_DRIVER_DIR}/configurations/mosek.cmake)
 include(${DASHBOARD_DRIVER_DIR}/configurations/snopt.cmake)
 
-if(GUROBI)
-  set(DASHBOARD_WITH_GUROBI ON)
-else()
-  set(DASHBOARD_WITH_GUROBI OFF)
-endif()
-
-if(MOSEK)
-  set(DASHBOARD_WITH_MOSEK ON)
-else()
-  set(DASHBOARD_WITH_MOSEK OFF)
-endif()
-
-if(SNOPT)
-  set(DASHBOARD_WITH_ROBOTLOCOMOTION_SNOPT ${SNOPT})
-else()
-  set(DASHBOARD_WITH_ROBOTLOCOMOTION_SNOPT OFF)
-endif()
-
 if(VERBOSE)
   set(DASHBOARD_VERBOSE_MAKEFILE ON)
 else()
@@ -105,9 +87,6 @@ cache_flag(COLOR_MAKEFILE BOOL)
 cache_flag(CXX_FLAGS STRING)
 cache_flag(INSTALL_PREFIX PATH)
 cache_flag(VERBOSE_MAKEFILE BOOL)
-cache_append(WITH_GUROBI BOOL ${DASHBOARD_WITH_GUROBI})
-cache_append(WITH_MOSEK BOOL ${DASHBOARD_WITH_MOSEK})
-cache_append(WITH_ROBOTLOCOMOTION_SNOPT STRING ${DASHBOARD_WITH_ROBOTLOCOMOTION_SNOPT})
 cache_append(DRAKE_CI_ENABLE_PACKAGING BOOL ${PACKAGE})
 cache_append(DRAKE_CI_ENABLE_EVERYTHING BOOL ${EVERYTHING})
 
@@ -181,10 +160,6 @@ report_configuration("
   CTEST_USE_LAUNCHERS
   ====================================
   PACKAGE
-  ==================================== >DASHBOARD_
-  WITH_GUROBI
-  WITH_MOSEK
-  WITH_ROBOTLOCOMOTION_SNOPT
   ==================================== >DASHBOARD_
   GIT_COMMIT
   DRAKE_VERSION
