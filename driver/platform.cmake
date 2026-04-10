@@ -61,39 +61,38 @@ endif()
 if(PROVISION)
   if(APPLE)
     fatal("provisioning is not supported on macOS")
-  else()
-    string(TOLOWER "${DASHBOARD_UNIX_DISTRIBUTION}" PROVISION_DIR)
-    set(PROVISION_SUDO "sudo")
   endif()
 
-  if(GENERATOR STREQUAL "cmake")
-    set(PROVISION_ARGS "--without-test-only")
-     if(PACKAGE)
-        string(APPEND PROVISION_ARGS " --with-maintainer-only")
-     endif()
-  elseif(DOCUMENTATION)
-    set(PROVISION_ARGS "--with-doc-only")
-  elseif(MIRROR_TO_S3)
-    set(PROVISION_ARGS "--with-doc-only --with-maintainer-only")
-  else()
-    set(PROVISION_ARGS)
+  set(PROVISION_SCRIPT "${DASHBOARD_SOURCE_DIRECTORY}/setup/install_prereqs")
+  set(PROVISION_ARGS "-y")
+  if(NOT GENERATOR STREQUAL "cmake" OR PACKAGE)
+    string(APPEND PROVISION_ARGS " --developer")
   endif()
-
-  set(PROVISION_SCRIPT
-    "${DASHBOARD_SOURCE_DIRECTORY}/setup/${PROVISION_DIR}/install_prereqs.sh")
 
   if(EXISTS "${PROVISION_SCRIPT}")
     message(STATUS "Executing provisioning script...")
-    execute_process(COMMAND bash "-c" "yes | ${PROVISION_SUDO} ${PROVISION_SCRIPT} ${PROVISION_ARGS}"
+    execute_process(COMMAND bash "-c" "${PROVISION_SCRIPT} ${PROVISION_ARGS}"
       RESULT_VARIABLE INSTALL_PREREQS_RESULT_VARIABLE)
     if(NOT INSTALL_PREREQS_RESULT_VARIABLE EQUAL 0)
       fatal("provisioning script did not complete successfully")
     endif()
   else()
-    fatal("provisioning script not available for this platform")
+    fatal("provisioning script was not found")
   endif()
 
-  find_program(DASHBOARD_BAZEL_COMMAND NAMES "bazel")
+  if(NOT GENERATOR STREQUAL "cmake" OR PACKAGE)
+    find_program(DASHBOARD_BAZEL_COMMAND NAMES "bazel")
+  else()
+    # When Bazel is not installed (per `--developer`, above), use the vendored
+    # copy of bazelisk to determine the compiler (see `determine_compiler`).
+    # TODO(tyler-yankee): When most of the compiler chasing goes away (except
+    # for linux-.*-clang-bazel builds), CMake builds should no longer need
+    # DASHBOARD_BAZEL_COMMAND, so this stanza can be removed.
+    find_program(DASHBOARD_BAZEL_COMMAND
+      NAMES "bazelisk.py"
+      PATHS "${DASHBOARD_SOURCE_DIRECTORY}/third_party/com_github_bazelbuild_bazelisk"
+    )
+  endif()
   if(NOT DASHBOARD_BAZEL_COMMAND)
     fatal("bazel was not found")
   endif()
