@@ -74,7 +74,7 @@ if git diff-index --quiet HEAD; then
   notice "Documentation is unchanged."
   exit 0
 fi
-git commit -m "Documentation: RobotLocomotion/drake@$GIT_COMMIT"
+git commit --quiet -m "Documentation: RobotLocomotion/drake@$GIT_COMMIT"
 
 # Determine if we need to prune the history. Allow up to `commit_max`, at which
 # point the oldest commits are squashed and history is re-rooted to contain
@@ -102,7 +102,7 @@ EOF
 
   # Reset history.
   git checkout --orphan temp HEAD~${offset}
-  git commit -m "${commit_message}"
+  git commit --quiet -m "${commit_message}"
   git checkout master
   git rebase --onto temp HEAD~${offset}
   git branch -D temp
