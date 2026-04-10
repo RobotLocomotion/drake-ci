@@ -17,47 +17,47 @@ import jenkins.model.Jenkins
  */
 def checkout(String ciSha = 'main', String drakeSha = null) {
   def scmVars = null
-  retry(4) {
-    // N.B. The userRemoteConfigs in the first case are crucially used for
-    // production builds in order to allow pushing to additional remote
-    // branches (e.g., nightly_release) beyond the one being cloned (master).
-    // The second case below (`checkout scm`) does not specify such an option,
-    // however, it is useful for checkout of the specific merge commit created
-    // by Jenkins for pull requests as they build after a merge with master
-    // (for this call, we have no access to that commit SHA).
-    if (drakeSha) {
-      scmVars = checkout([$class: 'GitSCM',
-        branches: [[name: drakeSha]],
+  dir("${env.WORKSPACE}/src") {
+    retry(4) {
+      // N.B. The userRemoteConfigs in the first case are crucially used for
+      // production builds in order to allow pushing to additional remote
+      // branches (e.g., nightly_release) beyond the one being cloned (master).
+      // The second case below (`checkout scm`) does not specify such an option,
+      // however, it is useful for checkout of the specific merge commit created
+      // by Jenkins for pull requests as they build after a merge with master
+      // (for this call, we have no access to that commit SHA).
+      if (drakeSha) {
+        scmVars = checkout([$class: 'GitSCM',
+          branches: [[name: drakeSha]],
+          extensions: [[$class: 'AuthorInChangelog'],
+            [$class: 'CloneOption', honorRefspec: true, noTags: true],
+            [$class: 'LocalBranch', localBranch: 'master']],
+          userRemoteConfigs: [[
+            credentialsId: 'ad794d10-9bc8-4a7a-a2f3-998af802cab0',
+            name: 'origin',
+            refspec: '+refs/heads/*:refs/remotes/origin/* ' +
+              '+refs/pull/*:refs/remotes/origin/pr/*',
+            url: 'git@github.com:RobotLocomotion/drake.git']]])
+      }
+      else {
+        scmVars = checkout scm
+      }
+    }
+  }
+  dir("${env.WORKSPACE}/ci") {
+    retry(4) {
+      checkout([$class: 'GitSCM',
+        branches: [[name: ciSha]],
         extensions: [[$class: 'AuthorInChangelog'],
           [$class: 'CloneOption', honorRefspec: true, noTags: true],
-          [$class: 'RelativeTargetDirectory', relativeTargetDir: 'src'],
-          [$class: 'LocalBranch', localBranch: 'master']],
+          [$class: 'LocalBranch', localBranch: 'main']],
         userRemoteConfigs: [[
           credentialsId: 'ad794d10-9bc8-4a7a-a2f3-998af802cab0',
           name: 'origin',
           refspec: '+refs/heads/*:refs/remotes/origin/* ' +
             '+refs/pull/*:refs/remotes/origin/pr/*',
-          url: 'git@github.com:RobotLocomotion/drake.git']]])
+          url: 'git@github.com:RobotLocomotion/drake-ci.git']]])
     }
-    else {
-      dir("${env.WORKSPACE}/src") {
-        scmVars = checkout scm
-      }
-    }
-  }
-  retry(4) {
-    checkout([$class: 'GitSCM',
-      branches: [[name: ciSha]],
-      extensions: [[$class: 'AuthorInChangelog'],
-        [$class: 'CloneOption', honorRefspec: true, noTags: true],
-        [$class: 'RelativeTargetDirectory', relativeTargetDir: 'ci'],
-        [$class: 'LocalBranch', localBranch: 'main']],
-      userRemoteConfigs: [[
-        credentialsId: 'ad794d10-9bc8-4a7a-a2f3-998af802cab0',
-        name: 'origin',
-        refspec: '+refs/heads/*:refs/remotes/origin/* ' +
-          '+refs/pull/*:refs/remotes/origin/pr/*',
-        url: 'git@github.com:RobotLocomotion/drake-ci.git']]])
   }
   return scmVars
 }
