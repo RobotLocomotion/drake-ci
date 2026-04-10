@@ -35,7 +35,7 @@
 set(DASHBOARD_BAZEL_VERSION)
 
 if (DISTRIBUTION STREQUAL "noble" AND GENERATOR STREQUAL "cmake" AND
-  COMPILER STREQUAL "gcc" AND BUILD_TYPE STREQUAL "release")
+  COMPILER STREQUAL "gcc" AND NOT DEBUG)
   # Special case to extract Drake's minimum-supported Bazel version from the
   # sources manually. This is to provide CI coverage of multiple Bazel versions
   # simultaneously.
