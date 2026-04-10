@@ -146,7 +146,7 @@ if [[ -n "${drake_branch}" ]]; then
 fi
 
 # Install Drake's prerequisites.
-readonly drake_setup_script="${drake_root}/setup/mac/install_prereqs.sh"
+readonly drake_setup_script="${drake_root}/setup/install_prereqs"
 if [[ ! -f "${drake_setup_script}" ]]; then
   die "drake setup script not found; expected: ${drake_setup_script}"
 fi
