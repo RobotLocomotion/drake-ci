@@ -101,7 +101,14 @@ if(REMOTE_CACHE)
   )
 endif()
 
-set(DASHBOARD_BAZEL_BUILD_OPTIONS "--config=${COMPILER}")
+set(DASHBOARD_BAZEL_BUILD_OPTIONS "")
+
+# The only time we use a non-default compiler is the Clang variant on Ubuntu.
+if(NOT APPLE)
+  if(COMPILER STREQUAL "clang")
+    set(DASHBOARD_BAZEL_BUILD_OPTIONS "--config=${COMPILER}")
+  endif()
+endif()
 
 if(DEBUG)
   string(APPEND DASHBOARD_BAZEL_BUILD_OPTIONS " --config=debug")

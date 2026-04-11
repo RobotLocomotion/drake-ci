@@ -471,47 +471,6 @@ function(determine_compiler OUTPUT_CC_VARIABLE OUTPUT_CXX_VARIABLE)
 endfunction()
 
 #------------------------------------------------------------------------------
-# Verify that (cc|c++) and (gcc|g++) exist and that they resolve to the same
-# path as each other, respectively. Store the output paths to cc and c++ in the
-# respective output variables. This is used conditionally under some build
-# configurations when we do not want to provide a compiler explicitly, to
-# provide additional CI coverage of Drake's compiler identification logic.
-#------------------------------------------------------------------------------
-function(verify_cc_is_gcc OUTPUT_CC_VARIABLE OUTPUT_CXX_VARIABLE)
-  find_program(CC_COMMAND NAMES "cc")
-  if(NOT CC_COMMAND)
-    fatal("cc was not found")
-  endif()
-  find_program(CXX_COMMAND NAMES "c++")
-  if(NOT CXX_COMMAND)
-    fatal("c++ was not found")
-  endif()
-  find_program(GCC_COMMAND NAMES "gcc")
-  if(NOT GCC_COMMAND)
-    fatal("gcc was not found")
-  endif()
-  find_program(GXX_COMMAND NAMES "g++")
-  if(NOT GXX_COMMAND)
-    fatal("g++ was not found")
-  endif()
-
-  file(REAL_PATH "${CC_COMMAND}" CC_REALPATH)
-  file(REAL_PATH "${GCC_COMMAND}" GCC_REALPATH)
-  if(NOT CC_REALPATH STREQUAL GCC_REALPATH)
-    fatal("cc and gcc are not the same" CC_REALPATH GCC_REALPATH)
-  endif()
-
-  file(REAL_PATH "${CXX_COMMAND}" CXX_REALPATH)
-  file(REAL_PATH "${GXX_COMMAND}" GXX_REALPATH)
-  if(NOT CXX_REALPATH STREQUAL GXX_REALPATH)
-    fatal("c++ and g++ are not the same" CXX_REALPATH GXX_REALPATH)
-  endif()
-
-  set(${OUTPUT_CC_VARIABLE} "${CC_COMMAND}" PARENT_SCOPE)
-  set(${OUTPUT_CXX_VARIABLE} "${CXX_COMMAND}" PARENT_SCOPE)
-endfunction()
-
-#------------------------------------------------------------------------------
 # Execute `${COMPILER} --version` and store the first line of the result in
 # `OUTPUT_VARIABLE`.  This function is used in compiler.cmake only to be able
 # to log the compiler version in Jenkins, we do not care about detecting exact
