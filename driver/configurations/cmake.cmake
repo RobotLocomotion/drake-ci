@@ -52,10 +52,6 @@ endif()
 # for some inexplicable reason.
 unset(ENV{JAVA_HOME})
 
-# Pass along compiler
-set(ENV{CC} "${DASHBOARD_CC_COMMAND}")
-set(ENV{CXX} "${DASHBOARD_CXX_COMMAND}")
-
 set(DASHBOARD_CXX_FLAGS)
 if(DEFINED ENV{TERM})
   if(COMPILER STREQUAL "clang")
