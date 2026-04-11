@@ -186,44 +186,21 @@ function(prepend_path VAR)
 endfunction()
 
 #------------------------------------------------------------------------------
-# Set an environment path
-#------------------------------------------------------------------------------
-function(set_path VAR)
-  unset(ENV{${VAR}})
-  prepend_path(${VAR} ${ARGN})
-endfunction()
-
-#------------------------------------------------------------------------------
-# Prepend entries to a flags (space separated) variable
-#------------------------------------------------------------------------------
-function(prepend_flags VAR)
-  list(REVERSE ARGN)
-  foreach(_flag ${ARGN})
-    if(NOT "${VAR}" STREQUAL "")
-      set(${VAR} "${_flag} ${${VAR}}")
-    else()
-      set(${VAR} "${_flag}")
-    endif()
-  endforeach()
-  set(${VAR} "${${VAR}}" PARENT_SCOPE)
-endfunction()
-
-#------------------------------------------------------------------------------
-# Add an entry to the generated CMake cache
+# Add a literal entry to the CMake configure options
 #------------------------------------------------------------------------------
 macro(cache_append_literal STRING)
-  set(CACHE_CONTENT "${CACHE_CONTENT}${STRING}\n")
+  string(APPEND CONFIGURE_OPTIONS " ${STRING}")
 endmacro()
 
 #------------------------------------------------------------------------------
-# Add an entry to the generated CMake cache
+# Add a type-annotated entry to the CMake configure options
 #------------------------------------------------------------------------------
 macro(cache_append NAME TYPE VALUE)
-  cache_append_literal("${NAME}:${TYPE}=${VALUE}")
+  cache_append_literal("-D${NAME}:${TYPE}=${VALUE}")
 endmacro()
 
 #------------------------------------------------------------------------------
-# Add flags to the generated CMake cache
+# Add flags to CMake configure options
 #------------------------------------------------------------------------------
 function(cache_flag NAME TYPE)
   cmake_parse_arguments("_cf" "" "" "NAMES;EXTRA" ${ARGN})
