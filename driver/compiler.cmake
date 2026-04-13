@@ -32,20 +32,19 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-if (GENERATOR STREQUAL "cmake" AND COMPILER STREQUAL "gcc")
-  # Provide CI coverage of Drake's build logic for compiler identification by
-  # explicitly not specifying the compiler.
-  set(DASHBOARD_CC_COMMAND)
-  set(DASHBOARD_CXX_COMMAND)
-  verify_cc_is_gcc(CC_COMMAND CXX_COMMAND)
-  compiler_version_string("${CC_COMMAND}" DASHBOARD_CC_VERSION_STRING)
-  compiler_version_string("${CXX_COMMAND}" DASHBOARD_CXX_VERSION_STRING)
-  unset(CC_COMMAND)
-  unset(CXX_COMMAND)
+if(APPLE)
+  set(DASHBOARD_CC_COMMAND "/usr/bin/clang")
+  set(DASHBOARD_CXX_COMMAND "/usr/bin/clang++")
 else()
-  determine_compiler(DASHBOARD_CC_COMMAND DASHBOARD_CXX_COMMAND)
-  compiler_version_string("${DASHBOARD_CC_COMMAND}" DASHBOARD_CC_VERSION_STRING)
-  compiler_version_string("${DASHBOARD_CXX_COMMAND}" DASHBOARD_CXX_VERSION_STRING)
+  if(GENERATOR STREQUAL "bazel" AND COMPILER STREQUAL "clang")
+    # Ask Bazel which Clang it's using.
+    determine_compiler(DASHBOARD_CC_COMMAND DASHBOARD_CXX_COMMAND)
+  else()
+    set(DASHBOARD_CC_COMMAND "/usr/bin/gcc")
+    set(DASHBOARD_CXX_COMMAND "/usr/bin/g++")
+  endif()
 endif()
+compiler_version_string("${DASHBOARD_CC_COMMAND}" DASHBOARD_CC_VERSION_STRING)
+compiler_version_string("${DASHBOARD_CXX_COMMAND}" DASHBOARD_CXX_VERSION_STRING)
 
 string(TOUPPER "${COMPILER}" COMPILER_UPPER)
