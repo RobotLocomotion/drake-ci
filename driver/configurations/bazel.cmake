@@ -32,10 +32,6 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# Jenkins passes down an incorrect value of JAVA_HOME from controller to agent
-# for some inexplicable reason.
-unset(ENV{JAVA_HOME})
-
 # Set build locations and ensure there are no leftover artifacts.
 set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}")
 set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/_bazel_$ENV{USER}")

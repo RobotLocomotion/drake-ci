@@ -48,10 +48,6 @@ if (PACKAGE)
   set(DASHBOARD_SUBMIT OFF)
 endif()
 
-# Jenkins passes down an incorrect value of JAVA_HOME from controller to agent
-# for some inexplicable reason.
-unset(ENV{JAVA_HOME})
-
 # Pass along compiler
 set(ENV{CC} "${DASHBOARD_CC_COMMAND}")
 set(ENV{CXX} "${DASHBOARD_CXX_COMMAND}")
