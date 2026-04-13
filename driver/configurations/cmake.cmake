@@ -116,8 +116,6 @@ execute_step(common get-bazel-version)
 
 report_configuration("
   ==================================== ENV
-  CC
-  CXX
   DISPLAY
   GUROBI_PATH
   SNOPT_PATH

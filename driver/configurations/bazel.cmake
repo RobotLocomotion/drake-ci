@@ -101,13 +101,11 @@ if(REMOTE_CACHE)
   )
 endif()
 
-set(DASHBOARD_BAZEL_BUILD_OPTIONS "")
+set(DASHBOARD_BAZEL_BUILD_OPTIONS)
 
 # The only time we use a non-default compiler is the Clang variant on Ubuntu.
-if(NOT APPLE)
-  if(COMPILER STREQUAL "clang")
-    set(DASHBOARD_BAZEL_BUILD_OPTIONS "--config=${COMPILER}")
-  endif()
+if(NOT APPLE AND COMPILER STREQUAL "clang")
+  string(APPEND DASHBOARD_BAZEL_BUILD_OPTIONS " --config=${COMPILER}")
 endif()
 
 if(DEBUG)
@@ -220,8 +218,6 @@ configure_file("${DASHBOARD_TOOLS_DIR}/user.bazelrc.in" "${CTEST_SOURCE_DIRECTOR
 # Report build configuration
 report_configuration("
   ==================================== ENV
-  CC
-  CXX
   DISPLAY
   GUROBI_PATH
   SNOPT_PATH
