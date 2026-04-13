@@ -48,10 +48,6 @@ if (PACKAGE)
   set(DASHBOARD_SUBMIT OFF)
 endif()
 
-# Jenkins passes down an incorrect value of JAVA_HOME from controller to agent
-# for some inexplicable reason.
-unset(ENV{JAVA_HOME})
-
 set(DASHBOARD_CXX_FLAGS)
 if(DEFINED ENV{TERM})
   if(COMPILER STREQUAL "clang")
