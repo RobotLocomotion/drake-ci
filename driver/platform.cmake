@@ -13,14 +13,7 @@ set(CTEST_TEST_ARGS ${CTEST_TEST_ARGS}
   PARALLEL_LEVEL ${DASHBOARD_PROCESSOR_COUNT})
 
 set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
-
-# Set up specific platform
-set(DASHBOARD_APPLE OFF)
-
-if(APPLE)
-  set(DASHBOARD_APPLE ON)
-  include(${DASHBOARD_DRIVER_DIR}/platform/apple.cmake)
-endif()
+set(DASHBOARD_APPLE ${APPLE})
 
 if(NOT APPLE)
   set(ENV{DISPLAY} ":99")
