@@ -145,16 +145,6 @@ function(report_configuration)
 endfunction()
 
 #------------------------------------------------------------------------------
-# Prepend entries to an environment path
-#------------------------------------------------------------------------------
-function(prepend_path VAR)
-  cmake_path(CONVERT "$ENV{$VAR}}" TO_CMAKE_PATH_LIST _paths)
-  list(INSERT _paths 0 ${ARGN})
-  string(REPLACE ";" ":" _newpath "${_paths}")
-  set(ENV{${VAR}} "${_newpath}")
-endfunction()
-
-#------------------------------------------------------------------------------
 # Add an entry to the CMake configure options
 #------------------------------------------------------------------------------
 macro(cache_append NAME TYPE VALUE)
