@@ -133,8 +133,11 @@ systemctl --now --quiet enable /lib/systemd/system/xvfb.service
 systemctl enable chrony
 systemctl start  chrony
 
-install_gurobi \
-  'https://packages.gurobi.com/13.0/gurobi13.0.1_linux64.tar.gz' \
-  '/opt/gurobi1301' \
-  'ec623217ac5fa0657799a752ed7c02b2141fbb9c0ff34129d6e1f8c9a8fe4ed8' \
-  'c18d09d252e1287cdb421c6984de21811907e02cdbe9db7890598453e563ab7b'
+# Drake does not currently support Gurobi on Ubuntu aarch64.
+if [[ "$(arch)" == "x86_64" ]]; then
+  install_gurobi \
+    'https://packages.gurobi.com/13.0/gurobi13.0.1_linux64.tar.gz' \
+    '/opt/gurobi1301' \
+    'ec623217ac5fa0657799a752ed7c02b2141fbb9c0ff34129d6e1f8c9a8fe4ed8' \
+    'c18d09d252e1287cdb421c6984de21811907e02cdbe9db7890598453e563ab7b'
+fi
