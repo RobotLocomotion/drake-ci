@@ -115,92 +115,30 @@ include(${DASHBOARD_DRIVER_DIR}/configurations/gurobi.cmake)
 include(${DASHBOARD_DRIVER_DIR}/configurations/mosek.cmake)
 include(${DASHBOARD_DRIVER_DIR}/configurations/snopt.cmake)
 
-set(DASHBOARD_TEST_TAG_FILTERS)
-
 if(EVERYTHING)
   string(APPEND DASHBOARD_BAZEL_BUILD_OPTIONS " --config=everything")
-elseif(GUROBI OR MOSEK OR SNOPT)
-  set(DASHBOARD_TEST_TAG_FILTERS
-    "-gurobi"
-    "-mosek"
-    "-snopt"
-  )
-  if(GUROBI)
-    string(APPEND DASHBOARD_BAZEL_BUILD_OPTIONS " --config=gurobi")
-    list(REMOVE_ITEM DASHBOARD_TEST_TAG_FILTERS "-gurobi")
-  endif()
-  if(MOSEK)
-    string(APPEND DASHBOARD_BAZEL_BUILD_OPTIONS " --config=mosek")
-    list(REMOVE_ITEM DASHBOARD_TEST_TAG_FILTERS "-mosek")
-  endif()
-  if(SNOPT)
-    string(APPEND DASHBOARD_BAZEL_BUILD_OPTIONS " --config=snopt")
-    list(REMOVE_ITEM DASHBOARD_TEST_TAG_FILTERS "-snopt")
-  endif()
 endif()
 
 if(COVERAGE)
-  if(EVERYTHING)
-    string(REPLACE
-      "--config=everything"
-      "--config=kcov_everything"
-      DASHBOARD_BAZEL_BUILD_OPTIONS
-      "${DASHBOARD_BAZEL_BUILD_OPTIONS}")
-  else()
-    set(DASHBOARD_BAZEL_BUILD_OPTIONS
-      "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=kcov")
-    if(DASHBOARD_TEST_TAG_FILTERS)
-      list(APPEND DASHBOARD_TEST_TAG_FILTERS "-no_kcov")
-      list(APPEND DASHBOARD_TEST_TAG_FILTERS "-lint")
-    endif()
-  endif()
+  string(APPEND DASHBOARD_BAZEL_BUILD_OPTIONS " --config=kcov")
 endif()
 
 if(MEMCHECK)
-  set(MEMCHECK_BAZEL_CONFIG "")
+  set(MEMCHECK_BAZEL_CONFIG)
   if(MEMCHECK STREQUAL "address-sanitizer")
     set(MEMCHECK_BAZEL_CONFIG "asan")
-    if(DASHBOARD_TEST_TAG_FILTERS)
-      list(APPEND DASHBOARD_TEST_TAG_FILTERS "-no_asan" "-no_lsan")
-    endif()
   elseif(MEMCHECK STREQUAL "leak-sanitizer")
     set(MEMCHECK_BAZEL_CONFIG "lsan")
-    if(DASHBOARD_TEST_TAG_FILTERS)
-      list(APPEND DASHBOARD_TEST_TAG_FILTERS "-no_lsan")
-    endif()
   elseif(MEMCHECK STREQUAL "thread-sanitizer")
     set(MEMCHECK_BAZEL_CONFIG "tsan")
-    if(DASHBOARD_TEST_TAG_FILTERS)
-      list(APPEND DASHBOARD_TEST_TAG_FILTERS "-no_tsan")
-    endif()
   elseif(MEMCHECK STREQUAL "undefined-behavior-sanitizer")
     set(MEMCHECK_BAZEL_CONFIG "ubsan")
-    if(DASHBOARD_TEST_TAG_FILTERS)
-      list(APPEND DASHBOARD_TEST_TAG_FILTERS "-no_ubsan")
-    endif()
   elseif(MEMCHECK STREQUAL "valgrind-memcheck")
     set(MEMCHECK_BAZEL_CONFIG "memcheck")
-    if(DASHBOARD_TEST_TAG_FILTERS)
-      list(APPEND DASHBOARD_TEST_TAG_FILTERS "-no_memcheck,-no_valgrind_tools")
-    endif()
   else()
     fatal("memcheck is invalid")
   endif()
-  if(EVERYTHING)
-    string(REPLACE
-      "--config=everything"
-      "--config=${MEMCHECK_BAZEL_CONFIG}_everything"
-      DASHBOARD_BAZEL_BUILD_OPTIONS
-      "${DASHBOARD_BAZEL_BUILD_OPTIONS}")
-  else()
-    set(DASHBOARD_BAZEL_BUILD_OPTIONS
-      "${DASHBOARD_BAZEL_BUILD_OPTIONS} --config=${MEMCHECK_BAZEL_CONFIG}")
-  endif()
-endif()
-
-if(DASHBOARD_TEST_TAG_FILTERS)
-  list(JOIN DASHBOARD_TEST_TAG_FILTERS "," DASHBOARD_TEST_TAG_FILTERS_STRING)
-  string(APPEND DASHBOARD_BAZEL_BUILD_OPTIONS " --test_tag_filters=${DASHBOARD_TEST_TAG_FILTERS_STRING}")
+  string(APPEND DASHBOARD_BAZEL_BUILD_OPTIONS " --config=${MEMCHECK_BAZEL_CONFIG}")
 endif()
 
 set(DASHBOARD_BAZEL_TEST_OPTIONS)
