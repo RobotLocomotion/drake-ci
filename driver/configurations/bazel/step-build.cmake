@@ -76,7 +76,7 @@ execute_process(COMMAND ${DASHBOARD_BAZEL_COMMAND} ${BUILD_ARGS_LIST}
   WORKING_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}"
   RESULT_VARIABLE DASHBOARD_BUILD_RETURN_VALUE)
 
-# https://bazel.build/blog/2016/01/27/continuous-integration.html
+# https://blog.bazel.build/2016/01/27/continuous-integration.html
 if(DASHBOARD_BUILD_RETURN_VALUE EQUAL 1)
   # Build failed.
   append_step_status("BAZEL BUILD" FAILURE)
