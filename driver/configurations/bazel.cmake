@@ -122,7 +122,6 @@ configure_file("${DASHBOARD_TOOLS_DIR}/user.bazelrc.in" "${CTEST_SOURCE_DIRECTOR
 report_configuration("
   ==================================== ENV
   DISPLAY
-  GUROBI_PATH
   SNOPT_PATH
   TERM
   ==================================== >DASHBOARD_
@@ -131,7 +130,6 @@ report_configuration("
   CXX_COMMAND
   CXX_VERSION_STRING
   ==================================== >DASHBOARD_
-  UNIX
   UNIX_DISTRIBUTION
   UNIX_DISTRIBUTION_CODE_NAME
   UNIX_DISTRIBUTION_VERSION
