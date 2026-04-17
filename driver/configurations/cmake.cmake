@@ -127,9 +127,6 @@ report_configuration("
   OS_CACHE_VERSION
   PYTHON_CACHE_VERSION
   ==================================== >DASHBOARD_
-  BAZEL_COMMAND
-  BAZEL_VERSION
-  ==================================== >DASHBOARD_
   REMOTE_CACHE_KEY_VERSION
   REMOTE_CACHE_KEY
   ====================================
