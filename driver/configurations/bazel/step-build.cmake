@@ -119,7 +119,7 @@ if(DASHBOARD_SUBMIT)
 endif()
 
 if(COVERAGE)
-  set(KCOV_TOOL "${DASHBOARD_SOURCE_DIRECTORY}/tools/dynamic_analysis/kcov_tool")
+  set(KCOV_TOOL "${DASHBOARD_SOURCE_DIRECTORY}/tools/kcov/kcov_tool")
   execute_process(
     COMMAND "${KCOV_TOOL}" ci_merge
     RESULT_VARIABLE KCOV_MERGE_RESULT_VARIABLE
