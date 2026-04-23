@@ -173,13 +173,6 @@ else()
   set(DOCKER OFF)
 endif()
 
-string(STRIP "$ENV{verbose}" VERBOSE)
-if(VERBOSE)
-  set(VERBOSE ON)
-else()
-  set(VERBOSE OFF)
-endif()
-
 # Set the source tree
 set(DASHBOARD_SOURCE_DIRECTORY "${DASHBOARD_WORKSPACE}/src")
 

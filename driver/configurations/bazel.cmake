@@ -43,12 +43,6 @@ else()
   set(DASHBOARD_JOBS 1)
 endif()
 
-if(VERBOSE)
-  set(DASHBOARD_SUBCOMMANDS "yes")
-else()
-  set(DASHBOARD_SUBCOMMANDS "no")
-endif()
-
 include(${DASHBOARD_DRIVER_DIR}/configurations/cache.cmake)
 
 if(REMOTE_CACHE)
