@@ -121,8 +121,6 @@ report_configuration("
   ==================================== >DASHBOARD_
   CC_COMMAND
   CC_VERSION_STRING
-  CXX_COMMAND
-  CXX_VERSION_STRING
   ==================================== >DASHBOARD_
   UNIX_DISTRIBUTION
   UNIX_DISTRIBUTION_CODE_NAME
