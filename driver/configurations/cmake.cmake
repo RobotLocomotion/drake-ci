@@ -17,18 +17,6 @@ if (PACKAGE)
   set(DASHBOARD_SUBMIT OFF)
 endif()
 
-set(DASHBOARD_CXX_FLAGS)
-if(DEFINED ENV{TERM})
-  if(COMPILER STREQUAL "clang")
-    set(DASHBOARD_CXX_FLAGS "-fcolor-diagnostics ${DASHBOARD_CXX_FLAGS}")
-  elseif(COMPILER STREQUAL "gcc")
-    set(DASHBOARD_CXX_FLAGS "-fdiagnostics-color=always ${DASHBOARD_CXX_FLAGS}")
-  endif()
-  set(DASHBOARD_COLOR_MAKEFILE ON)
-else()
-  set(DASHBOARD_COLOR_MAKEFILE OFF)
-endif()
-
 # Set up build configuration
 set(CTEST_CONFIGURATION_TYPE "${DASHBOARD_CONFIGURATION_TYPE}")
 set(CTEST_TEST_TIMEOUT 300)
@@ -38,16 +26,7 @@ include(${DASHBOARD_DRIVER_DIR}/configurations/gurobi.cmake)
 include(${DASHBOARD_DRIVER_DIR}/configurations/mosek.cmake)
 include(${DASHBOARD_DRIVER_DIR}/configurations/snopt.cmake)
 
-if(VERBOSE)
-  set(DASHBOARD_VERBOSE_MAKEFILE ON)
-else()
-  set(DASHBOARD_VERBOSE_MAKEFILE OFF)
-endif()
-
-cache_append(CMAKE_COLOR_MAKEFILE BOOL ${DASHBOARD_COLOR_MAKEFILE})
-cache_append(CMAKE_CXX_FLAGS STRING ${DASHBOARD_CXX_FLAGS})
 cache_append(CMAKE_INSTALL_PREFIX PATH ${DASHBOARD_INSTALL_PREFIX})
-cache_append(CMAKE_VERBOSE_MAKEFILE BOOL ${DASHBOARD_VERBOSE_MAKEFILE})
 cache_append(DRAKE_CI_ENABLE_PACKAGING BOOL ${PACKAGE})
 cache_append(DRAKE_CI_ENABLE_EVERYTHING BOOL ${EVERYTHING})
 
@@ -97,10 +76,7 @@ report_configuration("
   ====================================
   CMAKE_VERSION
   ==================================== >DASHBOARD_ <CMAKE_
-  COLOR_MAKEFILE
-  CXX_FLAGS
   INSTALL_PREFIX
-  VERBOSE_MAKEFILE
   ====================================
   CTEST_BUILD_NAME(DASHBOARD_JOB_NAME)
   CTEST_BINARY_DIRECTORY

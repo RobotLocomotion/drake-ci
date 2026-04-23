@@ -23,12 +23,6 @@ else()
   set(DASHBOARD_EXPERIMENTAL_SCALE_TIMEOUTS 1.0)
 endif()
 
-if(VERBOSE)
-  set(DASHBOARD_SUBCOMMANDS "yes")
-else()
-  set(DASHBOARD_SUBCOMMANDS "no")
-endif()
-
 include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
 
 # Set package version

@@ -11,7 +11,6 @@ build --host_copt=@DASHBOARD_COPT@
 build --http_timeout_scaling=@DASHBOARD_EXPERIMENTAL_SCALE_TIMEOUTS@
 build --jobs=@DASHBOARD_JOBS@
 build --keep_going=yes
-build --subcommands=@DASHBOARD_SUBCOMMANDS@
 build --test_env=GRB_LICENSE_FILE
 build --test_env=MOSEKLM_LICENSE_FILE
 build --experimental_repository_downloader_retries=5
