@@ -221,7 +221,7 @@ macro(aws_upload ARTIFACT UNSTABLE_MESSAGE)
     COMMAND ${DASHBOARD_PYTHON_COMMAND}
       "${DASHBOARD_TOOLS_DIR}/upload-to-aws.py"
       --bucket "drake-packages"
-      --track "${DASHBOARD_TRACK}"
+      --group "${DASHBOARD_GROUP}"
       --aws "${DASHBOARD_AWS_COMMAND}"
       --log "${CTEST_BINARY_DIRECTORY}/aws_artifacts.log"
       "${ARTIFACT}"
@@ -303,7 +303,7 @@ function(begin_stage)
   endif()
 
   # Set up the dashboard
-  ctest_start("${DASHBOARD_MODEL}" TRACK "${DASHBOARD_TRACK}" QUIET)
+  ctest_start("${DASHBOARD_GROUP}" QUIET)
 
   # Upload the Jenkins job URL to add link on CDash
   set(DASHBOARD_BUILD_URL_FILE

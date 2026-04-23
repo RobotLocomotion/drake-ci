@@ -15,14 +15,14 @@ ARCHIVE_STORAGE_CLASS = 'STANDARD'
 MAX_ATTEMPTS = 3
 BACKOFF_DELAY = 15
 
-SUPPORTED_TRACKS = {'nightly', 'continuous', 'experimental', 'staging'}
+SUPPORTED_GROUPS = {'nightly', 'continuous', 'experimental', 'staging'}
 
 
 def canonical_uri(*, name, options, scheme, domain, escape: bool):
     """
     Returns the URI for the specified parameters.
     """
-    path = f'drake/{options.track}/{name}'
+    path = f'drake/{options.group}/{name}'
     if escape:
         path = urllib.parse.quote(path)
     return urllib.parse.urlunsplit((scheme, domain, path, '', ''))
@@ -63,7 +63,7 @@ def max_age(options):
         return to_seconds(minutes=30)
 
     raise ValueError(
-        f"max_age only supports nightly and continuous, not {options.track}")
+        f"max_age only supports nightly and continuous, not {options.group}")
 
 
 def upload(path, name, options, *, expiration=None):
@@ -135,7 +135,7 @@ def upload_checksum(path, name, options, *, expiration=None):
 
 def upload_artifacts(options):
     """
-    Uploads an artifact (and checksums) to AWS S3. Depending on the CI track,
+    Uploads an artifact (and checksums) to AWS S3. Depending on the CI group,
     also uploads a copy as 'latest'.
     """
     path = options.artifact
@@ -189,16 +189,16 @@ def main(args):
         '--bucket', type=str, required=True,
         help='Name of target AWS bucket')
     parser.add_argument(
-        '--track', type=str.lower, required=True, choices=SUPPORTED_TRACKS,
-        help='CI track of artifact')
+        '--group', type=str.lower, required=True, choices=SUPPORTED_GROUPS,
+        help='CI group of artifact')
     parser.add_argument(
         '--log', type=str, metavar='LOGFILE', dest='logfile',
         help='Append list of uploaded URIs to %(metavar)s')
 
     options = parser.parse_args(args)
 
-    for t in SUPPORTED_TRACKS:
-        setattr(options, t, options.track == t)
+    for g in SUPPORTED_GROUPS:
+        setattr(options, g, options.group == g)
 
     if not os.path.exists(options.artifact):
         parser.error(f'Artifact {options.artifact!r} does not exist')
