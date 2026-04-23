@@ -6,18 +6,6 @@ string(REGEX REPLACE "(.*) - (.*) (.*)" "\\2"
   DASHBOARD_NODE_NAME "${DASHBOARD_NODE_NAME}")
 set(CTEST_SITE "${DASHBOARD_NODE_NAME}")
 
-# set model and track for submission
-set(DASHBOARD_MODEL "Experimental")
-if(TRACK STREQUAL "continuous")
-  set(DASHBOARD_TRACK "Continuous")
-elseif(TRACK MATCHES "(nightly|weekly)")
-  set(DASHBOARD_TRACK "Nightly")
-elseif(TRACK STREQUAL "staging")
-  set(DASHBOARD_TRACK "Staging")
-else()
-  set(DASHBOARD_TRACK "Experimental")
-endif()
-
 # Set build id
 if(DEFINED ENV{BUILD_ID})
   string(STRIP "$ENV{BUILD_ID}" DASHBOARD_JENKINS_BUILD_ID)

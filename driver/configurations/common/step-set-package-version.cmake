@@ -1,7 +1,7 @@
 # -*- mode: cmake; -*-
 # vi: set ft=cmake:
 
-if(DASHBOARD_TRACK STREQUAL "Staging")
+if(DASHBOARD_GROUP STREQUAL "staging")
   if(NOT "$ENV{DRAKE_VERSION}" MATCHES "^[0-9].[0-9]")
     fatal("drake version is invalid or not set")
   endif()
@@ -20,7 +20,7 @@ else()
   # For nightly uploads we only want YYYYMMDD so that the users do not need to
   # guess the build time.  For all other builds, we want the date, time, and
   # also the commit hash.
-  if(DASHBOARD_TRACK STREQUAL "Nightly")
+  if(DASHBOARD_GROUP STREQUAL "nightly")
     set(DASHBOARD_DRAKE_VERSION "0.0.${DASHBOARD_PACKAGE_DATE}")
   elseif(GIT_REV_PARSE_RESULT_VARIABLE EQUAL 0)
     set(DASHBOARD_PACKAGE_COMMIT "${GIT_REV_PARSE_OUTPUT_VARIABLE}")

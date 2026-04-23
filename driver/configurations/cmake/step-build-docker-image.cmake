@@ -48,7 +48,7 @@ else()
     endif()
   endif()
 
-  if(DASHBOARD_TRACK STREQUAL "Staging")
+  if(DASHBOARD_GROUP STREQUAL "staging")
     set(DOCKER_TAG "${DASHBOARD_DRAKE_VERSION}-staging")
   else()
     set(DOCKER_TAG "${DATE}")
@@ -76,7 +76,7 @@ else()
       endif()
     endif()
 
-    if(DASHBOARD_TRACK STREQUAL "Nightly" AND NOT DASHBOARD_UNSTABLE)
+    if(DASHBOARD_GROUP STREQUAL "nightly" AND NOT DASHBOARD_UNSTABLE)
       set(DOCKER_TAG_LATEST_ARGS "tag robotlocomotion/drake:${DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME} robotlocomotion/drake:latest")
       separate_arguments(DOCKER_TAG_LATEST_ARGS_LIST UNIX_COMMAND "${DOCKER_TAG_LATEST_ARGS}")
       execute_process(COMMAND "sudo" "${DASHBOARD_DOCKER_COMMAND}" ${DOCKER_TAG_LATEST_ARGS_LIST}
