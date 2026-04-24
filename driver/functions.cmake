@@ -338,7 +338,7 @@ endmacro()
 # invoking tooling within Drake. This is used conditionally in compiler.cmake
 # to select the compiler for the current build.
 #------------------------------------------------------------------------------
-function(determine_compiler OUTPUT_CC_VARIABLE OUTPUT_CXX_VARIABLE)
+function(determine_compiler OUTPUT_CC_VARIABLE)
   # Query what compiler is specified by `--config=${COMPILER}`.
   set(COMPILER_CONFIG_ARGS
     run --config=${COMPILER}
@@ -359,11 +359,11 @@ function(determine_compiler OUTPUT_CC_VARIABLE OUTPUT_CXX_VARIABLE)
   execute_process(COMMAND ${DASHBOARD_BAZEL_COMMAND} clean
     WORKING_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}")
 
-  # Extract the compiler (CC, CXX) names.
+  # Extract the compiler (CC) value.
   STRING(REPLACE "\n" ";" COMPILER_CONFIG_OUTPUT "${COMPILER_CONFIG_OUTPUT}")
   foreach(COMPILER_CONFIG_ENTRY IN LISTS COMPILER_CONFIG_OUTPUT)
-    if("${COMPILER_CONFIG_ENTRY}" MATCHES "^([A-Z]+)=(.*)$")
-      set(${CMAKE_MATCH_1}_COMMAND "${CMAKE_MATCH_2}")
+    if("${COMPILER_CONFIG_ENTRY}" MATCHES "^CC=(.*)$")
+      set(CC_COMMAND "${CMAKE_MATCH_1}")
     endif()
   endforeach()
 
@@ -371,12 +371,8 @@ function(determine_compiler OUTPUT_CC_VARIABLE OUTPUT_CXX_VARIABLE)
   if("${CC_COMMAND}" STREQUAL "")
     fatal("compiler configuration (CC) could not be obtained")
   endif()
-  if("${CXX_COMMAND}" STREQUAL "")
-    fatal("compiler configuration (CXX) could not be obtained")
-  endif()
 
   set(${OUTPUT_CC_VARIABLE} "${CC_COMMAND}" PARENT_SCOPE)
-  set(${OUTPUT_CXX_VARIABLE} "${CXX_COMMAND}" PARENT_SCOPE)
 endfunction()
 
 #------------------------------------------------------------------------------
