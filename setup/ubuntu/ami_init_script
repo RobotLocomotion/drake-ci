@@ -29,8 +29,13 @@ apt-get install --no-install-recommends \
   ${packages}
 
 # Set the version of Java to match Jenkins.
-update-java-alternatives --jre-headless -s \
-  java-1.21.0-openjdk-$(dpkg-architecture -qDEB_HOST_ARCH)
+if [[ "$(uname -m)" == "aarch64" ]]; then
+  update-java-alternatives --jre-headless -s \
+    java-1.21.0-openjdk-arm64
+else
+  update-java-alternatives --jre-headless -s \
+    java-1.21.0-openjdk-amd64
+fi
 
 groupadd docker
 usermod -a -G docker ubuntu
