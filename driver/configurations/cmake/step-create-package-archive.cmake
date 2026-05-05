@@ -11,7 +11,14 @@ else()
     elseif(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "aarch64")
       set(DASHBOARD_PACKAGE_ARCHIVE_DISTRIBUTION "${DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME}-aarch64")
     else()
-      set(DASHBOARD_PACKAGE_ARCHIVE_DISTRIBUTION "${DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME}")
+      # For Resolute (and newer), we incorporate the architecture in the package
+      # name when running on amd64. For Noble (and prior, none of which are in
+      # CI anymore), we do NOT incorporate it.
+      if (DASHBOARD_PACKAGE_ARCHIVE_DISTRIBUTION STREQUAL "noble")
+        set(DASHBOARD_PACKAGE_ARCHIVE_DISTRIBUTION "${DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME}")
+      else()
+        set(DASHBOARD_PACKAGE_ARCHIVE_DISTRIBUTION "${DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME}-${DASHBOARD_DEB_ARCH}")
+      endif()
     endif()
 
     set(DASHBOARD_PACKAGE_NAME "drake-${DASHBOARD_DRAKE_VERSION}")
