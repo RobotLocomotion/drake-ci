@@ -8,13 +8,12 @@ else()
   if(NOT DASHBOARD_UNSTABLE)
     if(APPLE)
       set(DASHBOARD_PACKAGE_ARCHIVE_DISTRIBUTION mac-arm64)
-    elseif(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "aarch64")
-      set(DASHBOARD_PACKAGE_ARCHIVE_DISTRIBUTION "${DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME}-aarch64")
     else()
-      # For Resolute (and newer), we incorporate the architecture in the package
-      # name when running on amd64. For Noble (and prior, none of which are in
-      # CI anymore), we do NOT incorporate it.
-      if(DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME STREQUAL "noble")
+      # For compatibility reasons, our Noble amd64 binaries are named plainly
+      # without any architecture information. For all other binaries moving
+      # forward (e.g., Noble arm64, and all Resolute), incorporate the
+      # architecture and variant as applicable in all package names.
+      if(DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME STREQUAL "noble" AND CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64")
         set(DASHBOARD_PACKAGE_ARCHIVE_DISTRIBUTION "${DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME}")
       else()
         set(DASHBOARD_PACKAGE_ARCHIVE_DISTRIBUTION "${DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME}-${DASHBOARD_DEB_ARCH}")
