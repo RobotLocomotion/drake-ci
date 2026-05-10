@@ -33,8 +33,8 @@ set(DASHBOARD_TEMPORARY_FILES "")
 set(CMAKE_EXECUTE_PROCESS_COMMAND_ECHO STDERR)
 
 include(${DASHBOARD_DRIVER_DIR}/functions.cmake)
-include(${DASHBOARD_DRIVER_DIR}/architecture.cmake)
 include(${DASHBOARD_DRIVER_DIR}/environment.cmake)
+include(${DASHBOARD_DRIVER_DIR}/architecture.cmake)
 
 # Set initial configuration
 set(CTEST_TEST_ARGS "")

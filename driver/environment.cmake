@@ -54,6 +54,23 @@ if(NOT DISTRIBUTION STREQUAL DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME)
   fatal("incorrect operating system code name in job name")
 endif()
 
+if(NOT APPLE)
+  if(DASHBOARD_JOB_NAME MATCHES "(amd64v[0-9]|arm64)")
+    set(ARCH_AND_VARIANT "${CMAKE_MATCH_0}")
+    # `v1` is in the job name for clarity, but really the architecture is just
+    # called amd64.
+    string(REGEX REPLACE "v1$" "" ARCH_AND_VARIANT "${ARCH_AND_VARIANT}")
+  else()
+    # Noble did not support architecture variants. Otherwise, we'll assume
+    # amd64v3 by default.
+    if(DISTRIBUTION STREQUAL "noble")
+      set(ARCH_AND_VARIANT "amd64")
+    else()
+      set(ARCH_AND_VARIANT "amd64v3")
+    endif()
+  endif()
+endif()
+
 if(DASHBOARD_JOB_NAME MATCHES "(clang|gcc)")
   set(COMPILER "${CMAKE_MATCH_0}")
 else()
