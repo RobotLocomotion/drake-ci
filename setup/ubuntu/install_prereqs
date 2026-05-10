@@ -51,6 +51,17 @@ install_gurobi () {
 
 [[ "${EUID}" -eq 0 ]] || die 'This script must be run as root'
 
+disable_amd64v3=1
+while [ "${1:-}" != "" ]; do
+  case "$1" in
+    --disable-amd64v3)
+      disable_amd64v3=0
+      ;;
+    *)
+      die "invalid argument: $1"
+  esac
+done
+
 trap 'cleanup' EXIT
 
 systemctl --quiet disable apt-daily-upgrade.timer apt-daily.timer
@@ -59,6 +70,12 @@ echo 'APT::Acquire::Retries "4";' > /etc/apt/apt.conf.d/80-acquire-retries
 
 export DEBIAN_FRONTEND=noninteractive
 export PYTHONWARNINGS=ignore::SyntaxWarning
+
+# Reset to the requested architecture variant *before* updating packages.
+. /etc/os-release
+if [[ "${VERSION_CODENAME}" != "noble" && "${disable_amd64v3}" -eq 1 ]]; then
+  rm -f /etc/apt/apt.conf.d/99enable-amd64v3
+fi
 
 apt-get update -qq || (sleep 15; apt-get update -qq)
 
@@ -72,7 +89,7 @@ apt-get upgrade -o Dpkg::Options::=--force-confdef \
 # it should have already been installed on the Noble unprovisioned image. See
 # https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 # for instructions on installing manually.
-if [[ "$(. /etc/os-release && echo ${VERSION_CODENAME})" != "noble" ]]; then
+if [[ "${VERSION_CODENAME}" != "noble" ]]; then
   apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
     awscli
 fi
