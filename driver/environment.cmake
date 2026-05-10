@@ -54,6 +54,16 @@ if(NOT DISTRIBUTION STREQUAL DASHBOARD_UNIX_DISTRIBUTION_CODE_NAME)
   fatal("incorrect operating system code name in job name")
 endif()
 
+if(NOT APPLE)
+  if(DASHBOARD_JOB_NAME MATCHES "(amd64[v[0-9]]?|arm64)")
+    set(ARCH_AND_VARIANT "${CMAKE_MATCH_0}")
+  else()
+    # Default to amd64 (the only available) for distributions which don't
+    # incorporate the variant in the job name (i.e., Noble).
+    set(ARCH_AND_VARIANT "amd64")
+  endif()
+endif()
+
 if(DASHBOARD_JOB_NAME MATCHES "(clang|gcc)")
   set(COMPILER "${CMAKE_MATCH_0}")
 else()
