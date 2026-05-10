@@ -18,8 +18,12 @@ fi
 
 # Provision image, if required (Linux only).
 if [[ "$(uname -s)" == "Linux" && "${JOB_NAME}" =~ unprovisioned ]]; then
+    install_prereqs_args=()
+    if [[ "${JOB_NAME}" =~ "amd64v[0-24-9]" ]]; then
+        install_prereqs_args+=(--disable-amd64-v3)
+    fi
     sudo PATH="${PATH}" WORKSPACE="${WORKSPACE}" \
-        "${CI_ROOT}/setup/ubuntu/install_prereqs"
+        "${CI_ROOT}/setup/ubuntu/install_prereqs" "${install_prereqs_args[@]}"
 fi
 
 # Synchronize the system clock (so log timestamps will be accurate).

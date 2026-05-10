@@ -167,7 +167,7 @@ def addCDashBadge() {
  * @return the node label
  */
 def getNodeLabel() {
-  def pattern = ~/^((linux(-arm64)?|mac-arm)-[A-Za-z]+(-unprovisioned)?).*/
+  def pattern = ~/^((linux(-arm64|amd64v[0-9])?|mac-arm)-[A-Za-z]+(-unprovisioned)?).*/
   def match = env.JOB_NAME =~ pattern
 
   if (match.find()) {
