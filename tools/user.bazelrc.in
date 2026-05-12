@@ -1,3 +1,5 @@
+# -*- bazelrc -*-
+
 startup --output_user_root=@DASHBOARD_OUTPUT_USER_ROOT@
 startup --max_idle_secs=99
 

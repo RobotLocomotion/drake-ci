@@ -1,3 +1,5 @@
+# -*- bazelrc -*-
+
 build --remote_download_outputs=all
 build --experimental_remote_cache_lease_extension=yes
 build --experimental_remote_cache_ttl=30m
@@ -8,3 +10,5 @@ build --remote_max_connections=@DASHBOARD_REMOTE_MAX_CONNECTIONS@
 build --remote_retries=@DASHBOARD_REMOTE_RETRIES@
 build --remote_timeout=@DASHBOARD_REMOTE_TIMEOUT@
 build --remote_upload_local_results=@DASHBOARD_REMOTE_UPLOAD_LOCAL_RESULTS@
+
+try-import-if-bazel-version >=9.1.0 %workspace%/remote-v9.1.bazelrc
