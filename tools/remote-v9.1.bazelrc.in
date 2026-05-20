@@ -1,0 +1,3 @@
+# -*- bazelrc -*-
+
+build --rewind_lost_inputs

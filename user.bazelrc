@@ -1,3 +1,5 @@
+# -*- bazelrc -*-
+
 startup --max_idle_secs=99
 
 build --announce_rc=yes

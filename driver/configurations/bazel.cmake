@@ -58,6 +58,9 @@ if(REMOTE_CACHE)
   configure_file("${DASHBOARD_TOOLS_DIR}/remote.bazelrc.in"
     "${CTEST_SOURCE_DIRECTORY}/remote.bazelrc" @ONLY
   )
+  configure_file("${DASHBOARD_TOOLS_DIR}/remote-v9.1.bazelrc.in"
+    "${CTEST_SOURCE_DIRECTORY}/remote-v9.1.bazelrc" @ONLY
+  )
 endif()
 
 set(DASHBOARD_BAZEL_BUILD_OPTIONS)
