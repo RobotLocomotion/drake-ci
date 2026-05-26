@@ -66,6 +66,7 @@ else()
 endif()
 
 set(DASHBOARD_SUBMIT ON)
+set(DASHBOARD_BUILD_EVENT_JSON_FILE "${CTEST_BINARY_DIRECTORY}/BUILD.JSON")
 
 # Set up the site and build information
 include(${DASHBOARD_DRIVER_DIR}/site.cmake)
@@ -84,6 +85,9 @@ set(CTEST_CONFIGURATION_TYPE "${DASHBOARD_CONFIGURATION_TYPE}")
 
 # Report resource usage before build
 execute_step(common report-resource-usage)
+
+# Set up remote cache
+execute_step(common setup-remote-cache)
 
 # Include helpers
 include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)

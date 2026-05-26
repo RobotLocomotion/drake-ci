@@ -37,4 +37,4 @@ query --experimental_repository_downloader_retries=5
 
 test --test_summary=short
 
-try-import %workspace%/remote.bazelrc
+try-import @REMOTE_RC_ROOT@/remote.bazelrc
