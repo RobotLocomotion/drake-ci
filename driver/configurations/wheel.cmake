@@ -2,9 +2,6 @@
 # vi: set ft=cmake:
 
 # Set build locations and ensure there are no leftover artifacts.
-set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}")
-set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/_wheel_$ENV{USER}")
-
 set(WHEEL_BUILD_PATHS
   "${CTEST_BINARY_DIRECTORY}"
   # The paths below should match those used by Drake during the wheel build.
@@ -22,8 +19,6 @@ if(APPLE)
 else()
   set(DASHBOARD_EXPERIMENTAL_SCALE_TIMEOUTS 1.0)
 endif()
-
-include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
 
 # Set package version
 execute_step(common set-package-version)

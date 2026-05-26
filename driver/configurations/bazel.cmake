@@ -2,8 +2,6 @@
 # vi: set ft=cmake:
 
 # Set build locations and ensure there are no leftover artifacts.
-set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}")
-set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/_bazel_$ENV{USER}")
 set(DASHBOARD_INSTALL_PREFIX "${CTEST_BINARY_DIRECTORY}/install")
 set(DASHBOARD_DOCUMENTATION_DIRECTORY "${DASHBOARD_INSTALL_PREFIX}/share/doc/drake")
 
@@ -75,11 +73,6 @@ if(DEBUG)
 else()
   string(APPEND DASHBOARD_BAZEL_BUILD_OPTIONS " --compilation_mode=opt")
 endif()
-
-include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
-include(${DASHBOARD_DRIVER_DIR}/configurations/gurobi.cmake)
-include(${DASHBOARD_DRIVER_DIR}/configurations/mosek.cmake)
-include(${DASHBOARD_DRIVER_DIR}/configurations/snopt.cmake)
 
 if(EVERYTHING)
   string(APPEND DASHBOARD_BAZEL_BUILD_OPTIONS " --config=everything")
