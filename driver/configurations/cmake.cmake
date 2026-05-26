@@ -2,9 +2,8 @@
 # vi: set ft=cmake:
 
 # Set build locations and ensure there are no leftover artifacts.
-set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}")
-set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/_cmake_$ENV{USER}")
 set(DASHBOARD_INSTALL_PREFIX /opt/drake)
+set(DASHBOARD_OUTPUT_USER_ROOT "${CTEST_BINARY_DIRECTORY}")
 
 file(REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
 file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
@@ -20,11 +19,6 @@ endif()
 # Set up build configuration
 set(CTEST_CONFIGURATION_TYPE "${DASHBOARD_CONFIGURATION_TYPE}")
 set(CTEST_TEST_TIMEOUT 300)
-
-include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
-include(${DASHBOARD_DRIVER_DIR}/configurations/gurobi.cmake)
-include(${DASHBOARD_DRIVER_DIR}/configurations/mosek.cmake)
-include(${DASHBOARD_DRIVER_DIR}/configurations/snopt.cmake)
 
 cache_append(CMAKE_INSTALL_PREFIX PATH ${DASHBOARD_INSTALL_PREFIX})
 cache_append(DRAKE_CI_ENABLE_PACKAGING BOOL ${PACKAGE})
