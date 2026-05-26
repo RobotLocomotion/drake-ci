@@ -173,12 +173,9 @@ else()
   set(DOCKER OFF)
 endif()
 
-# Set the source tree
+# Set the source and binary trees.
 set(DASHBOARD_SOURCE_DIRECTORY "${DASHBOARD_WORKSPACE}/src")
-
-# Set the build tree
-# TODO(jamiesnape) make this ${DASHBOARD_WORKSPACE}/build
-set(DASHBOARD_BINARY_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}/build")
+set(DASHBOARD_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/build")
 
 # Determine if build volume is "warm"
 set(DASHBOARD_TIMESTAMP_FILE "${DASHBOARD_TEMP_DIR}/TIMESTAMP")
