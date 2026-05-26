@@ -85,6 +85,9 @@ set(CTEST_CONFIGURATION_TYPE "${DASHBOARD_CONFIGURATION_TYPE}")
 # Report resource usage before build
 execute_step(common report-resource-usage)
 
+# Set up remote cache
+execute_step(common setup-remote-cache)
+
 # Include helpers
 include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
 include(${DASHBOARD_DRIVER_DIR}/configurations/gurobi.cmake)
