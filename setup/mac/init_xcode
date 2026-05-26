@@ -110,8 +110,8 @@ fi
 feedback "Checking if Xcode is already installed..."
 readonly xcode_root="/Applications/Xcode-$version.app"
 if ! [ -d "$xcode_root/Contents/Developer" ]; then
-  readonly installer_loc="Xcode_$xcode_full_version.xip"
-  readonly clt_loc="Command_Line_Tools_for_Xcode_$version.dmg"
+  readonly installer_loc="Xcode_${xcode_full_version}_Universal.xip"
+  readonly clt_loc="Command_Line_Tools_${version}_Universal.dmg"
 
   feedback "Fetching the installer and command line tools..."
   pull_xcode_or_clt "Xcode installer" \
@@ -124,7 +124,7 @@ if ! [ -d "$xcode_root/Contents/Developer" ]; then
   sync
   hdiutil attach "$clt_loc"
   readonly clt_volume="/Volumes/Command Line Developer Tools"
-  readonly clt_pkg="$clt_volume/Command Line Tools.pkg"
+  readonly clt_pkg="$clt_volume/Command Line Tools Universal.pkg"
   sudo installer -package "$clt_pkg" -target /
   sync
   hdiutil detach "$clt_volume"

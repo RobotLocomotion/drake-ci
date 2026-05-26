@@ -32,6 +32,10 @@ between Xcode versions on the same machine.
 
 It is intended to be used each time a new Xcode base image is created.
 
+Note that this script is **not** intended to be backwards-compatible with older
+versions of Xcode or macOS, but rather kept up-to-date with the latest versions
+in use for drake-ci.
+
 ### `ami_init_script`
 
 A script to perform initial system configuration. It uses `sudo` internally for
