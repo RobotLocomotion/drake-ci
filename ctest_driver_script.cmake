@@ -40,7 +40,7 @@ include(${DASHBOARD_DRIVER_DIR}/environment.cmake)
 set(CTEST_TEST_ARGS "")
 
 set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}")
-set(CTEST_BINARY_DIRECTORY "${DASHBOARD_BINARY_DIRECTORY}")
+set(CTEST_BINARY_DIRECTORY "${DASHBOARD_BINARY_DIRECTORY}/_${GENERATOR}_$ENV{USER}")
 
 find_program(DASHBOARD_GIT_COMMAND NAMES "git")
 if(NOT DASHBOARD_GIT_COMMAND)
@@ -84,6 +84,12 @@ set(CTEST_CONFIGURATION_TYPE "${DASHBOARD_CONFIGURATION_TYPE}")
 
 # Report resource usage before build
 execute_step(common report-resource-usage)
+
+# Include helpers
+include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
+include(${DASHBOARD_DRIVER_DIR}/configurations/gurobi.cmake)
+include(${DASHBOARD_DRIVER_DIR}/configurations/mosek.cmake)
+include(${DASHBOARD_DRIVER_DIR}/configurations/snopt.cmake)
 
 # Invoke the appropriate build driver for the selected configuration
 if(GENERATOR STREQUAL "bazel")

@@ -2,9 +2,10 @@
 # vi: set ft=cmake:
 
 # Set build locations and ensure there are no leftover artifacts.
-set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_SOURCE_DIRECTORY}")
-set(CTEST_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/_cmake_$ENV{USER}")
 set(DASHBOARD_INSTALL_PREFIX /opt/drake)
+# Use the Bazel output user root even under CMake builds, in case we caught a
+# warm machine that previously ran a Bazel build so we can share cache.
+set(DASHBOARD_OUTPUT_USER_ROOT "${DASHBOARD_BINARY_DIRECTORY}/_bazel_$ENV{USER}")
 
 file(REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
 file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
@@ -21,11 +22,6 @@ endif()
 set(CTEST_CONFIGURATION_TYPE "${DASHBOARD_CONFIGURATION_TYPE}")
 set(CTEST_TEST_TIMEOUT 300)
 
-include(${DASHBOARD_DRIVER_DIR}/configurations/aws.cmake)
-include(${DASHBOARD_DRIVER_DIR}/configurations/gurobi.cmake)
-include(${DASHBOARD_DRIVER_DIR}/configurations/mosek.cmake)
-include(${DASHBOARD_DRIVER_DIR}/configurations/snopt.cmake)
-
 cache_append(CMAKE_INSTALL_PREFIX PATH ${DASHBOARD_INSTALL_PREFIX})
 cache_append(DRAKE_CI_ENABLE_PACKAGING BOOL ${PACKAGE})
 cache_append(DRAKE_CI_ENABLE_EVERYTHING BOOL ${EVERYTHING})
@@ -34,7 +30,7 @@ file(COPY "${DASHBOARD_CI_DIR}/user.bazelrc"
   DESTINATION "${DASHBOARD_SOURCE_DIRECTORY}")
 
 file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
-  "startup --output_user_root=${DASHBOARD_WORKSPACE}/_bazel_$ENV{USER}\n")
+  "startup --output_user_root=${DASHBOARD_OUTPUT_USER_ROOT}\n")
 
 # Set up cache
 include(${DASHBOARD_DRIVER_DIR}/configurations/cache.cmake)
