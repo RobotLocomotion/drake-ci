@@ -85,13 +85,6 @@ def doMainBuild(Map scmVars, String stagingReleaseVersion = null) {
       sshUserPrivateKey(credentialsId: 'ad794d10-9bc8-4a7a-a2f3-998af802cab0',
         keyFileVariable: 'SSH_PRIVATE_KEY_FILE')
     ]
-    if (!env.JOB_NAME.contains("experimental")) {
-      // Use Docker credentials for production jobs only.
-      credentials += string(credentialsId: 'e21b9517-8aa7-419e-8f25-19cd42e10f68',
-        variable: 'DOCKER_USERNAME')
-      credentials += file(credentialsId: '912dd413-d419-4760-b7ab-c132ab9e7c5e',
-        variable: 'DOCKER_PASSWORD_FILE')
-    }
     if (env.JOB_NAME.contains("mirror-to-s3")) {
       credentials += string(credentialsId: '8435bd26-174f-4eab-9f57-508a77e467ce',
        variable: 'GITHUB_ACCESS_TOKEN')

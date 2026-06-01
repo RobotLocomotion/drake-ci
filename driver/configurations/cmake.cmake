@@ -130,17 +130,6 @@ if(PACKAGE)
       execute_step(cmake upload-debian-archive)
     endif()
   endif()
-  if(DOCKER)
-    # The default Ubuntu version for Docker should be the newest base OS.
-    # If this value changes, the Docker documentation in the drake repository
-    # (drake/doc/_pages/docker.md) also needs to be updated.
-    set(DEFAULT_DOCKER_DISTRIBUTION "noble")
-
-    execute_step(cmake build-docker-image)
-    if(DOCKER STREQUAL "publish")
-      execute_step(cmake push-docker-image)
-    endif()
-  endif()
   if(DISTRIBUTION STREQUAL "noble" AND CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64" AND DASHBOARD_GROUP STREQUAL "nightly")
     execute_step(cmake push-nightly-release-branch)
   endif()

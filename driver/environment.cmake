@@ -151,26 +151,11 @@ if(DASHBOARD_JOB_NAME MATCHES "packaging")
     else()
       set(PACKAGE ON)
     endif()
-    set(DOCKER OFF)
   else()
     set(PACKAGE "publish")
-    # Drake's published Docker images are deprecated, and the aarch64 and
-    # Resolute builds are newer than the deprecation. Therefore, we will never
-    # add support for aarch64 or Resolute Docker images.
-    if ((CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64") AND
-      (DISTRIBUTION STREQUAL "noble"))
-      if(DASHBOARD_GROUP MATCHES "(nightly|staging)")
-        set(DOCKER "publish")
-      else()
-        set(DOCKER ON)
-      endif()
-    else()
-      set(DOCKER OFF)
-    endif()
   endif()
 else()
   set(PACKAGE OFF)
-  set(DOCKER OFF)
 endif()
 
 # Set the source and binary trees.
