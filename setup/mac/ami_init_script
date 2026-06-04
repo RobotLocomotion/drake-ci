@@ -38,15 +38,6 @@ fi
 feedback "Fixing Homebrew permissions..."
 sudo chown -R $(whoami) "${brew_prefix}"
 
-feedback "Running Homebrew post-installation steps..."
-readonly brew_eval_command="eval \"\$(${brew_prefix} shellenv)\""
-for shell_rc in ( "${HOME}/.zshrc" "${HOME}/.bashrc" ); do
-  if [ -f "${shell_rc}" ]; then
-    grep -qF "${brew_eval_command}" "${shell_rc}" || \
-      echo "${brew_eval_command}" >> "${shell_rc}"
-  fi
-done
-
 # N.B. Gurobi requires Rosetta 2 to run on ARM (despite providing a "universal2"
 # pkg file). We should investigate whether this can be removed with future
 # versions of Gurobi.
