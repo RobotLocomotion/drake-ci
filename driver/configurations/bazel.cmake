@@ -14,52 +14,7 @@ set(DASHBOARD_OUTPUT_USER_ROOT "${CTEST_BINARY_DIRECTORY}")
 
 execute_step(common get-bazel-version)
 
-set(DASHBOARD_BUILD_EVENT_JSON_FILE "${CTEST_BINARY_DIRECTORY}/BUILD.JSON")
-
-if(COMPILER STREQUAL "clang")
-  set(DASHBOARD_COPT "-fcolor-diagnostics")
-elseif(COMPILER STREQUAL "gcc")
-  set(DASHBOARD_COPT "-fdiagnostics-color=always")
-else()
-  set(DASHBOARD_COPT)
-endif()
-
 set(DASHBOARD_EXPERIMENTAL_SCALE_TIMEOUTS 2.0)
-
-if(DASHBOARD_PROCESSOR_COUNT GREATER 1)
-  # For rationale, see https://github.com/RobotLocomotion/drake/issues/17560.
-  if(COMPILER STREQUAL "clang" AND DASHBOARD_JOB_NAME MATCHES "address-sanitizer")
-    if(DASHBOARD_PROCESSOR_COUNT GREATER 2)
-      math(EXPR DASHBOARD_JOBS "7 * ${DASHBOARD_PROCESSOR_COUNT} / 16")
-    else()
-      set(DASHBOARD_JOBS 1)
-    endif()
-  else()
-    math(EXPR DASHBOARD_JOBS "7 * ${DASHBOARD_PROCESSOR_COUNT} / 8")
-  endif()
-else()
-  set(DASHBOARD_JOBS 1)
-endif()
-
-include(${DASHBOARD_DRIVER_DIR}/configurations/cache.cmake)
-
-if(REMOTE_CACHE)
-  if(DEBUG)
-    set(DASHBOARD_REMOTE_MAX_CONNECTIONS 16)
-    set(DASHBOARD_REMOTE_RETRIES 1)
-    set(DASHBOARD_REMOTE_TIMEOUT 240)
-  else()
-    set(DASHBOARD_REMOTE_MAX_CONNECTIONS 64)
-    set(DASHBOARD_REMOTE_RETRIES 4)
-    set(DASHBOARD_REMOTE_TIMEOUT 120)
-  endif()
-  configure_file("${DASHBOARD_TOOLS_DIR}/remote.bazelrc.in"
-    "${CTEST_SOURCE_DIRECTORY}/remote.bazelrc" @ONLY
-  )
-  configure_file("${DASHBOARD_TOOLS_DIR}/remote-v9.1.bazelrc.in"
-    "${CTEST_SOURCE_DIRECTORY}/remote-v9.1.bazelrc" @ONLY
-  )
-endif()
 
 set(DASHBOARD_BAZEL_BUILD_OPTIONS)
 

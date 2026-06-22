@@ -26,26 +26,9 @@ cache_append(CMAKE_INSTALL_PREFIX PATH ${DASHBOARD_INSTALL_PREFIX})
 cache_append(DRAKE_CI_ENABLE_PACKAGING BOOL ${PACKAGE})
 cache_append(DRAKE_CI_ENABLE_EVERYTHING BOOL ${EVERYTHING})
 
-file(COPY "${DASHBOARD_CI_DIR}/user.bazelrc"
-  DESTINATION "${DASHBOARD_SOURCE_DIRECTORY}")
+set(DASHBOARD_EXPERIMENTAL_SCALE_TIMEOUTS 2.0)
 
-file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
-  "startup --output_user_root=${DASHBOARD_OUTPUT_USER_ROOT}\n")
-
-# Set up cache
-include(${DASHBOARD_DRIVER_DIR}/configurations/cache.cmake)
-
-if(REMOTE_CACHE)
-  file(APPEND "${DASHBOARD_SOURCE_DIRECTORY}/user.bazelrc"
-    "build --remote_download_outputs=all\n"
-    "build --remote_cache=${DASHBOARD_REMOTE_CACHE}\n"
-    "build --remote_local_fallback=yes\n"
-    "build --remote_max_connections=64\n"
-    "build --remote_retries=4\n"
-    "build --remote_timeout=120\n"
-    "build --remote_accept_cached=${DASHBOARD_REMOTE_ACCEPT_CACHED}\n"
-    "build --remote_upload_local_results=${DASHBOARD_REMOTE_UPLOAD_LOCAL_RESULTS}\n")
-endif()
+configure_file("${DASHBOARD_TOOLS_DIR}/user.bazelrc.in" "${CTEST_SOURCE_DIRECTORY}/user.bazelrc" @ONLY)
 
 # Set package version
 execute_step(common set-package-version)

@@ -14,3 +14,9 @@ endif()
 compiler_version_string("${DASHBOARD_CC_COMMAND}" DASHBOARD_CC_VERSION_STRING)
 
 string(TOUPPER "${COMPILER}" COMPILER_UPPER)
+
+if(COMPILER STREQUAL "clang")
+  set(DASHBOARD_COPT "-fcolor-diagnostics")
+else()  # gcc
+  set(DASHBOARD_COPT "-fdiagnostics-color=always")
+endif()
