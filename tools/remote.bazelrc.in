@@ -1,6 +1,9 @@
 # -*- bazelrc -*-
 
-build --remote_download_outputs=all
+build --remote_download_outputs=minimal
+# Drake has its own debug-specific setting for this flag, which we must
+# override.
+build:debug --remote_download_outputs=minimal
 build --experimental_remote_cache_lease_extension=yes
 build --experimental_remote_cache_ttl=30m
 build --remote_accept_cached=@DASHBOARD_REMOTE_ACCEPT_CACHED@
