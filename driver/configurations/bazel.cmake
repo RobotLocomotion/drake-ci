@@ -55,6 +55,11 @@ if(MEMCHECK)
   string(APPEND DASHBOARD_BAZEL_BUILD_OPTIONS " --config=${MEMCHECK_BAZEL_CONFIG}")
 endif()
 
+if (REMOTE_CACHE)
+  # TODO
+  string(APPEND DASHBOARD_BAZEL_BUILD_OPTIONS " --remote_download_outputs=minimal")
+endif()
+
 set(DASHBOARD_BAZEL_TEST_OPTIONS)
 
 if(APPLE)
