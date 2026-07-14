@@ -18,6 +18,7 @@ if(DASHBOARD_UPDATE_RETURN_VALUE EQUAL -1 OR DASHBOARD_UPDATE_CAPTURE_CMAKE_ERRO
 endif()
 
 set(BUILD_ARGS "${DASHBOARD_BAZEL_STARTUP_OPTIONS}")
+string(APPEND BUILD_ARGS " --bazelrc=${CTEST_SOURCE_DIRECTORY}/default.bazelrc")
 if(MIRROR_TO_S3)
   string(APPEND BUILD_ARGS
     " build ${DASHBOARD_BAZEL_BUILD_OPTIONS} //tools/workspace:mirror_to_s3 //tools/release_engineering:mirror_to_s3")

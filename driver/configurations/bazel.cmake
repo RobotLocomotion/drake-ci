@@ -61,7 +61,7 @@ if(APPLE)
   string(APPEND DASHBOARD_BAZEL_TEST_OPTIONS " --test_timeout=300,1500,4500,-1")
 endif()
 
-configure_file("${DASHBOARD_TOOLS_DIR}/user.bazelrc.in" "${CTEST_SOURCE_DIRECTORY}/user.bazelrc" @ONLY)
+configure_file("${DASHBOARD_TOOLS_DIR}/user.bazelrc.in" "${CTEST_SOURCE_DIRECTORY}/default.bazelrc" @ONLY)
 
 # Report build configuration
 report_configuration("
