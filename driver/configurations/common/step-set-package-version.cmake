@@ -30,6 +30,12 @@ else()
     set(DASHBOARD_DRAKE_VERSION "0.0.${DASHBOARD_PACKAGE_DATE_TIME}+unknown")
   endif()
 
+  # For builds with the non-default binder (currently nanobind), we want to
+  # salt the name with those details.
+  if(DRAKE_PYTHON_BINDER STREQUAL "nanobind")
+    string(APPEND DASHBOARD_DRAKE_VERSION "-nb")
+  endif()
+
   string(REGEX REPLACE "[.]0+([0-9])" ".\\1"
     DASHBOARD_DRAKE_VERSION "${DASHBOARD_DRAKE_VERSION}")
   set(ENV{DRAKE_VERSION} "${DASHBOARD_DRAKE_VERSION}")
