@@ -175,6 +175,12 @@ else()
   set(PACKAGE OFF)
 endif()
 
+if(DASHBOARD_JOB_NAME MATCHES "otherbinder")
+  set(DRAKE_PYTHON_BINDER "nanobind")
+else()
+  set(DRAKE_PYTHON_BINDER "pybind11")
+endif()
+
 # Set the source and binary trees.
 set(DASHBOARD_SOURCE_DIRECTORY "${DASHBOARD_WORKSPACE}/src")
 set(DASHBOARD_BINARY_DIRECTORY "${DASHBOARD_WORKSPACE}/build")
