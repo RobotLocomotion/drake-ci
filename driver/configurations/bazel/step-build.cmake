@@ -84,16 +84,20 @@ if(DASHBOARD_SUBMIT)
     message(STATUS "Submitted to CDash with build id ${DASHBOARD_CDASH_BUILD_ID}")
   endif()
 
-  # Upload all image test results as uploaded files
-  file(GLOB_RECURSE TEST_OUTPUT_FILES FOLLOW_SYMLINKS "${DASHBOARD_SOURCE_DIRECTORY}/bazel-testlogs/*")
-  list(FILTER TEST_OUTPUT_FILES INCLUDE REGEX "test\\.outputs\\/")
-  if (TEST_OUTPUT_FILES)
-    ctest_upload(FILES ${TEST_OUTPUT_FILES}
-      CAPTURE_CMAKE_ERROR DASHBOARD_SUBMIT_UPLOAD_CAPTURE_CMAKE_ERROR
-      QUIET)
-      if(DASHBOARD_SUBMIT_UPLOAD_CAPTURE_CMAKE_ERROR EQUAL -1)
-        message(WARNING "*** CTest submit upload Bazel test logs was not successful")
-      endif()
+  # Upload all image test results as uploaded files. This step is skipped for
+  # coverage runs, as they zip their per-test kcov data into
+  # test.outputs/outputs.zip, which is too large to upload.
+  if(NOT COVERAGE)
+    file(GLOB_RECURSE TEST_OUTPUT_FILES FOLLOW_SYMLINKS "${DASHBOARD_SOURCE_DIRECTORY}/bazel-testlogs/*")
+    list(FILTER TEST_OUTPUT_FILES INCLUDE REGEX "test\\.outputs\\/")
+    if (TEST_OUTPUT_FILES)
+      ctest_upload(FILES ${TEST_OUTPUT_FILES}
+        CAPTURE_CMAKE_ERROR DASHBOARD_SUBMIT_UPLOAD_CAPTURE_CMAKE_ERROR
+        QUIET)
+        if(DASHBOARD_SUBMIT_UPLOAD_CAPTURE_CMAKE_ERROR EQUAL -1)
+          message(WARNING "*** CTest submit upload Bazel test logs was not successful")
+        endif()
+    endif()
   endif()
 
   ctest_submit(PARTS Upload
