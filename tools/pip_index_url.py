@@ -42,12 +42,23 @@ def main() -> None:
     bucket = s3.Bucket(bucket_name)
 
     # Query the drake-packages bucket for drake/nightly/... wheel files from
-    # the past 48 days that are not in Glacier storage. The files are named
-    # like `drake-0.0.20230830-cp310-cp310-manylinux_2_31_x86_64.whl`.
+    # the past 48 days that are not in Glacier storage.
+    #
+    # See the python.org binary distribution format for the naming conventions
+    # that drake follows:
+    # https://packaging.python.org/en/latest/specifications/binary-distribution-format/#binary-distribution-format.
+    # In general, it's:
+    #   drake-<version>-cpNNN-(cpNNN|abi3)-<platform>.whl
+    # For example, on Linux, we may produce:
+    #   drake-0.0.20260812a1-cp312-abi3-manylinux_2_34_x86_64.whl
+    # for an abi3, glibc 2.34, x86_64 wheel built on 2026-08-12. "a1" denotes
+    # our "alpha" nanobind releases. Alternatively, there may be:
+    #   drake-0.0.20260812-cp314-cp314-manylinux_2_34_aarch64.whl
+    # for a Python 3.14-specific wheel on aarch64.
     wheels: list[Wheel] = []
     print(f"==> Querying {bucket_name} objects ...")
     days_back = 48
-    version_re = re.compile(r"^drake-0\.0\.([0-9]{8})-cp3([0-9]{1,2})-.*")
+    version_re = re.compile(r"^drake-0\.0\.([0-9]{8})(a1)?-cp3([0-9]{1,2})-.*")
     for obj in bucket.objects.filter(Prefix="drake/nightly/"):
         if obj.storage_class != "STANDARD":
             continue
@@ -58,7 +69,7 @@ def main() -> None:
         # Parse the version numbers.
         match = version_re.match(Path(obj.key).name)
         assert match is not None, obj.key
-        yyyymmdd, py_minor = match.groups()
+        yyyymmdd, _, py_minor = match.groups()
         # Check whether the date is sufficiently new.
         date = datetime.date(
             year=int(yyyymmdd[:4]),
