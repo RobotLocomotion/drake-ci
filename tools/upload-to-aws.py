@@ -149,15 +149,18 @@ def upload_artifacts(options):
         # Names are expected too like like one of:
         #
         # TGZ:
-        #   drake-<YYYYMMDD>-<codename>.tar.gz (nightly)
-        #   drake-<YYYYMMDDHHMMSS>-<hash>-<codename>.tar.gz
+        #   drake-0.0.YYYYMMDD[-nb]-<codename>.tar.gz (nightly)
+        #   drake-0.0.YYYYMMDD.HHMMSS+git<commit>[-nb]-<codename>.tar.gz
         # Deb:
-        #   drake-dev_0.0.<YYYYMMDD>-1_<arch>-<codename>.deb (nightly)
-        #   drake-dev_0.0.<YYYYMMDDHHMMSS>-<commit>-1_<arch>-<codename>.deb
+        #   drake-dev_0.0.YYYYMMDD[-nb]-1_<arch>-<codename>.deb (nightly)
+        #   drake-dev_0.0.YYYYMMDD.HHMMSS+git<commit>[-nb]-1_<arch>-<codename>.deb
         # Wheel:
-        #   drake-0.0.YYYY.M.D.h.m.s+git<commit>-cp39-cp39-<platform>.whl
+        #   drake-0.0.YYYYMMDDD[a1]-cp312-cp312-<platform>.whl (nightly)
+        #   drake-0.0.YYYYMMDDD.HHMMSS[a1]+git<commit>-cp312-cp312-<platform>.whl
         # Generally:
-        #   drake-[dev_]<version>[-<commit>]-<stuff>
+        #   drake-[dev_]<version>[+git<commit>]-<stuff>
+        # The optional "nb" or "a1" components denote our nanobind alpha
+        # artifacts.
         #
         # A 'latest' artifact should preserve '<stuff>' unaltered, but replace
         # the version/date/sha with 'latest'. This regex matches the above and
