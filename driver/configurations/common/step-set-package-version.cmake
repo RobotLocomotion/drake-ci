@@ -33,7 +33,16 @@ else()
   # For builds with the non-default binder (currently nanobind), we want to
   # salt the name with those details.
   if(DRAKE_PYTHON_BINDER STREQUAL "nanobind")
-    string(APPEND DASHBOARD_DRAKE_VERSION "-nb")
+    if(DASHBOARD_DRAKE_VERSION MATCHES "\\+")
+      string(REGEX REPLACE
+        "^([^+]*)\\+(.*)$"
+        "\\1a1+\\2"
+        DASHBOARD_DRAKE_VERSION
+         "${DASHBOARD_DRAKE_VERSION}"
+      )
+    else()
+      string(APPEND DASHBOARD_DRAKE_VERSION "a1")
+    endif()
   endif()
 
   string(REGEX REPLACE "[.]0+([0-9])" ".\\1"
