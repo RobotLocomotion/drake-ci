@@ -261,8 +261,15 @@ macro(generate_pip_index_url)
       COMMAND "${venv}/bin/pip" install boto3
       RESULT_VARIABLE DASHBOARD_PYTHON_PIP_BOTO3_RESULT_VARIABLE)
     if(DASHBOARD_PYTHON_PIP_BOTO3_RESULT_VARIABLE EQUAL 0)
+      set(pip_index_cmd
+        "${venv}/bin/python3" "${DASHBOARD_TOOLS_DIR}/pip_index_url.py"
+      )
+      if(NOT DASHBOARD_GROUP STREQUAL "nightly")
+        # ONLY nightly jobs should ever populate the pip index.
+        list(APPEND pip_index_cmd "--dry-run")
+      endif()
       execute_process(
-        COMMAND "${venv}/bin/python3" "${DASHBOARD_TOOLS_DIR}/pip_index_url.py"
+        COMMAND ${pip_index_cmd}
         RESULT_VARIABLE DASHBOARD_PIP_INDEX_URL_RESULT_VARIABLE)
       if(NOT DASHBOARD_PIP_INDEX_URL_RESULT_VARIABLE EQUAL 0)
         append_step_status("PIP INDEX URL" UNSTABLE)
@@ -274,6 +281,7 @@ macro(generate_pip_index_url)
     append_step_status("PIP INDEX URL VENV CREATION" UNSTABLE)
   endif()
   unset(venv)
+  unset(pip_index_cmd)
 endmacro()
 
 #------------------------------------------------------------------------------

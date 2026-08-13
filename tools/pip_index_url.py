@@ -16,10 +16,12 @@ NOTE: to develop locally, you must have your ~/.aws/config and
 """
 from __future__ import annotations
 
+import argparse
 import datetime
 import io
 import operator
 import re
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -34,7 +36,15 @@ class Wheel:
     sha512: str | None = None
 
 
-def main() -> None:
+def main(args=None) -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--dry-run',
+        action='store_true',
+        help='Generate the index without uploading to S3',
+    )
+    options = parser.parse_args(args)
+
     # Log in to s3.
     print("==> Logging in to s3 ...")
     s3 = boto3.resource("s3")
@@ -139,27 +149,28 @@ def main() -> None:
     html.seek(0)
 
     # Upload the index.html to the s3 bucket.
-    s3_key = "whl/nightly/drake/index.html"
-    print(f"==> Uploading to s3://{bucket_name}/{s3_key} ...")
-    s3.meta.client.upload_fileobj(
-        html,
-        bucket_name,
-        s3_key,
-        ExtraArgs={
-            # The Max-Age for browser caches (among other tools).  We desire it
-            # to expire fairly quickly, the default is 24 hours but 30 minutes
-            # will force tools to reload the data more quickly.
-            "CacheControl": "max-age=1800",  # 30 minutes in seconds
-            # Make sure it is available as an HTML document, otherwise browsers
-            # will just download the file and pip cannot use it.
-            "ContentType": "text/html",  # Default is binary/octet-stream
-            "StorageClass": "STANDARD",
-            "ACL": "public-read",
-        },
-    )
+    if not options.dry_run:
+        s3_key = "whl/nightly/drake/index.html"
+        print(f"==> Uploading to s3://{bucket_name}/{s3_key} ...")
+        s3.meta.client.upload_fileobj(
+            html,
+            bucket_name,
+            s3_key,
+            ExtraArgs={
+                # The Max-Age for browser caches (among other tools).  We desire it
+                # to expire fairly quickly, the default is 24 hours but 30 minutes
+                # will force tools to reload the data more quickly.
+                "CacheControl": "max-age=1800",  # 30 minutes in seconds
+                # Make sure it is available as an HTML document, otherwise browsers
+                # will just download the file and pip cannot use it.
+                "ContentType": "text/html",  # Default is binary/octet-stream
+                "StorageClass": "STANDARD",
+                "ACL": "public-read",
+            },
+        )
 
     print("==> DONE!")
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])
