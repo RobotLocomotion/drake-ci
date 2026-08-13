@@ -159,12 +159,16 @@ def upload_artifacts(options):
         #   drake-0.0.YYYYMMDDD.HHMMSS[a1]+git<commit>-cp312-cp312-<platform>.whl
         # Generally:
         #   drake-[dev_]<version>[+git<commit>]-<stuff>
-        # The optional "a1" component denotes our nanobind alpha artifacts.
         #
         # A 'latest' artifact should preserve '<stuff>' unaltered, but replace
         # the version/date/sha with 'latest'. This regex matches the above and
         # allows us to extract the '<stuff>' portion of the name.
-        m = re.match(r'^(drake-(dev_)?)[^-]+(-[0-9a-f]{40})?-(.*)$', name)
+        #
+        # The optional "a1" component denotes our nanobind alpha artifacts.
+        # These should NOT be published with a 'latest' artifact.
+        m = re.match(
+            r'^(drake-(dev_)?)(?![^-]*a1)[^-]+(-[0-9a-f]{40})?-(.*)$', name
+        )
         if m is not None:
             prefix = m.group(1)
             residue = m.group(4)
