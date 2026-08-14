@@ -144,42 +144,50 @@ def upload_artifacts(options):
     upload(path, name, options)
     upload_checksum(path, name, options)
 
-    # For nightly and continuous, upload a 'latest' artifact as well.
+    # For Nightly and Continuous, upload a 'latest' artifact as well. (We'll
+    # compute the 'latest' name even in jobs we're not going to upload it so
+    # that we can verify the logic during Experimental testing.)
+    #
+    # Names are expected too like like one of:
+    #
+    # TGZ:
+    #   drake-0.0.YYYYMMDD[a1]-<codename>.tar.gz (nightly)
+    #   drake-0.0.YYYYMMDD.HHMMSS[a1]+git<commit>-<codename>.tar.gz
+    # Deb:
+    #   drake-dev_0.0.YYYYMMDDa1-1_<arch>-<codename>.deb (nightly)
+    #   drake-dev_0.0.YYYYMMDD.HHMMSS[a1]+git<commit>-1_<arch>-<codename>.deb
+    # Wheel:
+    #   drake-0.0.YYYYMMDDD[a1]-cp312-cp312-<platform>.whl (nightly)
+    #   drake-0.0.YYYYMMDDD.HHMMSS[a1]+git<commit>-cp312-cp312-<platform>.whl
+    # Documentation (Continuous / Experimenal only):
+    #   drake-doc-0.0.YYYYMMDD.HHMMSS+git<commit>.tar.gz
+    # Generally:
+    #   drake-[dev_]<version>[+git<commit>]-<stuff>
+    #
+    # A 'latest' artifact should preserve '<stuff>' unaltered, but replace the
+    # version/date/sha with 'latest'. This regex matches the above and allows us
+    # to extract the '<stuff>' portion of the name.
+    #
+    # The optional "a1" component denotes our nanobind alpha artifacts. These
+    # should NOT be published with a 'latest' artifact.
+    #
+    m = re.match(r'^(drake-(dev_|doc-)?)([^-]+)-(.*)$', name)
+    assert m, f'Could not decompose {name}'
+    prefix, dev_doc, version, residue = m.groups()
+    if dev_doc == 'doc-':
+        print('Not uploading a "latest" alias for a Documentation build')
+        return
+    if version.split('+')[0].endswith("a1"):
+        print('Not uploading a "latest" alias for a Nanobind build')
+        return
+    new_name = f'{prefix}latest-{residue}'
     if options.nightly or options.continuous:
-        # Names are expected too like like one of:
-        #
-        # TGZ:
-        #   drake-0.0.YYYYMMDD[a1]-<codename>.tar.gz (nightly)
-        #   drake-0.0.YYYYMMDD.HHMMSS[a1]+git<commit>-<codename>.tar.gz
-        # Deb:
-        #   drake-dev_0.0.YYYYMMDDa1-1_<arch>-<codename>.deb (nightly)
-        #   drake-dev_0.0.YYYYMMDD.HHMMSS[a1]+git<commit>-1_<arch>-<codename>.deb
-        # Wheel:
-        #   drake-0.0.YYYYMMDDD[a1]-cp312-cp312-<platform>.whl (nightly)
-        #   drake-0.0.YYYYMMDDD.HHMMSS[a1]+git<commit>-cp312-cp312-<platform>.whl
-        # Generally:
-        #   drake-[dev_]<version>[+git<commit>]-<stuff>
-        #
-        # A 'latest' artifact should preserve '<stuff>' unaltered, but replace
-        # the version/date/sha with 'latest'. This regex matches the above and
-        # allows us to extract the '<stuff>' portion of the name.
-        #
-        # The optional "a1" component denotes our nanobind alpha artifacts.
-        # These should NOT be published with a 'latest' artifact.
-        m = re.match(
-            r'^(drake-(dev_)?)(?![^-]*a1)[^-]+(-[0-9a-f]{40})?-(.*)$', name
-        )
-        if m is not None:
-            prefix = m.group(1)
-            residue = m.group(4)
-            name = f'{prefix}latest-{residue}'
-            expiration = max_age(options)
-
-            upload(path, name, options, expiration=expiration)
-            upload_checksum(path, name, options, expiration=expiration)
-        else:
-            raise RuntimeError(
-                f"Failed to transform version in artifact {name} to 'latest'.")
+        expiration = max_age(options)
+        upload(path, new_name, options, expiration=expiration)
+        upload_checksum(path, new_name, options, expiration=expiration)
+    else:
+        print(f'Not uploading "latest" alias {new_name} during '
+              f'non-Nightly, non-Continuous --group={options.group}')
 
 
 def main(args):
