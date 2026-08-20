@@ -10,7 +10,9 @@ else()
   string(TIMESTAMP DATE "%Y%m%d")
   string(TIMESTAMP TIME "%H%M%S")
   set(DASHBOARD_PACKAGE_DATE "${DATE}")
-  set(DASHBOARD_PACKAGE_DATE_TIME "${DATE}.${TIME}")
+  # Include a "1" so that leading zeros on `TIME` are not stripped from the
+  # resulting version component.
+  set(DASHBOARD_PACKAGE_DATE_TIME "${DATE}.1${TIME}")
   execute_process(COMMAND "${CTEST_GIT_COMMAND}" rev-parse --short=8 HEAD
     WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}"
     RESULT_VARIABLE GIT_REV_PARSE_RESULT_VARIABLE
@@ -45,7 +47,5 @@ else()
     endif()
   endif()
 
-  string(REGEX REPLACE "[.]0+([0-9])" ".\\1"
-    DASHBOARD_DRAKE_VERSION "${DASHBOARD_DRAKE_VERSION}")
   set(ENV{DRAKE_VERSION} "${DASHBOARD_DRAKE_VERSION}")
 endif()
