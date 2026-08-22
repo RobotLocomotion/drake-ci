@@ -83,6 +83,7 @@ apt-get update -qq || (sleep 15; apt-get update -qq)
 apt-get purge --autoremove -o Dpkg::Use-Pty=0 -qy cron unattended-upgrades
 rm -rf /etc/cron.daily/apt-compat /var/log/unattended-upgrades
 
+apt-get upgrade --download-only -qy || (sleep 15; apt-get upgrade --download-only -qy) || sleep 15
 apt-get upgrade -o Dpkg::Options::=--force-confdef \
   -o Dpkg::Options::=--force-confnew -o Dpkg::Use-Pty=0 -qy
 
