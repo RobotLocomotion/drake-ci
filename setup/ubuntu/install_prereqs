@@ -67,8 +67,6 @@ trap 'cleanup' EXIT
 
 systemctl --quiet disable apt-daily-upgrade.timer apt-daily.timer
 
-echo 'APT::Acquire::Retries "4";' > /etc/apt/apt.conf.d/80-acquire-retries
-
 export DEBIAN_FRONTEND=noninteractive
 export PYTHONWARNINGS=ignore::SyntaxWarning
 

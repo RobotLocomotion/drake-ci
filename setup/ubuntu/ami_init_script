@@ -16,13 +16,44 @@ cleanup () {
     /var/log/apt/*
 }
 
+die () {
+  echo >&2 "$@"
+  exit 1
+}
+
+[[ "${EUID}" -eq 0 ]] || die 'This script must be run as root'
+
 trap 'cleanup' EXIT
 
 systemctl --quiet disable apt-daily-upgrade.timer apt-daily.timer
 
-apt-get update -o APT::Acquire::Retries=4 -qq \
-  || (sleep 15; apt-get update -o APT::Acquire::Retries=4 -qq)
+. /etc/os-release
 
+# Configure retries to protect against download/network flakes.
+echo 'APT::Acquire::Retries "4";' > /etc/apt/apt.conf.d/80-acquire-retries
+
+# By default, EC2 only includes its own mirror
+# (http://us-east-1.ec2.archive.ubuntu.com/ubuntu/) for APT sources. For
+# reliability, add the Canonical mirror as a fallback.
+tee /etc/apt/sources.list.d/canonical.sources > /dev/null <<EOF
+Types: deb
+URIs: http://archive.ubuntu.com/ubuntu/
+Suites: ${VERSION_CODENAME} ${VERSION_CODENAME}-updates ${VERSION_CODENAME}-backports
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+
+Types: deb
+URIs: http://security.ubuntu.com/ubuntu
+Suites: ${VERSION_CODENAME}-security
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+EOF
+
+# Refresh packages.
+apt-get update -qq || (sleep 15; apt-get update -qq)
+
+# Install a baseline of packages that should exist even on unprovisioned
+# images.
 packages=$(cat "${BASH_SOURCE%/*}/packages-unprovisioned.txt")
 apt-get install --no-install-recommends \
   -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 -qy \
@@ -37,5 +68,6 @@ else
     java-1.21.0-openjdk-amd64
 fi
 
+# Allow running Docker without root.
 groupadd docker
 usermod -a -G docker ubuntu
