@@ -16,13 +16,40 @@ cleanup () {
     /var/log/apt/*
 }
 
+die () {
+  echo >&2 "$@"
+  exit 1
+}
+
+[[ "${EUID}" -eq 0 ]] || die 'This script must be run as root'
+
 trap 'cleanup' EXIT
 
 systemctl --quiet disable apt-daily-upgrade.timer apt-daily.timer
 
+# Add Canonical as a fallback source for apt downloads, to be hopefully
+# resistant against EC2 (i.e., us-east-1.ec2.archive.ubuntu.com) downtime.
+#
+# In particular, write to (a) the cloud-init template, which bakes the setting
+# into the AMI for future instance boots, and (b) the current `ubuntu.sources`
+# file on this instance, so we sanity check the result with our
+# `apt-get update` during maintenance.
+if [[ "$(uname -m)" == "aarch64" ]]; then
+  apt_fallback_uri='http://ports.ubuntu.com/ubuntu-ports'
+else
+  apt_fallback_uri='http://archive.ubuntu.com/ubuntu/'
+fi
+sed -i "s|^URIs: {{mirror}}\$|URIs: {{mirror}} ${apt_fallback_uri}|" \
+  /etc/cloud/templates/sources.list.ubuntu.deb822.tmpl
+sed -i "0,/^URIs: /{s|^URIs: \(.*\)\$|URIs: \1 ${apt_fallback_uri}|}" \
+  /etc/apt/sources.list.d/ubuntu.sources
+
+# Refresh packages.
 apt-get update -o APT::Acquire::Retries=4 -qq \
   || (sleep 15; apt-get update -o APT::Acquire::Retries=4 -qq)
 
+# Install a baseline of packages that should exist even on unprovisioned
+# images.
 packages=$(cat "${BASH_SOURCE%/*}/packages-unprovisioned.txt")
 apt-get install --no-install-recommends \
   -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 -qy \
@@ -37,5 +64,6 @@ else
     java-1.21.0-openjdk-amd64
 fi
 
+# Allow running Docker without root.
 groupadd docker
 usermod -a -G docker ubuntu
