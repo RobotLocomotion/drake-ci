@@ -21,15 +21,14 @@ die () {
 
 trap 'cleanup' EXIT
 
+echo 'APT::Acquire::Retries "4";' > /etc/apt/apt.conf.d/80-acquire-retries
+
 export DEBIAN_FRONTEND=noninteractive
 
-apt-get update -o APT::Acquire::Retries=4 -qq \
-  || (sleep 15; apt-get update -o APT::Acquire::Retries=4 -qq)
+apt-get update -qq
 
-packages=$(cat "${BASH_SOURCE%/*}/packages.txt")
-apt-get install --no-install-recommends \
-  -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 -qy \
-  ${packages}
+readonly packages=$(cat "${BASH_SOURCE%/*}/packages.txt")
+apt-get install --no-install-recommends "-o" "Dpkg::Use-Pty=0" -qy ${packages}
 
 # Since v29, docker delegates container storage to containerd; ensure they both
 # point to `/media/ephemeral0/...` so we don't overrun our small `/`.

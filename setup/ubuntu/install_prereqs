@@ -70,7 +70,6 @@ systemctl --quiet disable apt-daily-upgrade.timer apt-daily.timer
 echo 'APT::Acquire::Retries "4";' > /etc/apt/apt.conf.d/80-acquire-retries
 
 export DEBIAN_FRONTEND=noninteractive
-export PYTHONWARNINGS=ignore::SyntaxWarning
 
 # Reset to the requested architecture variant *before* updating packages.
 . /etc/os-release
@@ -78,28 +77,28 @@ if [[ "${VERSION_CODENAME}" != "noble" && "${disable_amd64v3}" -eq 1 ]]; then
   rm -f /etc/apt/apt.conf.d/99enable-amd64v3 /etc/apt/apt.conf.d/90arch-variant
 fi
 
-apt-get update -qq || (sleep 15; apt-get update -qq)
+readonly pty=("-o" "Dpkg::Use-Pty=0")
 
-apt-get purge --autoremove -o Dpkg::Use-Pty=0 -qy cron unattended-upgrades
-rm -rf /etc/cron.daily/apt-compat /var/log/unattended-upgrades
-
+apt-get update -qq
 apt-get upgrade -o Dpkg::Options::=--force-confdef \
-  -o Dpkg::Options::=--force-confnew -o Dpkg::Use-Pty=0 -qy
+  -o Dpkg::Options::=--force-confnew "${pty[@]}" -qy
+
+apt-get purge --autoremove "${pty[@]}" -qy cron unattended-upgrades
+rm -rf /etc/cron.daily/apt-compat /var/log/unattended-upgrades
 
 # `awscli` is available on most Ubuntu versions, except Noble. By this point,
 # it should have already been installed on the Noble unprovisioned image. See
 # https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 # for instructions on installing manually.
 if [[ "${VERSION_CODENAME}" != "noble" ]]; then
-  apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
-    awscli
+  apt-get install --no-install-recommends "${pty[@]}" -qy awscli
 fi
 if [[ -z "$(type -P aws)" ]]; then
   die 'ERROR: Failed to locate a working installation of awscli.'
 fi
 
-packages=$(cat "${BASH_SOURCE%/*}/packages-provisioned.txt")
-apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy ${packages}
+readonly packages=$(cat "${BASH_SOURCE%/*}/packages-provisioned.txt")
+apt-get install --no-install-recommends "${pty[@]}" -qy ${packages}
 
 echo 'verbose = off' > /root/.wgetrc
 cp /root/.wgetrc /home/ubuntu/.wgetrc
