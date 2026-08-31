@@ -51,6 +51,8 @@ install_gurobi () {
 
 [[ "${EUID}" -eq 0 ]] || die 'This script must be run as root'
 
+die "wip"
+
 disable_amd64v3=0
 while [ "${1:-}" != "" ]; do
   case "$1" in
