@@ -62,13 +62,14 @@ def main(args=None) -> None:
     # For example, on Linux, we may produce:
     #   drake-0.0.20260812a1-cp312-abi3-manylinux_2_34_x86_64.whl
     # for an abi3, glibc 2.34, x86_64 wheel built on 2026-08-12. "a1" denotes
-    # our "alpha" nanobind releases. Alternatively, there may be:
+    # our "alpha" nanobind releases or "b1" denotes legacy pybind11 releases.
+    # Alternatively, there may be:
     #   drake-0.0.20260812-cp314-cp314-manylinux_2_34_aarch64.whl
     # for a Python 3.14-specific wheel on aarch64.
     wheels: list[Wheel] = []
     print(f"==> Querying {bucket_name} objects ...")
     days_back = 48
-    version_re = re.compile(r"^drake-0\.0\.([0-9]{8})(a1)?-cp3([0-9]{1,2})-.*")
+    version_re = re.compile(r"^drake-0\.0\.([0-9]{8})(a1|b1)?-cp3([0-9]{1,2})-.*")
     for obj in bucket.objects.filter(Prefix="drake/nightly/"):
         if obj.storage_class != "STANDARD":
             continue
