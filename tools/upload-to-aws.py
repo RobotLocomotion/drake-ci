@@ -153,14 +153,14 @@ def upload_artifacts(options):
     # Names are expected to look like one of:
     #
     # TGZ:
-    #   drake-0.0.YYYYMMDD[a1]-<codename>.tar.gz (nightly)
-    #   drake-0.0.YYYYMMDD.HHMMSS[a1]+git<commit>-<codename>.tar.gz
+    #   drake-0.0.YYYYMMDD[a1|b1]-<codename>.tar.gz (nightly)
+    #   drake-0.0.YYYYMMDD.HHMMSS[a1|b1]+git<commit>-<codename>.tar.gz
     # Deb:
-    #   drake-dev_0.0.YYYYMMDDa1-1_<arch>-<codename>.deb (nightly)
-    #   drake-dev_0.0.YYYYMMDD.HHMMSS[a1]+git<commit>-1_<arch>-<codename>.deb
+    #   drake-dev_0.0.YYYYMMDD[a1|b1]-1_<arch>-<codename>.deb (nightly)
+    #   drake-dev_0.0.YYYYMMDD.HHMMSS[a1|b1]+git<commit>-1_<arch>-<codename>.deb
     # Wheel:
-    #   drake-0.0.YYYYMMDDD[a1]-cp312-cp312-<platform>.whl (nightly)
-    #   drake-0.0.YYYYMMDDD.HHMMSS[a1]+git<commit>-cp312-cp312-<platform>.whl
+    #   drake-0.0.YYYYMMDDD[a1|b1]-cp312-cp312-<platform>.whl (nightly)
+    #   drake-0.0.YYYYMMDDD.HHMMSS[a1|b1]+git<commit>-cp312-cp312-<platform>.whl
     # Documentation (Continuous / Experimental only):
     #   drake-doc-0.0.YYYYMMDD.HHMMSS+git<commit>.tar.gz
     #
@@ -172,7 +172,8 @@ def upload_artifacts(options):
     # to extract the '<stuff>' portion of the name.
     #
     # The optional "a1" component denotes our nanobind alpha artifacts. These
-    # should NOT be published with a 'latest' artifact.
+    # should NOT be published with a 'latest' artifact. Similarly, "b1" marks a
+    # legacy pybind11 artifact that should NOT be published as latest.
     #
     if name.startswith('drake-doc-'):
         print('Not uploading a "latest" alias for a Documentation build')
@@ -180,8 +181,8 @@ def upload_artifacts(options):
     m = re.match(r'^(drake-(dev_)?)([^-]+)-(.*)$', name)
     assert m, f'Could not decompose {name}'
     prefix, _, version, residue = m.groups()
-    if version.split('+')[0].endswith('a1'):
-        print('Not uploading a "latest" alias for a Nanobind build')
+    if version.split('+')[0].endswith(('a1', 'b1')):
+        print('Not uploading a "latest" alias for a non-standard python_binder')
         return
     new_name = f'{prefix}latest-{residue}'
     if options.nightly or options.continuous:
