@@ -38,9 +38,8 @@ fi
 feedback "Fixing Homebrew permissions..."
 sudo chown -R $(whoami) "${brew_prefix}"
 
-# N.B. Gurobi requires Rosetta 2 to run on ARM (despite providing a "universal2"
-# pkg file). We should investigate whether this can be removed with future
-# versions of Gurobi.
+# N.B. Gurobi requires Rosetta 2. This will have to be removed by the time
+# drake adds support for macOS 28.
 feedback "Installing Rosetta 2..."
 sudo softwareupdate --install-rosetta --agree-to-license
 
@@ -50,7 +49,7 @@ sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate \
 
 feedback "Disabling Spotlight indexing and filesystem logs..."
 sudo mdutil -a -i off
-readonly data_dir="/System/Volumes/Data/"
+readonly data_dir="/System/Volumes/Data"
 sudo rm -rf "$data_dir/.Spotlight*"
 readonly never_index="$data_dir/.metadata_never_index"
 sudo touch $never_index
