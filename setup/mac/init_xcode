@@ -120,14 +120,14 @@ if ! [ -d "$xcode_root/Contents/Developer" ]; then
     "$xcode_full_version" "$clt_hash_expect" "$clt_loc"
 
   feedback "Installing command line tools..."
-  # Finish any pending filesystem operations before `hdiutil`.
+  # Finish any pending filesystem operations before `diskutil`.
   sync
-  hdiutil attach "$clt_loc"
+  diskutil image attach "$clt_loc"
   readonly clt_volume="/Volumes/Command Line Developer Tools"
   readonly clt_pkg="$clt_volume/Command Line Tools.pkg"
   sudo installer -package "$clt_pkg" -target /
   sync
-  hdiutil detach "$clt_volume"
+  diskutil eject "$clt_volume"
 
   feedback "Extracting the installer..."
   sudo xip -x "$installer_loc"
