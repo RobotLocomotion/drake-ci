@@ -40,7 +40,7 @@ else()
 endif()
 
 if(APPLE)
-  set(DISTRIBUTION_REGEX "(tahoe|golden-gate)")
+  set(DISTRIBUTION_REGEX "(tahoe|goldengate)")
 else()
   set(DISTRIBUTION_REGEX "(noble|resolute)")
 endif()
