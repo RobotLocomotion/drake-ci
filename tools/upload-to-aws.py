@@ -111,26 +111,31 @@ def upload(path, name, options, *, expiration=None):
 
 def upload_checksum(path, name, options, *, expiration=None):
     """
-    Computes the checksum of an artifact, creates a checksum file, and uploads
-    the checksum file to AWS S3.
+    Computes the checksums of an artifact, creates checksum files, and uploads
+    the checksum files to AWS S3.
 
     When provided, `expiration` (an int representing seconds) will be added to
     the s3 cache control for content Max-Age http headers.
     """
-    checksum = hashlib.sha512()
+    checksums = {
+        'sha256': hashlib.sha256(),
+        'sha512': hashlib.sha512(),
+    }
 
     with open(path, mode='rb') as f:
         while True:
             data = f.read(64 << 10)
             if not data:
                 break
-            checksum.update(data)
+            for h in checksums:
+                checksums[h].update(data)
 
-    checksum_path = f'{path}.sha512'
-    with open(checksum_path, mode='w') as f:
-        f.write(f'{checksum.hexdigest()}  {name}\n')
+    for kind, checksum in checksums.items():
+        checksum_path = f'{path}.{kind}'
+        with open(checksum_path, mode='w') as f:
+            f.write(f'{checksum.hexdigest()}  {name}\n')
 
-    upload(checksum_path, f'{name}.sha512', options, expiration=expiration)
+        upload(checksum_path, f'{name}.{kind}', options, expiration=expiration)
 
 
 def upload_artifacts(options):
