@@ -146,6 +146,16 @@ def cleanWorkspace() {
   dir("${env.WORKSPACE}@tmp") {
     deleteDir()
   }
+  if (env.JOB_NAME.contains("wheel")) {
+    // The paths below should match those used by Drake during the wheel build
+    // and the list in drake-ci/driver/configurations/wheel.cmake.
+    dir("${env.HOME}/.drake-wheel-build") {
+      deleteDir()
+    }
+    dir("${env.HOME}/.cache/drake-wheel-build") {
+      deleteDir()
+    }
+  }
 }
 
 /**
