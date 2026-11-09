@@ -146,6 +146,14 @@ def cleanWorkspace() {
   dir("${env.WORKSPACE}@tmp") {
     deleteDir()
   }
+  if (env.JOB_NAME.contains("wheel")) {
+    dir("${env.HOME}/.drake-wheel-build") {
+      deleteDir()
+    }
+    dir("${env.HOME}/.cache/drake-wheel-build") {
+      deleteDir()
+    }
+  }
 }
 
 /**
