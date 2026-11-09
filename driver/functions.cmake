@@ -172,7 +172,14 @@ endfunction()
 # Set POSIX permissions on file
 #------------------------------------------------------------------------------
 function(chmod PATH PERMISSIONS MESSAGE)
-  execute_process(COMMAND sudo chmod ${PERMISSIONS} "${PATH}"
+  set(options SUDO)
+  cmake_parse_arguments(PARSE_ARGV 3 chmod "${options}" "" "")
+  if(chmod_SUDO)
+    set(sudo sudo)
+  else()
+    set(sudo)
+  endif()
+  execute_process(COMMAND ${sudo} chmod ${PERMISSIONS} "${PATH}"
     RESULT_VARIABLE _chmod_result
     OUTPUT_VARIABLE _chmod_output
     ERROR_VARIABLE _chmod_output)
@@ -202,15 +209,24 @@ endfunction()
 # Create a directory with specified permissions
 #------------------------------------------------------------------------------
 function(mkdir PATH PERMISSIONS MESSAGE)
+  set(options SUDO)
+  cmake_parse_arguments(PARSE_ARGV 3 mkdir "${options}" "" "")
   message(STATUS "Creating ${MESSAGE}...")
+  if(mkdir_SUDO)
+    set(sudo sudo)
+  else()
+    set(sudo)
+  endif()
   execute_process(
-    COMMAND sudo "${CMAKE_COMMAND}" -E make_directory "${PATH}"
+    COMMAND ${sudo} "${CMAKE_COMMAND}" -E make_directory "${PATH}"
     RESULT_VARIABLE _mkdir_result)
   if(NOT _mkdir_result EQUAL 0)
     fatal("creation of ${MESSAGE} was not successful")
   endif()
   chmod("${PATH}" "${PERMISSIONS}" "${MESSAGE}")
-  chown("${PATH}")
+  if(mkdir_SUDO)
+    chown("${PATH}" SUDO)
+  endif()
 endfunction()
 
 #------------------------------------------------------------------------------
