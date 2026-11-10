@@ -172,7 +172,7 @@ endfunction()
 # Set POSIX permissions on file
 #------------------------------------------------------------------------------
 function(chmod PATH PERMISSIONS MESSAGE)
-  execute_process(COMMAND sudo chmod ${PERMISSIONS} "${PATH}"
+  execute_process(COMMAND chmod ${PERMISSIONS} "${PATH}"
     RESULT_VARIABLE _chmod_result
     OUTPUT_VARIABLE _chmod_output
     ERROR_VARIABLE _chmod_output)
@@ -186,12 +186,19 @@ endfunction()
 # Change ownership of a file or directory to the current user
 #------------------------------------------------------------------------------
 function(chown PATH)
+  set(options SUDO)
+  cmake_parse_arguments(PARSE_ARGV 1 chown "${options}" "" "")
+  if(chown_SUDO)
+    set(sudo sudo)
+  else()
+    set(sudo)
+  endif()
   execute_process(
     COMMAND whoami
     OUTPUT_VARIABLE _current_user
     OUTPUT_STRIP_TRAILING_WHITESPACE)
   execute_process(
-    COMMAND sudo chown ${_current_user} "${PATH}"
+    COMMAND ${sudo} chown ${_current_user} "${PATH}"
     RESULT_VARIABLE _chown_result)
   if(NOT _chown_result EQUAL 0)
     fatal("Could not change ownership of ${PATH}")
@@ -202,15 +209,24 @@ endfunction()
 # Create a directory with specified permissions
 #------------------------------------------------------------------------------
 function(mkdir PATH PERMISSIONS MESSAGE)
+  set(options SUDO)
+  cmake_parse_arguments(PARSE_ARGV 3 mkdir "${options}" "" "")
   message(STATUS "Creating ${MESSAGE}...")
+  if(mkdir_SUDO)
+    set(sudo sudo)
+  else()
+    set(sudo)
+  endif()
   execute_process(
-    COMMAND sudo "${CMAKE_COMMAND}" -E make_directory "${PATH}"
+    COMMAND ${sudo} "${CMAKE_COMMAND}" -E make_directory "${PATH}"
     RESULT_VARIABLE _mkdir_result)
   if(NOT _mkdir_result EQUAL 0)
     fatal("creation of ${MESSAGE} was not successful")
   endif()
+  if(mkdir_SUDO)
+    chown("${PATH}" SUDO)
+  endif()
   chmod("${PATH}" "${PERMISSIONS}" "${MESSAGE}")
-  chown("${PATH}")
 endfunction()
 
 #------------------------------------------------------------------------------

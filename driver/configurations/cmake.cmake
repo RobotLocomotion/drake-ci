@@ -91,7 +91,7 @@ report_configuration("
 if(PACKAGE)
   set(DASHBOARD_PACKAGE_OUTPUT_DIRECTORY "${DASHBOARD_INSTALL_PREFIX}")
   mkdir("${DASHBOARD_PACKAGE_OUTPUT_DIRECTORY}" 1777
-    "package output directory")
+    "package output directory" SUDO)
   list(APPEND DASHBOARD_TEMPORARY_FILES DASHBOARD_PACKAGE_OUTPUT_DIRECTORY)
 endif()
 
